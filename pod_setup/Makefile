@@ -1,0 +1,146 @@
+#sudo apt-get install libomp-dev
+#sudo apt-get install libcrypto++-dev
+#sudo apt-get install libboost-all-dev
+
+ifeq ($(OS),Windows_NT)
+	OS_TYPE := Windows
+else
+	UNAME := $(shell uname -s)
+	ifeq ($(UNAME),Linux)
+		OS_TYPE := Linux
+	else ifeq ($(UNAME),Darwin)
+		OS_TYPE := Darwin
+	else
+		OS_TYPE := Unknown
+	endif
+endif
+
+CXX ?= $(shell which g++)
+ifdef CXX11_HOME
+  CXX := LD_LIBRARY_PATH=${CXX11_HOME}/lib $(CXX11_HOME)/bin/g++
+endif
+
+THIRD_PARTY_HOME = ../thirdparty
+MCL_HOME = ../thirdparty/mcl/include
+PUB_HOME = ../public
+
+INC_FLAGS :=  \
+ -I $(MCL_HOME) \
+ -I $(PUB_HOME) \
+ -I $(THIRD_PARTY_HOME) \
+ -I /usr/local/include \
+ -I /usr/include \
+ -I. \
+ -I..
+
+ifdef CXX11_HOME
+  INC_FLAGS += -I $(CXX11_HOME)/include
+endif
+
+CXXFLAGS := \
+ -g3 \
+ -fPIC \
+ -fopenmp \
+ -std=c++14 \
+ -Wall \
+ -Wextra \
+ -gdwarf-2 \
+ -gstrict-dwarf \
+ -Wno-parentheses \
+ -Wdeprecated-declarations \
+ -fmerge-all-constants  \
+ $(INC_FLAGS)
+
+MCL_FLAGS := \
+ -DMCL_DONT_USE_OPENSSL
+
+RELEASE_FLAGS := \
+ -O3 \
+ -DDTREE_ICASE \
+ -DNDEBUG \
+ -DLINUX \
+
+DEBUG_FLAGS := \
+ -O0 \
+ -D_DEBUG \
+ -DLINUX \
+ 
+#LDFLAGS += \
+# -static-libstdc++ -static-libgcc \
+# -fmerge-all-constants \
+# -L${CXX11_HOME}/lib64
+
+LDFLAGS += \
+ -fmerge-all-constants \
+ -L${CXX11_HOME}/lib64
+
+ 
+
+LIBS := \
+ -lpthread \
+ -lrt \
+ -lgmpxx \
+ -lgmp \
+ -lcryptopp \
+ -lgomp \
+ -lboost_filesystem \
+ -lboost_system \
+ -lboost_iostreams \
+ -lboost_program_options
+
+ifeq ($(OS_TYPE),Darwin)
+  TMPVAR := $(CXXFLAGS)
+  CXXFLAGS := $(filter-out -fopenmp, $(TMPVAR))
+
+  TMPVAR := $(LDFLAGS)
+  LDFLAGS := $(filter-out -static-libgcc, $(TMPVAR))
+
+  TMPVAR := $(LIBS)
+  TMPVAR := $(filter-out -lgomp, $(TMPVAR))
+  LIBS := $(filter-out -lrt, $(TMPVAR))
+endif
+
+BUILD := ./build/self
+BUILDPUB := ./build/public
+
+$(shell mkdir -p $(BUILD))
+$(shell mkdir -p $(BUILDPUB))
+
+DIR := .
+
+SRC := $(foreach d, $(DIR), $(wildcard $(d)/*.cc))
+
+SRC += ../public/ecc.cc
+SRC += ../public/fp.cc
+
+RELEASE_OBJ := $(patsubst %.cc, $(BUILD)/%.o, $(SRC))
+
+DEBUG_OBJ := $(patsubst %.cc, $(BUILD)/%.d.o, $(SRC))
+
+RELEASE_BIN := pod_setup
+DEBUG_BIN := pod_setupd
+ifeq ($(OS_TYPE),Windows)
+  RELEASE_BIN = $(addsuffix .exe,$(RELEASE_BIN))
+  DEBUG_BIN = $(addsuffix .exe,$(DEBUG_BIN))
+endif
+
+all: $(RELEASE_BIN) $(DEBUG_BIN)
+
+$(BUILD)/%.o : %.cc
+	$(CXX) -c $^ $(CXXFLAGS) $(RELEASE_FLAGS) $(MCL_FLAGS) -o $@
+
+$(BUILD)/%.d.o : %.cc
+	$(CXX) -c $^ $(CXXFLAGS) $(DEBUG_FLAGS) $(MCL_FLAGS) -o $@
+
+$(DEBUG_BIN): $(DEBUG_OBJ)
+	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS)
+
+$(RELEASE_BIN): $(RELEASE_OBJ)
+	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS)
+
+clean:
+	find . -name "*.o" -delete
+	rm -rf $(RELEASE_BIN) $(DEBUG_BIN)
+	rm -rf build
+
+.PHONY :

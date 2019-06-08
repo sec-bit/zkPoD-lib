@@ -1,0 +1,59 @@
+namespace {
+struct EccPubSetup {
+  std::string output_file;
+  uint64_t u1_size = 1026;
+  uint64_t u2_size = 2;
+};
+
+bool MainEccPubSetup(EccPubSetup const& param) {
+  try {
+    EccPub ecc_pub(param.u1_size, param.u2_size);
+    if (!ecc_pub.Save(param.output_file)) {
+      std::cerr << "Save data failed." << std::endl;
+      return false;
+    }
+
+    EccPub ecc_pub2(param.output_file);
+
+    if (ecc_pub != ecc_pub2) {
+      std::cerr << "Oops!" << std::endl;
+      return false;
+    }
+    std::cout << "Success." << std::endl;
+    return true;
+  } catch (std::exception& e) {
+    std::cerr << "Exception: " << e.what() << std::endl;
+    return false;
+  }
+}
+}  // namespace
+
+namespace boost::program_options {
+// Called by program_options to parse a set of Range arguments
+void validate(boost::any& v, std::vector<std::string> const& values,
+              EccPubSetup*, int) {
+  EccPubSetup r;
+  // Extract tokens from values string vector and populate Model struct.
+  if (values.size() < 1) {
+    throw po::validation_error(po::validation_error::invalid_option_value,
+                               "want output_file u1_size u2_size");
+  }
+
+  r.output_file = values[0];
+  if (values.size() >= 2) {
+    r.u1_size = boost::lexical_cast<uint64_t>(values[1]);
+  }
+  if (values.size() >= 3) {
+    r.u2_size = boost::lexical_cast<uint64_t>(values[2]);
+  }
+  
+  if (r.output_file.empty())
+    throw po::validation_error(po::validation_error::invalid_option_value,
+                               "output_file can not be empty");
+  if (!r.u1_size || !r.u2_size)
+    throw po::validation_error(po::validation_error::invalid_option_value,
+                               "u1_size u2_size can not be 0");
+
+  v = r;
+}
+}  // namespace boost::program_options

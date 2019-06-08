@@ -1,0 +1,55 @@
+{
+    "pk_digest": "a6ef4bb3f10301287c27fd07c8ff19930a1fc9824d221600d0328d30a51d8715",
+    "column_names": [
+        "date (UTC)",
+        "description",
+        "moneyIn (Satoshi)",
+        "moneyOut (Satoshi)",
+        "tx hash",
+        "current balance (Satoshi)"
+    ],
+    "keys": [
+        {
+            "unique": "false",
+            "j": "0",
+            "column_index": "0",
+            "mj_mkl_root": "48aba23b1a06ba11a16b4a6fe0d7d0e5aaad54bdf6c17f717947e323f83ba96e",
+            "bp_digest": "2de063fbe13dcc19dc4a1db83ed45846725f81c9b38716af94ef2b0c611f4d7f"
+        },
+        {
+            "unique": "false",
+            "j": "1",
+            "column_index": "1",
+            "mj_mkl_root": "1fbd8e6009dea10fa27410f30ac3c89da47a39ec2511fe389dd73a5dab6c887b",
+            "bp_digest": "0ffc16d15709669dc72611ebfd4aaaba0934d820f7e1d576ef7a0a13f77ff89a"
+        },
+        {
+            "unique": "false",
+            "j": "2",
+            "column_index": "2",
+            "mj_mkl_root": "961ad23187af7ec7e1f49d48e2fd9bb3dc464260e90fdf511bdd5d0e8c4c881c",
+            "bp_digest": "57dab7eedcfd78680c4831e2d81f1a79b378ecebd56dcc5c2094f9f11c556aab"
+        },
+        {
+            "unique": "false",
+            "j": "3",
+            "column_index": "3",
+            "mj_mkl_root": "bb048c14610bf88bd71b65e3b907327d4fb506c01cdcd69f167b9b17a07fe6ac",
+            "bp_digest": "3fbe8d0e2ed3e528e4b11af4d9cc1509c7a4ef46084ff11a0eedc50c1b67ccb3"
+        },
+        {
+            "unique": "false",
+            "j": "4",
+            "column_index": "4",
+            "mj_mkl_root": "8aa5820dfa11ba187cfd7c0e65d3d7fc4d9f80e6edd3e5b4047dff77c83203a1",
+            "bp_digest": "6e6842d42b5208e80c039fa16005676eb752cb99c49cbca150d84d3d8af21aba"
+        },
+        {
+            "unique": "false",
+            "j": "5",
+            "column_index": "5",
+            "mj_mkl_root": "0d78830075db9c456e26478c6821c0d829c96615d906ab4509793b45d8118396",
+            "bp_digest": "c5130ec054beca244a35b9323151540e8d4dbf90d134c0c61707c19d66363a69"
+        }
+    ]
+}

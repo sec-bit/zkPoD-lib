@@ -1,0 +1,103 @@
+#make -f Makefile.clang
+#CXX11_HOME = /home/alpha/opt/gcc
+#sudo apt-get install libomp-dev
+#sudo apt-get install libcrypto++-dev
+#sudo apt-get install libboost-all-dev
+#sudo apt-get install libiomp5
+
+CXX11_HOME = /usr
+
+THIRD_PARTY_HOME = ../thirdparty
+MCL_HOME = ../thirdparty/mcl/include
+CSV_HOME = ../thirdparty/csv
+PUB_HOME = ../public
+
+CXXFLAGS := \
+ -g3 \
+ -fPIC \
+ -fopenmp=libiomp5 \
+ -std=c++17 \
+ -Wall \
+ -Wextra \
+ -gdwarf-2 \
+ -gstrict-dwarf \
+ -Wno-parentheses \
+ -Wdeprecated-declarations \
+ -fmerge-all-constants  \
+ -I $(CXX11_HOME)/include \
+ -I $(MCL_HOME) \
+ -isystem $(CSV_HOME) \
+ -I $(THIRD_PARTY_HOME) \
+ -I $(PUB_HOME) \
+ -I. \
+
+MCL_FLAGS := \
+ -DMCL_DONT_USE_OPENSSL
+
+BOOST_FLAGS := \
+ -DBOOST_SPIRIT_THREADSAFE 
+
+RELEASE_FLAGS := \
+ -O3 \
+ -DNDEBUG \
+ -DLINUX \
+
+DEBUG_FLAGS := \
+ -O0 \
+ -D_DEBUG \
+ -DLINUX \
+ 
+LDFLAGS += \
+ -fmerge-all-constants \
+ -L${CXX11_HOME}/lib64
+
+LIBS := \
+ -lpthread \
+ -lrt \
+ -lgmpxx \
+ -lgmp \
+ -lcryptopp \
+ -lomp \
+ -lboost_filesystem \
+ -lboost_system \
+ -lboost_iostreams \
+ -lboost_program_options
+
+BUILD := ./build/self
+BUILDPUB := ./build/public
+BUILD3RD := ./build/thirdparty
+BUILDCSV := ./build/thirdparty/csv
+$(shell mkdir -p $(BUILD))
+$(shell mkdir -p $(BUILDPUB))
+$(shell mkdir -p $(BUILD3RD))
+$(shell mkdir -p $(BUILDCSV))
+
+DIR := . ../public
+
+SRC := $(foreach d, $(DIR), $(wildcard $(d)/*.cc))
+
+RELEASE_OBJ := $(patsubst %.cc, %.o, $(SRC))
+
+DEBUG_OBJ := $(patsubst %.cc, %.d.o, $(SRC))
+
+CXX := export LD_LIBRARY_PATH=${CXX11_HOME}/lib; ${CXX11_HOME}/bin/clang++
+
+all: pod_publishd pod_publish
+
+%.o : %.cc
+	$(CXX) -c $^ $(CXXFLAGS) $(RELEASE_FLAGS) $(MCL_FLAGS) $(BOOST_FLAGS) -o $(BUILD)/$@
+
+
+%.d.o : %.cc
+	$(CXX) -c $^ $(CXXFLAGS) $(DEBUG_FLAGS) $(MCL_FLAGS) $(BOOST_FLAGS) -o $(BUILD)/$@
+
+pod_publishd : $(DEBUG_OBJ)
+	$(CXX) $(addprefix $(BUILD)/, $^) -o $@.exe $(LDFLAGS) $(LIBS)
+
+pod_publish : $(RELEASE_OBJ)
+	$(CXX) $(addprefix $(BUILD)/, $^) -o $@.exe $(LDFLAGS) $(LIBS)
+
+clean:
+	find . -regex "\(.*\.o\|.*\.exe\)" | xargs rm
+
+.PHONY :

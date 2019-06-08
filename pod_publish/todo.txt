@@ -1,0 +1,32 @@
+vrf：
+为每个key计算hash(vrf(hash(key)))作为mi0，mi1...
+随后紧跟一个pad
+然后是encode的整个record。
+
+需要计算
+sigma和sigma_tree, sigma_root
+mi0_tree, mi0_root
+vrf0_pk_hash
+mi0和sigma同源的bp证明
+
+需要在底部pad一个随机block?
+怎么掺沙子？
+
+需要保存
+所有的mij
+所有的sigma
+基于sigma构建的mkl tree
+
+需要公布
+sigma_root
+mi0_root
+vrf0_pk_root
+key_names
+hash(mi0_sigma_bp_proof)
+
+需要提供API
+get_mi0_pk
+get_mi0
+get_sigma
+get_bp_mi0_sigma
+
