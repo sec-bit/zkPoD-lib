@@ -1,6 +1,6 @@
 # zkPoD-lib
 
-zkPoD-lib is the underlying core library for [zkPoD system](https://github.com/sec-bit/zkPoD-node). It fully implements PoD (proof of delivery) protocol and also provides CLI interface together with Golang bindings.
+zkPoD-lib is the underlying core library for [zkPoD system](https://github.com/sec-bit/zkPoD-node). It fully implements PoD (proof of delivery) protocol and also provides a CLI interface together with Golang bindings.
 
 zkPoD-lib has four main parts as followed.
 
@@ -66,7 +66,7 @@ Use `pod_setup` to generate public parameters.
 ./pod_setup -o ecc_pub.bin
 ```
 
-`ecc_pub.bin` is generated after successful setup.
+`ecc_pub.bin` is generated after a successful setup.
 
 ### pod_publish
 
@@ -113,7 +113,7 @@ zkPoD supports two modes: binary mode and table mode.
 ./pod_publish -e ecc_pub.bin -m table -f test1000.csv -o table_data -t csv -k 0 1
 ```
 
-Check output folder after publish.
+Check the output folder after publishing.
 
 ### pod_core
 
@@ -141,7 +141,7 @@ command line options:
   --dump_ecc_pub
 ```
 
-`pod_core` supports several mode combination. Basically, we have `atomic-swap` and `complaint` trade mode for binary and table files. Moreover, we could employ *oblivious transfer*, `OT` mode, for privacy-preserving download. Furthermore, we are allowed to do `vrf_query` of structured table data, which could be combined with `OT` mode for private query.
+`pod_core` supports several mode combinations. We have `atomic-swap` and `complaint` trade mode for binary and table files. Moreover, we could employ *oblivious transfer*, `OT` mode, for privacy-preserving download. Furthermore, we are allowed to do `vrf_query` of structured table data, which could be combined with `OT` mode for the private query.
 
 ```shell
 ./pod_core -e ecc_pub.bin -m plain -a batch_pod -p plain_data -o plain_output --demand_ranges 0-2
