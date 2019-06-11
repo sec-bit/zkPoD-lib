@@ -1,0 +1,7 @@
+pod-go/test_data/ecc_pub.bin
+pod-go/test_data/output
+pod-go/test_data/publish
+pod_*/build
+# pod_*/*.so
+# pod_core/pod_core
+# pod_core/pod_cored
