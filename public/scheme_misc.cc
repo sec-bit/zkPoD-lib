@@ -461,16 +461,12 @@ std::istream& operator>>(std::istream& in, scheme::Action& t) {
     t = scheme::Action::kVrfPod;
   } else if (token == "ot_vrf_pod") {
     t = scheme::Action::kOtVrfPod;
-  } else if (token == "batch_pod") {
-    t = scheme::Action::kBatchPod;
-  } else if (token == "ot_batch_pod") {
-    t = scheme::Action::kOtBatchPod;
-  } else if (token == "batch2_pod") {
-    t = scheme::Action::kBatch2Pod;
-  } else if (token == "batch3_pod") {
-    t = scheme::Action::kBatch3Pod;
-  } else if (token == "otbatch3_pod") {
-    t = scheme::Action::kOtBatch3Pod;
+  } else if (token == "complaint_pod") {
+    t = scheme::Action::kComplaintPod;
+  } else if (token == "ot_complaint_pod") {
+    t = scheme::Action::kOtComplaintPod;
+  } else if (token == "atomic_swap_pod") {
+    t = scheme::Action::kAtomicSwapPod;
   } else {
     in.setstate(std::ios_base::failbit);
   }
@@ -486,16 +482,12 @@ std::ostream& operator<<(std::ostream& os, scheme::Action const& t) {
     os << "vrf_pod";
   } else if (t == scheme::Action::kOtVrfPod) {
     os << "ot_vrf_pod";
-  } else if (t == scheme::Action::kBatchPod) {
-    os << "batch_pod";
-  } else if (t == scheme::Action::kOtBatchPod) {
-    os << "ot_batch_pod";
-  } else if (t == scheme::Action::kBatch2Pod) {
-    os << "batch2_pod";
-  } else if (t == scheme::Action::kBatch3Pod) {
-    os << "batch3_pod";
-  } else if (t == scheme::Action::kOtBatch3Pod) {
-    os << "otbatch3_pod";
+  } else if (t == scheme::Action::kComplaintPod) {
+    os << "complaint_pod";
+  } else if (t == scheme::Action::kOtComplaintPod) {
+    os << "ot_complaint_pod";
+  } else if (t == scheme::Action::kAtomicSwapPod) {
+    os << "atomic_swap_pod";
   } else {
     os.setstate(std::ios_base::failbit);
   }

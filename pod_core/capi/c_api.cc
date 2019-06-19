@@ -2,7 +2,6 @@
 #include "ecc.h"
 #include "ecc_pub.h"
 
-
 extern "C" {
 EXPORT void E_InitEcc() { InitEcc(); }
 

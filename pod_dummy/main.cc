@@ -144,18 +144,16 @@ bool TestBp() {
   return true;
 }
 
-Fr Mimc(std::vector<Fr> const& c) {
-  Fr left = FrRand();
-  Fr right = FrRand();
-
+Fr Mimc(std::vector<Fr> const& c, Fr const& seed, uint64_t offset) {
+  Fr s = seed + offset;
   std::vector<Fr> x(c.size());
-  auto temp = left + c[0];
-  x[0] = right + temp * temp * temp;
-  temp = x[0] + c[1];
-  x[1] = left + temp * temp * temp;
+
+  auto pow_3 = [](Fr const& v) { return v * v * v; };
+
+  x[0] = pow_3(s + c[0]);
+  x[1] = s + pow_3(x[0] + c[1]);
   for (size_t i = 2; i < c.size(); ++i) {
-    temp = x[i - 1] + c[i];
-    x[i] = x[i - 2] + temp * temp * temp;
+    x[i] = x[i - 2] + pow_3(x[i - 1] + c[i]);
   }
   return x.back();
 }

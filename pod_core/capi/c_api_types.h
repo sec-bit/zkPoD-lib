@@ -49,5 +49,5 @@ struct table_bulletin_t {
 #endif
 
 #ifdef __cplusplus
-}
+}  // extern "C" 
 #endif

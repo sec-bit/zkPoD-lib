@@ -29,8 +29,8 @@ struct CapiObject {
   static std::unordered_map<void*, std::shared_ptr<T>> datas;
 };
 
-template<typename T> 
+template <typename T>
 std::mutex CapiObject<T>::mutex;
 
-template<typename T> 
+template <typename T>
 std::unordered_map<void*, std::shared_ptr<T>> CapiObject<T>::datas;

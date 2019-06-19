@@ -1,25 +1,19 @@
-#include "capi/scheme_plain_batch2_test_capi.h"
-#include "capi/scheme_plain_batch3_test_capi.h"
-#include "capi/scheme_plain_batch_test_capi.h"
-#include "capi/scheme_plain_otbatch3_test_capi.h"
-#include "capi/scheme_plain_otbatch_test_capi.h"
-#include "capi/scheme_table_batch2_test_capi.h"
-#include "capi/scheme_table_batch3_test_capi.h"
-#include "capi/scheme_table_batch_test_capi.h"
-#include "capi/scheme_table_otbatch3_test_capi.h"
-#include "capi/scheme_table_otbatch_test_capi.h"
-#include "capi/scheme_table_otvrfq_test_capi.h"
+#include "capi/scheme_plain_atomic_swap_test_capi.h"
+#include "capi/scheme_plain_complaint_test_capi.h"
+#include "capi/scheme_plain_ot_complaint_test_capi.h"
+#include "capi/scheme_table_atomic_swap_test_capi.h"
+#include "capi/scheme_table_complaint_test_capi.h"
+#include "capi/scheme_table_ot_complaint_test_capi.h"
+#include "capi/scheme_table_ot_vrfq_test_capi.h"
 #include "capi/scheme_table_vrfq_test_capi.h"
 #include "ecc_pub.h"
 #include "public.h"
-#include "scheme_batch2_test.h"
-#include "scheme_batch3_test.h"
-#include "scheme_batch_test.h"
+#include "scheme_atomic_swap_test.h"
+#include "scheme_complaint_test.h"
 #include "scheme_misc.h"
-#include "scheme_otbatch3_test.h"
-#include "scheme_otbatch_test.h"
-#include "scheme_table_otvrfq_test.h"
-#include "scheme_table_vrfq_test.h"
+#include "scheme_ot_complaint_test.h"
+#include "scheme_ot_vrfq_test.h"
+#include "scheme_vrfq_test.h"
 
 namespace {
 void DumpEccPub() {
@@ -186,34 +180,34 @@ int main(int argc, char** argv) {
   }
 
   if (action == Action::kOtVrfQuery) {
-    auto func = use_capi ? scheme::table::otvrfq::capi::Test
-                         : scheme::table::otvrfq::Test;
+    auto func = use_capi ? scheme::table::ot_vrfq::capi::Test
+                         : scheme::table::ot_vrfq::Test;
     return func(publish_path, output_path, query_key, query_values,
                 phantom_values)
                ? 0
                : -1;
   }
 
-  if (action == Action::kBatchPod) {
-    decltype(scheme::table::batch::Test)* func;
+  if (action == Action::kComplaintPod) {
+    decltype(scheme::table::complaint::Test)* func;
     if (mode == Mode::kPlain) {
-      func = use_capi ? scheme::plain::batch::capi::Test
-                      : scheme::plain::batch::Test;
+      func = use_capi ? scheme::plain::complaint::capi::Test
+                      : scheme::plain::complaint::Test;
     } else {
-      func = use_capi ? scheme::table::batch::capi::Test
-                      : scheme::table::batch::Test;
+      func = use_capi ? scheme::table::complaint::capi::Test
+                      : scheme::table::complaint::Test;
     }
     return func(publish_path, output_path, demand_ranges, test_evil) ? 0 : -1;
   }
 
-  if (action == Action::kOtBatchPod) {
-    decltype(scheme::table::otbatch::Test)* func;
+  if (action == Action::kOtComplaintPod) {
+    decltype(scheme::table::ot_complaint::Test)* func;
     if (mode == Mode::kPlain) {
-      func = use_capi ? scheme::plain::otbatch::capi::Test
-                      : scheme::plain::otbatch::Test;
+      func = use_capi ? scheme::plain::ot_complaint::capi::Test
+                      : scheme::plain::ot_complaint::Test;
     } else {
-      func = use_capi ? scheme::table::otbatch::capi::Test
-                      : scheme::table::otbatch::Test;
+      func = use_capi ? scheme::table::ot_complaint::capi::Test
+                      : scheme::table::ot_complaint::Test;
     }
     return func(publish_path, output_path, demand_ranges, phantom_ranges,
                 test_evil)
@@ -221,41 +215,16 @@ int main(int argc, char** argv) {
                : -1;
   }
 
-  if (action == Action::kBatch2Pod) {
-    decltype(scheme::table::batch2::Test)* func;
+  if (action == Action::kAtomicSwapPod) {
+    decltype(scheme::table::atomic_swap::Test)* func;
     if (mode == Mode::kPlain) {
-      func = use_capi ? scheme::plain::batch2::capi::Test
-                      : scheme::plain::batch2::Test;
+      func = use_capi ? scheme::plain::atomic_swap::capi::Test
+                      : scheme::plain::atomic_swap::Test;
     } else {
-      func = use_capi ? scheme::table::batch2::capi::Test
-                      : scheme::table::batch2::Test;
+      func = use_capi ? scheme::table::atomic_swap::capi::Test
+                      : scheme::table::atomic_swap::Test;
     }
     return func(publish_path, output_path, demand_ranges, test_evil) ? 0 : -1;
-  }
-
-  if (action == Action::kBatch3Pod) {
-    decltype(scheme::table::batch3::Test)* func;
-    if (mode == Mode::kPlain) {
-      func = use_capi ? scheme::plain::batch3::capi::Test
-                      : scheme::plain::batch3::Test;
-    } else {
-      func = use_capi ? scheme::table::batch3::capi::Test
-                      : scheme::table::batch3::Test;
-    }
-    return func(publish_path, output_path, demand_ranges) ? 0 : -1;
-  }
-
-  if (action == Action::kOtBatch3Pod) {
-    decltype(scheme::table::otbatch3::Test)* func;
-    if (mode == Mode::kPlain) {
-      func = use_capi ? scheme::plain::otbatch3::capi::Test
-                      : scheme::table::otbatch3::Test;
-    } else {
-      func = use_capi ? scheme::plain::otbatch3::capi::Test
-                      : scheme::table::otbatch3::Test;
-    }
-    return func(publish_path, output_path, demand_ranges, phantom_ranges) ? 0
-                                                                          : -1;
   }
 
   std::cerr << "Not implement yet.\n";

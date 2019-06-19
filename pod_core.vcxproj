@@ -109,78 +109,53 @@
     <ClCompile Include="pod_core\capi\c_api.cc" />
     <ClCompile Include="pod_core\capi\c_api_plain.cc" />
     <ClCompile Include="pod_core\capi\c_api_table.cc" />
-    <ClCompile Include="pod_core\capi\scheme_plain_batch2_test_capi.cc" />
-    <ClCompile Include="pod_core\capi\scheme_plain_batch3_test_capi.cc" />
-    <ClCompile Include="pod_core\capi\scheme_plain_batch_test_capi.cc" />
-    <ClCompile Include="pod_core\capi\scheme_plain_otbatch3_test_capi.cc" />
-    <ClCompile Include="pod_core\capi\scheme_plain_otbatch_test_capi.cc" />
-    <ClCompile Include="pod_core\capi\scheme_table_batch2_test_capi.cc" />
-    <ClCompile Include="pod_core\capi\scheme_table_batch3_test_capi.cc" />
-    <ClCompile Include="pod_core\capi\scheme_table_batch_test_capi.cc" />
-    <ClCompile Include="pod_core\capi\scheme_table_otbatch3_test_capi.cc" />
-    <ClCompile Include="pod_core\capi\scheme_table_otbatch_test_capi.cc" />
-    <ClCompile Include="pod_core\capi\scheme_table_otvrfq_test_capi.cc" />
+    <ClCompile Include="pod_core\capi\scheme_plain_atomic_swap_test_capi.cc" />
+    <ClCompile Include="pod_core\capi\scheme_plain_complaint_test_capi.cc" />
+    <ClCompile Include="pod_core\capi\scheme_plain_ot_complaint_test_capi.cc" />
+    <ClCompile Include="pod_core\capi\scheme_table_atomic_swap_test_capi.cc" />
+    <ClCompile Include="pod_core\capi\scheme_table_complaint_test_capi.cc" />
+    <ClCompile Include="pod_core\capi\scheme_table_ot_complaint_test_capi.cc" />
+    <ClCompile Include="pod_core\capi\scheme_table_ot_vrfq_test_capi.cc" />
     <ClCompile Include="pod_core\capi\scheme_table_vrfq_test_capi.cc" />
     <ClCompile Include="pod_core\main.cc" />
     <ClInclude Include="pod_core\capi\c_api_object.h" />
-    <ClInclude Include="pod_core\capi\scheme_plain_batch2_test_capi.h" />
-    <ClInclude Include="pod_core\capi\scheme_plain_batch_test_capi.h" />
-    <ClInclude Include="pod_core\capi\scheme_plain_otbatch_test_capi.h" />
-    <ClInclude Include="pod_core\scheme_batch3_client.h" />
-    <ClInclude Include="pod_core\scheme_batch3_misc.h" />
-    <ClInclude Include="pod_core\scheme_batch3_notary.h" />
-    <ClInclude Include="pod_core\scheme_batch3_protocol.h" />
-    <ClInclude Include="pod_core\scheme_batch3_serialize.h" />
-    <ClInclude Include="pod_core\scheme_batch3_session.h" />
-    <ClInclude Include="pod_core\scheme_batch3_test.h" />
-    <ClInclude Include="pod_core\scheme_otbatch3_client.inc" />
-    <ClInclude Include="pod_core\scheme_batch3_client.inc">
+    <ClInclude Include="pod_core\capi\scheme_plain_atomic_swap_test_capi.h" />
+    <ClInclude Include="pod_core\capi\scheme_plain_complaint_test_capi.h" />
+    <ClInclude Include="pod_core\capi\scheme_plain_ot_complaint_test_capi.h" />
+    <ClCompile Include="pod_core\scheme_plain_alice_data.cc" />
+    <ClCompile Include="pod_core\scheme_plain_bob_data.cc" />
+    <ClCompile Include="pod_core\scheme_table_alice_data.cc" />
+    <ClCompile Include="pod_core\scheme_table_bob_data.cc" />
+    <ClInclude Include="pod_core\scheme_atomic_swap_client.inc">
       <FileType>Document</FileType>
     </ClInclude>
-    <ClCompile Include="pod_core\scheme_batch3_misc.cc" />
-    <ClInclude Include="pod_core\scheme_batch3_session.inc">
+    <ClCompile Include="pod_core\scheme_atomic_swap_notary.cc" />
+    <ClInclude Include="pod_core\scheme_atomic_swap_session.inc">
       <FileType>Document</FileType>
     </ClInclude>
-    <ClCompile Include="pod_core\scheme_batch3_test.cc" />
-    <ClCompile Include="pod_core\scheme_otbatch3_misc.cc" />
-    <ClInclude Include="pod_core\scheme_otbatch3_session.inc">
+    <ClCompile Include="pod_core\scheme_atomic_swap_test.cc" />
+    <ClInclude Include="pod_core\scheme_complaint_client.inc">
       <FileType>Document</FileType>
     </ClInclude>
-    <ClCompile Include="pod_core\scheme_otbatch3_test.cc" />
-    <ClCompile Include="pod_core\scheme_plain_a.cc" />
-    <ClCompile Include="pod_core\scheme_plain_b.cc" />
-    <ClCompile Include="pod_core\scheme_table_a.cc" />
-    <ClCompile Include="pod_core\scheme_table_b.cc" />
-    <ClInclude Include="pod_core\scheme_batch2_client.inc">
+    <ClInclude Include="pod_core\scheme_complaint_session.inc">
       <FileType>Document</FileType>
     </ClInclude>
-    <ClCompile Include="pod_core\scheme_batch2_notary.cc" />
-    <ClInclude Include="pod_core\scheme_batch2_session.inc">
+    <ClCompile Include="pod_core\scheme_complaint_test.cc" />
+    <ClInclude Include="pod_core\scheme_ot_complaint_client.inc">
       <FileType>Document</FileType>
     </ClInclude>
-    <ClCompile Include="pod_core\scheme_batch2_test.cc" />
-    <ClInclude Include="pod_core\scheme_batch_client.inc">
+    <ClInclude Include="pod_core\scheme_ot_complaint_session.inc">
       <FileType>Document</FileType>
     </ClInclude>
-    <ClInclude Include="pod_core\scheme_batch_session.inc">
-      <FileType>Document</FileType>
-    </ClInclude>
-    <ClCompile Include="pod_core\scheme_batch_test.cc" />
-    <ClInclude Include="pod_core\scheme_otbatch_client.inc">
-      <FileType>Document</FileType>
-    </ClInclude>
-    <ClInclude Include="pod_core\scheme_otbatch_session.inc">
-      <FileType>Document</FileType>
-    </ClInclude>
-    <ClCompile Include="pod_core\scheme_otbatch_test.cc" />
-    <ClCompile Include="pod_core\scheme_table_otvrfq_client.cc" />
-    <ClCompile Include="pod_core\scheme_table_otvrfq_notary.cc" />
-    <ClCompile Include="pod_core\scheme_table_otvrfq_session.cc" />
-    <ClCompile Include="pod_core\scheme_table_otvrfq_test.cc" />
-    <ClCompile Include="pod_core\scheme_table_vrfq_client.cc" />
-    <ClCompile Include="pod_core\scheme_table_vrfq_notary.cc" />
-    <ClCompile Include="pod_core\scheme_table_vrfq_session.cc" />
-    <ClCompile Include="pod_core\scheme_table_vrfq_test.cc" />
+    <ClCompile Include="pod_core\scheme_ot_complaint_test.cc" />
+    <ClCompile Include="pod_core\scheme_ot_vrfq_client.cc" />
+    <ClCompile Include="pod_core\scheme_ot_vrfq_notary.cc" />
+    <ClCompile Include="pod_core\scheme_ot_vrfq_session.cc" />
+    <ClCompile Include="pod_core\scheme_ot_vrfq_test.cc" />
+    <ClCompile Include="pod_core\scheme_vrfq_client.cc" />
+    <ClCompile Include="pod_core\scheme_vrfq_notary.cc" />
+    <ClCompile Include="pod_core\scheme_vrfq_session.cc" />
+    <ClCompile Include="pod_core\scheme_vrfq_test.cc" />
     <ClCompile Include="public\bulletin_plain.cc" />
     <ClCompile Include="public\bulletin_table.cc" />
     <ClCompile Include="public\ecc.cc" />
@@ -193,32 +168,21 @@
     <ClCompile Include="public\vrf_meta.cc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pod_core\capi\scheme_plain_batch3_test_capi.h" />
-    <ClInclude Include="pod_core\capi\scheme_plain_otbatch3_test_capi.h" />
-    <ClInclude Include="pod_core\capi\scheme_table_batch3_test_capi.h" />
-    <ClInclude Include="pod_core\capi\scheme_table_otbatch3_test_capi.h" />
     <ClInclude Include="pod_core\matrix_fr_serialize.h" />
-    <ClInclude Include="pod_core\scheme_otbatch3_client.h" />
-    <ClInclude Include="pod_core\scheme_otbatch3_misc.h" />
-    <ClInclude Include="pod_core\scheme_otbatch3_notary.h" />
-    <ClInclude Include="pod_core\scheme_otbatch3_protocol.h" />
-    <ClInclude Include="pod_core\scheme_otbatch3_serialize.h" />
-    <ClInclude Include="pod_core\scheme_otbatch3_session.h" />
-    <ClInclude Include="pod_core\scheme_otbatch3_test.h" />
-    <ClInclude Include="pod_core\scheme_otbatch_protocol.h" />
-    <ClInclude Include="pod_core\scheme_batch2_notary.h" />
-    <ClInclude Include="pod_core\scheme_batch2_protocol.h" />
-    <ClInclude Include="pod_core\scheme_batch2_serialize.h" />
-    <ClInclude Include="pod_core\scheme_batch_notary.h" />
-    <ClInclude Include="pod_core\scheme_batch_protocol.h" />
-    <ClInclude Include="pod_core\scheme_batch_serialize.h" />
-    <ClInclude Include="pod_core\scheme_otbatch_serialize.h" />
-    <ClInclude Include="pod_core\scheme_table_otvrfq_notary.h" />
-    <ClInclude Include="pod_core\scheme_table_otvrfq_protocol.h" />
-    <ClInclude Include="pod_core\scheme_table_otvrfq_serialize.h" />
-    <ClInclude Include="pod_core\scheme_table_vrfq_notary.h" />
-    <ClInclude Include="pod_core\scheme_table_vrfq_protocol.h" />
-    <ClInclude Include="pod_core\scheme_table_vrfq_serialize.h" />
+    <ClInclude Include="pod_core\scheme_ot_complaint_protocol.h" />
+    <ClInclude Include="pod_core\scheme_atomic_swap_notary.h" />
+    <ClInclude Include="pod_core\scheme_atomic_swap_protocol.h" />
+    <ClInclude Include="pod_core\scheme_atomic_swap_serialize.h" />
+    <ClInclude Include="pod_core\scheme_complaint_notary.h" />
+    <ClInclude Include="pod_core\scheme_complaint_protocol.h" />
+    <ClInclude Include="pod_core\scheme_complaint_serialize.h" />
+    <ClInclude Include="pod_core\scheme_ot_complaint_serialize.h" />
+    <ClInclude Include="pod_core\scheme_ot_vrfq_notary.h" />
+    <ClInclude Include="pod_core\scheme_ot_vrfq_protocol.h" />
+    <ClInclude Include="pod_core\scheme_ot_vrfq_serialize.h" />
+    <ClInclude Include="pod_core\scheme_vrfq_notary.h" />
+    <ClInclude Include="pod_core\scheme_vrfq_protocol.h" />
+    <ClInclude Include="pod_core\scheme_vrfq_serialize.h" />
     <ClInclude Include="public\func_alias.h" />
     <ClInclude Include="public\matrix_fr.h" />
     <ClInclude Include="public\omp_helper.h" />
@@ -279,31 +243,31 @@
     <ClInclude Include="pod_core\capi\c_api_plain.h" />
     <ClInclude Include="pod_core\capi\c_api_table.h" />
     <ClInclude Include="pod_core\capi\c_api_types.h" />
-    <ClInclude Include="pod_core\capi\scheme_table_batch2_test_capi.h" />
-    <ClInclude Include="pod_core\capi\scheme_table_batch_test_capi.h" />
-    <ClInclude Include="pod_core\capi\scheme_table_otbatch_test_capi.h" />
-    <ClInclude Include="pod_core\capi\scheme_table_otvrfq_test_capi.h" />
+    <ClInclude Include="pod_core\capi\scheme_table_atomic_swap_test_capi.h" />
+    <ClInclude Include="pod_core\capi\scheme_table_complaint_test_capi.h" />
+    <ClInclude Include="pod_core\capi\scheme_table_ot_complaint_test_capi.h" />
+    <ClInclude Include="pod_core\capi\scheme_table_ot_vrfq_test_capi.h" />
     <ClInclude Include="pod_core\capi\scheme_table_vrfq_test_capi.h" />
-    <ClInclude Include="pod_core\scheme_plain_a.h" />
-    <ClInclude Include="pod_core\scheme_plain_b.h" />
-    <ClInclude Include="pod_core\scheme_table_a.h" />
-    <ClInclude Include="pod_core\scheme_table_b.h" />
-    <ClInclude Include="pod_core\scheme_batch2_client.h" />
-    <ClInclude Include="pod_core\scheme_batch2_session.h" />
-    <ClInclude Include="pod_core\scheme_batch2_test.h" />
-    <ClInclude Include="pod_core\scheme_batch_client.h" />
-    <ClInclude Include="pod_core\scheme_batch_session.h" />
-    <ClInclude Include="pod_core\scheme_batch_test.h" />
-    <ClInclude Include="pod_core\scheme_otbatch_notary.h" />
-    <ClInclude Include="pod_core\scheme_otbatch_client.h" />
-    <ClInclude Include="pod_core\scheme_otbatch_session.h" />
-    <ClInclude Include="pod_core\scheme_otbatch_test.h" />
-    <ClInclude Include="pod_core\scheme_table_otvrfq_client.h" />
-    <ClInclude Include="pod_core\scheme_table_otvrfq_session.h" />
-    <ClInclude Include="pod_core\scheme_table_otvrfq_test.h" />
-    <ClInclude Include="pod_core\scheme_table_vrfq_client.h" />
-    <ClInclude Include="pod_core\scheme_table_vrfq_session.h" />
-    <ClInclude Include="pod_core\scheme_table_vrfq_test.h" />
+    <ClInclude Include="pod_core\scheme_plain_alice_data.h" />
+    <ClInclude Include="pod_core\scheme_plain_bob_data.h" />
+    <ClInclude Include="pod_core\scheme_table_alice_data.h" />
+    <ClInclude Include="pod_core\scheme_table_bob_data.h" />
+    <ClInclude Include="pod_core\scheme_atomic_swap_client.h" />
+    <ClInclude Include="pod_core\scheme_atomic_swap_session.h" />
+    <ClInclude Include="pod_core\scheme_atomic_swap_test.h" />
+    <ClInclude Include="pod_core\scheme_complaint_client.h" />
+    <ClInclude Include="pod_core\scheme_complaint_session.h" />
+    <ClInclude Include="pod_core\scheme_complaint_test.h" />
+    <ClInclude Include="pod_core\scheme_ot_complaint_notary.h" />
+    <ClInclude Include="pod_core\scheme_ot_complaint_client.h" />
+    <ClInclude Include="pod_core\scheme_ot_complaint_session.h" />
+    <ClInclude Include="pod_core\scheme_ot_complaint_test.h" />
+    <ClInclude Include="pod_core\scheme_ot_vrfq_client.h" />
+    <ClInclude Include="pod_core\scheme_ot_vrfq_session.h" />
+    <ClInclude Include="pod_core\scheme_ot_vrfq_test.h" />
+    <ClInclude Include="pod_core\scheme_vrfq_client.h" />
+    <ClInclude Include="pod_core\scheme_vrfq_session.h" />
+    <ClInclude Include="pod_core\scheme_vrfq_test.h" />
     <ClInclude Include="public\basic_types.h" />
     <ClInclude Include="public\bp.h" />
     <ClInclude Include="public\bulletin_plain.h" />

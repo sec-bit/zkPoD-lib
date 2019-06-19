@@ -4,8 +4,8 @@
 #include <iostream>
 #include <memory>
 
-#include "../scheme_table_vrfq_notary.h"
-#include "../scheme_table_vrfq_serialize.h"
+#include "../scheme_vrfq_notary.h"
+#include "../scheme_vrfq_serialize.h"
 #include "c_api.h"
 #include "tick.h"
 
@@ -15,14 +15,14 @@ namespace {
 const h256_t kDummySessionId = h256_t{{1}};
 const h256_t kDummyClientId = h256_t{{2}};
 
-class WrapperA {
+class WrapperAliceData {
  public:
-  WrapperA(char const* publish_path) {
-    h_ = E_TableANew(publish_path);
+  WrapperAliceData(char const* publish_path) {
+    h_ = E_TableAliceDataNew(publish_path);
     if (!h_) throw std::runtime_error("");
   }
-  ~WrapperA() {
-    if (!E_TableAFree(h_)) abort();
+  ~WrapperAliceData() {
+    if (!E_TableAliceDataFree(h_)) abort();
   }
   handle_t h() const { return h_; }
 
@@ -30,14 +30,14 @@ class WrapperA {
   handle_t h_;
 };
 
-class WrapperB {
+class WrapperBobData {
  public:
-  WrapperB(char const* bulletin_file, char const* public_path) {
-    h_ = E_TableBNew(bulletin_file, public_path);
+  WrapperBobData(char const* bulletin_file, char const* public_path) {
+    h_ = E_TableBobDataNew(bulletin_file, public_path);
     if (!h_) throw std::runtime_error("");
   }
-  ~WrapperB() {
-    if (!E_TableBFree(h_)) abort();
+  ~WrapperBobData() {
+    if (!E_TableBobDataFree(h_)) abort();
   }
   handle_t h() const { return h_; }
 
@@ -67,7 +67,7 @@ class WrapperClient {
                 uint8_t const* c_peer_id, char const* c_query_key,
                 char const* c_query_values[], uint64_t c_query_value_count) {
     h_ = E_TableVrfqClientNew(c_b, c_self_id, c_peer_id, c_query_key,
-                                c_query_values, c_query_value_count);
+                              c_query_values, c_query_value_count);
     if (!h_) throw std::runtime_error("");
   }
   ~WrapperClient() {
@@ -82,7 +82,7 @@ class WrapperClient {
 
 namespace scheme::table::vrfq::capi {
 
-bool QueryInternal(WrapperA const& a, WrapperB const& b,
+bool QueryInternal(WrapperAliceData const& a, WrapperBobData const& b,
                    std::string const& output_path, std::string const& query_key,
                    std::vector<std::string> const& query_values,
                    std::vector<std::vector<uint64_t>>& positions) {
@@ -108,25 +108,25 @@ bool QueryInternal(WrapperA const& a, WrapperB const& b,
   }
 
   if (!E_TableVrfqSessionOnRequest(session.h(), request_file.c_str(),
-                                     response_file.c_str())) {
+                                   response_file.c_str())) {
     assert(false);
     return false;
   }
 
   if (!E_TableVrfqClientOnResponse(client.h(), response_file.c_str(),
-                                     receipt_file.c_str())) {
+                                   receipt_file.c_str())) {
     assert(false);
     return false;
   }
 
   if (!E_TableVrfqSessionOnReceipt(session.h(), receipt_file.c_str(),
-                                     secret_file.c_str())) {
+                                   secret_file.c_str())) {
     assert(false);
     return false;
   }
 
   if (!E_TableVrfqClientOnSecret(client.h(), secret_file.c_str(),
-                                   positions_file.c_str())) {
+                                 positions_file.c_str())) {
     assert(false);
     return false;
   }
@@ -164,8 +164,8 @@ void DumpPositions(std::string const& query_key,
   }
 }
 
-bool Test(WrapperA const& a, WrapperB const& b, std::string const& output_path,
-          std::string const& query_key,
+bool Test(WrapperAliceData const& a, WrapperBobData const& b,
+          std::string const& output_path, std::string const& query_key,
           std::vector<std::string> const& query_values) {
   bool unique;
 
@@ -211,10 +211,10 @@ bool Test(std::string const& publish_path, std::string const& output_path,
           std::string const& query_key,
           std::vector<std::string> const& query_values) {
   try {
-    WrapperA a(publish_path.c_str());
+    WrapperAliceData a(publish_path.c_str());
     std::string bulletin_file = publish_path + "/bulletin";
     std::string public_path = publish_path + "/public";
-    WrapperB b(bulletin_file.c_str(), public_path.c_str());
+    WrapperBobData b(bulletin_file.c_str(), public_path.c_str());
     return Test(a, b, output_path, query_key, query_values);
   } catch (std::exception& e) {
     std::cerr << __FUNCTION__ << "\t" << e.what() << "\n";

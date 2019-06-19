@@ -1,16 +1,13 @@
 # pod_core
 
--e ecc_pub.bin -m plain -a batch_pod -p plain_data -o plain_output --demand_ranges 0-10
--e ecc_pub.bin -m table -a batch_pod -p table_data -o table_output --demand_ranges 1-20
+-e ecc_pub.bin -m plain -a complaint_pod -p plain_data -o plain_output --demand_ranges 0-10
+-e ecc_pub.bin -m table -a complaint_pod -p table_data -o table_output --demand_ranges 1-20
 
--e ecc_pub.bin -m plain -a batch2_pod -p plain_data -o plain_output --demand_ranges 1-10
--e ecc_pub.bin -m table -a batch2_pod -p table_data -o table_output --demand_ranges 1-10
+-e ecc_pub.bin -m plain -a atomic_swap_pod -p plain_data -o plain_output --demand_ranges 1-10
+-e ecc_pub.bin -m table -a atomic_swap_pod -p table_data -o table_output --demand_ranges 1-10
 
--e ecc_pub.bin -m plain -a ot_batch_pod -p plain_data -o plain_output --demand_ranges 1-2 --phantom_ranges 0-3
--e ecc_pub.bin -m table -a ot_batch_pod -p table_data -o table_output --demand_ranges 1-2 --phantom_ranges 0-3
-
--e ecc_pub.bin -m plain -a batch3_pod -p plain_data -o plain_output --demand_ranges 1-10
--e ecc_pub.bin -m table -a batch3_pod -p table_data -o table_output --demand_ranges 1-8000
+-e ecc_pub.bin -m plain -a ot_complaint_pod -p plain_data -o plain_output --demand_ranges 1-2 --phantom_ranges 0-3
+-e ecc_pub.bin -m table -a ot_complaint_pod -p table_data -o table_output --demand_ranges 1-2 --phantom_ranges 0-3
 
 -e ecc_pub.bin -m table -a vrf_query -p table_data -o table_output -k first_name -v Kathy
 -e ecc_pub.bin -m table -a vrf_query -p table_data -o table_output -k "Emp ID" -v 614227
