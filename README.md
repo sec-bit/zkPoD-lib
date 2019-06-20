@@ -7,7 +7,7 @@ zkPoD-lib has four main parts as followed.
 - [`pod_setup`](pod_setup/) - Generates public parameters of system
 - [`pod_publish`](pod_publish/) - Publish utility to preprocess data and calculate authenticators
 - [`pod_core`](pod_core/) - Core implementations of different zkPoD trading features
-- [`pod-go`](pod-go/) - Golang bindings for `pod_setup` and `pod_core` functions
+- [`pod_go`](pod_go/) - Golang bindings for `pod_setup` and `pod_core` functions
 
 ## Related zkPoD projects
 
@@ -151,17 +151,17 @@ command line options:
 
 Check [here](pod_core/README.md) for more CLI interface examples. You could look over [each](pod_core/scheme_batch_test.cc) [test](pod_core/scheme_batch2_test.cc) for detailed protocol implementation.
 
-### pod-go
+### pod_go
 
 A simple Golang wrapper for zkPoD-lib is provided for easier library integration.
 
 ```shell
-cd pod-go
+cd pod_go
 export GO111MODULE=on
 make test
 ```
 
-All tests should pass as expected. You could check over [tests](pod-go/plain/batch/api_test.go) to learn about usage.
+All tests should pass as expected. You could check over [tests](pod_go/plain/batch/api_test.go) to learn about usage.
 
 ## License
 
