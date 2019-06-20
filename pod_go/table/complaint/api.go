@@ -32,7 +32,7 @@ type (
 
 // NewSellerSession provides the Go interface for E_TableComplaintSessionNew().
 func NewSellerSession(
-	publishPath string, sellerID, buyerID [32]uint8,
+	publishPath string, sellerID, buyerID [40]uint8,
 ) (*SellerSession, error) {
 	a, err := table.NewA(publishPath)
 	if err != nil {
@@ -130,7 +130,7 @@ func (session *SellerSession) OnReceipt(receiptFile, secretFile string) error {
 // NewBuyerSession provides the Go interface for E_TableComplaintClientNew()
 func NewBuyerSession(
 	bulletinFile, publicPath string,
-	sellerID, buyerID [32]uint8, demands []types.Range,
+	sellerID, buyerID [40]uint8, demands []types.Range,
 ) (*BuyerSession, error) {
 	b, err := table.NewB(bulletinFile, publicPath)
 	if err != nil {

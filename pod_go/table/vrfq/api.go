@@ -32,7 +32,7 @@ type (
 
 // NewSellerSession provides the Go interface for E_TableVrfqSessionNew().
 func NewSellerSession(
-	publishPath string, sellerID, buyerID [32]uint8,
+	publishPath string, sellerID, buyerID [40]uint8,
 ) (*SellerSession, error) {
 	a, err := table.NewA(publishPath)
 	if err != nil {
@@ -129,7 +129,7 @@ func (session *SellerSession) OnReceipt(receiptFile, secretFile string) error {
 
 // NewBuyerSession provides the Go interface for E_TableVrfqClientNew()
 func NewBuyerSession(
-	bulletinFile, publicPath string, sellerID, buyerID [32]uint8,
+	bulletinFile, publicPath string, sellerID, buyerID [40]uint8,
 	keyName string, keyValues []string,
 ) (*BuyerSession, error) {
 	b, err := table.NewB(bulletinFile, publicPath)
