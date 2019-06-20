@@ -19,21 +19,21 @@ import (
 )
 
 type (
-	SellerSession struct {
+	AliceSession struct {
 		a      *table.A
 		handle types.CHandle
 	}
 
-	BuyerSession struct {
+	BobSession struct {
 		b      *table.B
 		handle types.CHandle
 	}
 )
 
-// NewSellerSession provides the Go interface for E_TableAtomicSwapSessionNew().
-func NewSellerSession(
+// NewAliceSession provides the Go interface for E_TableAtomicSwapSessionNew().
+func NewAliceSession(
 	publishPath string, sellerID, buyerID [40]uint8,
-) (*SellerSession, error) {
+) (*AliceSession, error) {
 	a, err := table.NewA(publishPath)
 	if err != nil {
 		return nil, err
@@ -58,11 +58,11 @@ func NewSellerSession(
 			handle, sellerID, buyerID)
 	}
 
-	return &SellerSession{a: a, handle: session}, nil
+	return &AliceSession{a: a, handle: session}, nil
 }
 
 // Free provides the Go interface for E_TableAtomicSwapSessionFree()
-func (session *SellerSession) Free() error {
+func (session *AliceSession) Free() error {
 	handle := C.handle_t(session.handle)
 	ret := bool(C.E_TableAtomicSwapSessionFree(handle))
 	if !ret {
@@ -72,7 +72,7 @@ func (session *SellerSession) Free() error {
 }
 
 // OnRequest provides the Go interface for E_TableAtomicSwapSessionOnRequest().
-func (session *SellerSession) OnRequest(requestFile, responseFile string) error {
+func (session *AliceSession) OnRequest(requestFile, responseFile string) error {
 	if err := utils.CheckRegularFileReadPerm(requestFile); err != nil {
 		return err
 	}
@@ -100,7 +100,7 @@ func (session *SellerSession) OnRequest(requestFile, responseFile string) error 
 }
 
 // OnReceipt provides the Go interface for E_TableAtomicSwapSessionOnReceipt()
-func (session *SellerSession) OnReceipt(receiptFile, secretFile string) error {
+func (session *AliceSession) OnReceipt(receiptFile, secretFile string) error {
 	if err := utils.CheckRegularFileReadPerm(receiptFile); err != nil {
 		return err
 	}
@@ -127,11 +127,11 @@ func (session *SellerSession) OnReceipt(receiptFile, secretFile string) error {
 	return nil
 }
 
-// NewBuyerSession provides the Go interface for E_TableAtomicSwapClientNew()
-func NewBuyerSession(
+// NewBobSession provides the Go interface for E_TableAtomicSwapClientNew()
+func NewBobSession(
 	bulletinFile, publicPath string,
 	sellerID, buyerID [40]uint8, demands []types.Range,
-) (*BuyerSession, error) {
+) (*BobSession, error) {
 	b, err := table.NewB(bulletinFile, publicPath)
 	if err != nil {
 		return nil, err
@@ -167,11 +167,11 @@ func NewBuyerSession(
 			handle, buyerID, sellerID, demands, nrDemands)
 	}
 
-	return &BuyerSession{b: b, handle: session}, nil
+	return &BobSession{b: b, handle: session}, nil
 }
 
 // Free provides the Go interface for E_TableAtomicSwapClientFree()
-func (session *BuyerSession) Free() error {
+func (session *BobSession) Free() error {
 	handle := C.handle_t(session.handle)
 	ret := bool(C.E_TableAtomicSwapClientFree(handle))
 	if !ret {
@@ -181,7 +181,7 @@ func (session *BuyerSession) Free() error {
 }
 
 // GetRequest provides the Go interface for E_TableAtomicSwapClientGetRequest()
-func (session *BuyerSession) GetRequest(requestFile string) error {
+func (session *BobSession) GetRequest(requestFile string) error {
 	if err := utils.CheckDirOfPathExistence(requestFile); err != nil {
 		return err
 	}
@@ -201,7 +201,7 @@ func (session *BuyerSession) GetRequest(requestFile string) error {
 }
 
 // OnResponse provides the Go interface for E_TableAtomicSwapClientOnResponse()
-func (session *BuyerSession) OnResponse(responseFile, receiptFile string) error {
+func (session *BobSession) OnResponse(responseFile, receiptFile string) error {
 	if err := utils.CheckRegularFileReadPerm(responseFile); err != nil {
 		return err
 	}
@@ -229,7 +229,7 @@ func (session *BuyerSession) OnResponse(responseFile, receiptFile string) error 
 }
 
 // OnSecret provides the Go interface for E_TableAtomicSwapClientOnSecret()
-func (session *BuyerSession) OnSecret(secretFile string) error {
+func (session *BobSession) OnSecret(secretFile string) error {
 	if err := utils.CheckRegularFileReadPerm(secretFile); err != nil {
 		return err
 	}
@@ -250,7 +250,7 @@ func (session *BuyerSession) OnSecret(secretFile string) error {
 }
 
 // Decrypt provides the Go interface for E_TableAtomicSwapClientSaveDecrypted()
-func (session *BuyerSession) Decrypt(outFile string) error {
+func (session *BobSession) Decrypt(outFile string) error {
 	if err := utils.CheckDirOfPathExistence(outFile); err != nil {
 		return err
 	}

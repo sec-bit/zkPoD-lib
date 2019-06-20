@@ -56,8 +56,8 @@ func prepare(t *testing.T) {
 	inited = true
 }
 
-func prepareSellerSession(t *testing.T) *SellerSession {
-	session, err := NewSellerSession(testPublishPath, sellerID, buyerID)
+func prepareAliceSession(t *testing.T) *AliceSession {
+	session, err := NewAliceSession(testPublishPath, sellerID, buyerID)
 	if err != nil {
 		t.Fatalf("%v\n", err)
 	}
@@ -65,7 +65,7 @@ func prepareSellerSession(t *testing.T) *SellerSession {
 	return session
 }
 
-func prepareBuyerSession(t *testing.T) *BuyerSession {
+func prepareBobSession(t *testing.T) *BobSession {
 	demandVals := []string{
 		"20190417",
 		"20190415",
@@ -88,7 +88,7 @@ func prepareBuyerSession(t *testing.T) *BuyerSession {
 		"20181010",
 	}
 
-	session, err := NewBuyerSession(
+	session, err := NewBobSession(
 		testBulletin, testPublicPath,
 		sellerID, buyerID, "date (UTC)", demandVals, phantomVals)
 	if err != nil {
@@ -98,9 +98,9 @@ func prepareBuyerSession(t *testing.T) *BuyerSession {
 	return session
 }
 
-func prepareSessions(t *testing.T, dir string) (*SellerSession, *BuyerSession) {
-	seller := prepareSellerSession(t)
-	buyer := prepareBuyerSession(t)
+func prepareSessions(t *testing.T, dir string) (*AliceSession, *BobSession) {
+	seller := prepareAliceSession(t)
+	buyer := prepareBobSession(t)
 
 	sellerReqFile := fmt.Sprintf("%s/seller_nego_request", dir)
 	sellerRespFile := fmt.Sprintf("%s/seller_nego_response", dir)
@@ -130,25 +130,25 @@ func prepareSessions(t *testing.T, dir string) (*SellerSession, *BuyerSession) {
 	return seller, buyer
 }
 
-func TestNewSellerSession(t *testing.T) {
+func TestNewAliceSession(t *testing.T) {
 	prepare(t)
 
-	if _, err := NewSellerSession(testPublishPath, sellerID, buyerID); err != nil {
+	if _, err := NewAliceSession(testPublishPath, sellerID, buyerID); err != nil {
 		t.Fatalf("%v\n", err)
 	}
 }
 
-func TestFreeSellerSession(t *testing.T) {
+func TestFreeAliceSession(t *testing.T) {
 	prepare(t)
 
-	session := prepareSellerSession(t)
+	session := prepareAliceSession(t)
 
 	if err := session.Free(); err != nil {
 		t.Fatalf("%v\n", err)
 	}
 }
 
-func TestNewBuyerSession(t *testing.T) {
+func TestNewBobSession(t *testing.T) {
 	prepare(t)
 
 	demandVals := []string{
@@ -173,7 +173,7 @@ func TestNewBuyerSession(t *testing.T) {
 		"20181010",
 	}
 
-	if _, err := NewBuyerSession(
+	if _, err := NewBobSession(
 		testBulletin, testPublicPath,
 		sellerID, buyerID, "date (UTC)", demandVals, phantomVals,
 	); err != nil {
@@ -181,10 +181,10 @@ func TestNewBuyerSession(t *testing.T) {
 	}
 }
 
-func TestFreeBuyerSession(t *testing.T) {
+func TestFreeBobSession(t *testing.T) {
 	prepare(t)
 
-	session := prepareBuyerSession(t)
+	session := prepareBobSession(t)
 
 	if err := session.Free(); err != nil {
 		t.Fatalf("%v\n", err)
@@ -198,7 +198,7 @@ func TestBuyerGetNegoRequest(t *testing.T) {
 
 	prepare(t)
 
-	session := prepareBuyerSession(t)
+	session := prepareBobSession(t)
 	defer session.Free()
 
 	if err := session.GetNegoRequest(requestFile); err != nil {
@@ -213,7 +213,7 @@ func TestSellerGetNegoRequest(t *testing.T) {
 
 	prepare(t)
 
-	session := prepareSellerSession(t)
+	session := prepareAliceSession(t)
 	defer session.Free()
 
 	if err := session.GetNegoRequest(requestFile); err != nil {
@@ -228,9 +228,9 @@ func TestSellerOnNegoRequest(t *testing.T) {
 	responseFile := fmt.Sprintf("%s/seller_nego_response", dir)
 
 	prepare(t)
-	seller := prepareSellerSession(t)
+	seller := prepareAliceSession(t)
 	defer seller.Free()
-	buyer := prepareBuyerSession(t)
+	buyer := prepareBobSession(t)
 	defer buyer.Free()
 
 	if err := buyer.GetNegoRequest(requestFile); err != nil {
@@ -249,9 +249,9 @@ func TestBuyerOnNegoRequest(t *testing.T) {
 	responseFile := fmt.Sprintf("%s/buyer_nego_response", dir)
 
 	prepare(t)
-	seller := prepareSellerSession(t)
+	seller := prepareAliceSession(t)
 	defer seller.Free()
-	buyer := prepareBuyerSession(t)
+	buyer := prepareBobSession(t)
 	defer buyer.Free()
 
 	if err := seller.GetNegoRequest(requestFile); err != nil {
@@ -270,9 +270,9 @@ func TestBuyerOnNegoResponse(t *testing.T) {
 	sellerRespFile := fmt.Sprintf("%s/seller_nego_response", dir)
 
 	prepare(t)
-	seller := prepareSellerSession(t)
+	seller := prepareAliceSession(t)
 	defer seller.Free()
-	buyer := prepareBuyerSession(t)
+	buyer := prepareBobSession(t)
 	defer buyer.Free()
 
 	if err := buyer.GetNegoRequest(buyerReqFile); err != nil {
@@ -295,9 +295,9 @@ func TestSellerOnNegoResponse(t *testing.T) {
 	buyerRespFile := fmt.Sprintf("%s/buyer_nego_response", dir)
 
 	prepare(t)
-	seller := prepareSellerSession(t)
+	seller := prepareAliceSession(t)
 	defer seller.Free()
-	buyer := prepareBuyerSession(t)
+	buyer := prepareBobSession(t)
 	defer buyer.Free()
 
 	if err := seller.GetNegoRequest(sellerReqFile); err != nil {

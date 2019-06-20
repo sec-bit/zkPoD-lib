@@ -19,21 +19,21 @@ import (
 )
 
 type (
-	SellerSession struct {
+	AliceSession struct {
 		a      *plain.A
 		handle types.CHandle
 	}
 
-	BuyerSession struct {
+	BobSession struct {
 		b      *plain.B
 		handle types.CHandle
 	}
 )
 
-// NewSellerSession provides the Go interface for E_PlainOtComplaintSessionNew().
-func NewSellerSession(
+// NewAliceSession provides the Go interface for E_PlainOtComplaintSessionNew().
+func NewAliceSession(
 	publishPath string, sellerID, buyerID [40]uint8,
-) (*SellerSession, error) {
+) (*AliceSession, error) {
 	a, err := plain.NewA(publishPath)
 	if err != nil {
 		return nil, err
@@ -58,11 +58,11 @@ func NewSellerSession(
 			handle, sellerID, buyerID)
 	}
 
-	return &SellerSession{a: a, handle: session}, nil
+	return &AliceSession{a: a, handle: session}, nil
 }
 
 // Free provides the Go interface for E_PlainOtComplaintSessionFree()
-func (session *SellerSession) Free() error {
+func (session *AliceSession) Free() error {
 	handle := C.handle_t(session.handle)
 	ret := bool(C.E_PlainOtComplaintSessionFree(handle))
 	if !ret {
@@ -72,7 +72,7 @@ func (session *SellerSession) Free() error {
 }
 
 // GetNegoRequest provides the Go interface for E_PlainOtComplaintSessionGetNegoRequest()
-func (session *SellerSession) GetNegoRequest(requestFile string) error {
+func (session *AliceSession) GetNegoRequest(requestFile string) error {
 	if err := utils.CheckDirOfPathExistence(requestFile); err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func (session *SellerSession) GetNegoRequest(requestFile string) error {
 }
 
 // OnNegoRequest provides the Go interface for E_PlainOtComplaintSessionOnNegoRequest()
-func (session *SellerSession) OnNegoRequest(requestFile, responseFile string) error {
+func (session *AliceSession) OnNegoRequest(requestFile, responseFile string) error {
 	if err := utils.CheckRegularFileReadPerm(requestFile); err != nil {
 		return err
 	}
@@ -119,7 +119,7 @@ func (session *SellerSession) OnNegoRequest(requestFile, responseFile string) er
 }
 
 // OnNegoResponse provides the Go interface for E_PlainOtComplaintSessionOnNegoResponse()
-func (session *SellerSession) OnNegoResponse(responseFile string) error {
+func (session *AliceSession) OnNegoResponse(responseFile string) error {
 	if err := utils.CheckRegularFileReadPerm(responseFile); err != nil {
 		return err
 	}
@@ -140,7 +140,7 @@ func (session *SellerSession) OnNegoResponse(responseFile string) error {
 }
 
 // OnRequest provides the Go interface for E_PlainOtComplaintSessionOnRequest().
-func (session *SellerSession) OnRequest(requestFile, responseFile string) error {
+func (session *AliceSession) OnRequest(requestFile, responseFile string) error {
 	if err := utils.CheckRegularFileReadPerm(requestFile); err != nil {
 		return err
 	}
@@ -168,7 +168,7 @@ func (session *SellerSession) OnRequest(requestFile, responseFile string) error 
 }
 
 // OnReceipt provides the Go interface for E_PlainOtComplaintSessionOnReceipt()
-func (session *SellerSession) OnReceipt(receiptFile, secretFile string) error {
+func (session *AliceSession) OnReceipt(receiptFile, secretFile string) error {
 	if err := utils.CheckRegularFileReadPerm(receiptFile); err != nil {
 		return err
 	}
@@ -195,11 +195,11 @@ func (session *SellerSession) OnReceipt(receiptFile, secretFile string) error {
 	return nil
 }
 
-// NewBuyerSession provides the Go interface for E_PlainOtComplaintClientNew()
-func NewBuyerSession(
+// NewBobSession provides the Go interface for E_PlainOtComplaintClientNew()
+func NewBobSession(
 	bulletinFile, publicPath string,
 	sellerID, buyerID [40]uint8, demands, phantoms []types.Range,
-) (*BuyerSession, error) {
+) (*BobSession, error) {
 	b, err := plain.NewB(bulletinFile, publicPath)
 	if err != nil {
 		return nil, err
@@ -246,11 +246,11 @@ func NewBuyerSession(
 			demands, nrDemands, phantoms, nrPhantoms)
 	}
 
-	return &BuyerSession{b: b, handle: session}, nil
+	return &BobSession{b: b, handle: session}, nil
 }
 
 // Free provides the Go interface for E_PlainOtComplaintClientFree()
-func (session *BuyerSession) Free() error {
+func (session *BobSession) Free() error {
 	handle := C.handle_t(session.handle)
 	ret := bool(C.E_PlainOtComplaintClientFree(handle))
 	if !ret {
@@ -260,7 +260,7 @@ func (session *BuyerSession) Free() error {
 }
 
 // GetNegoRequest provides the Go interface for E_PlainOtComplaintClientGetNegoRequest()
-func (session *BuyerSession) GetNegoRequest(requestFile string) error {
+func (session *BobSession) GetNegoRequest(requestFile string) error {
 	if err := utils.CheckDirOfPathExistence(requestFile); err != nil {
 		return err
 	}
@@ -280,7 +280,7 @@ func (session *BuyerSession) GetNegoRequest(requestFile string) error {
 }
 
 // OnNegoResponse provides the Go interface for E_PlainOtComplaintClientOnNegoResponse()
-func (session *BuyerSession) OnNegoResponse(responseFile string) error {
+func (session *BobSession) OnNegoResponse(responseFile string) error {
 	if err := utils.CheckRegularFileReadPerm(responseFile); err != nil {
 		return err
 	}
@@ -301,7 +301,7 @@ func (session *BuyerSession) OnNegoResponse(responseFile string) error {
 }
 
 // OnNegoRequest provides the Go interface for E_PlainOtComplaintClientOnNegoRequest()
-func (session *BuyerSession) OnNegoRequest(requestFile, responseFile string) error {
+func (session *BobSession) OnNegoRequest(requestFile, responseFile string) error {
 	if err := utils.CheckRegularFileReadPerm(requestFile); err != nil {
 		return err
 	}
@@ -328,7 +328,7 @@ func (session *BuyerSession) OnNegoRequest(requestFile, responseFile string) err
 }
 
 // GetRequest provides the Go interface for E_PlainOtComplaintClientGetRequest()
-func (session *BuyerSession) GetRequest(requestFile string) error {
+func (session *BobSession) GetRequest(requestFile string) error {
 	if err := utils.CheckDirOfPathExistence(requestFile); err != nil {
 		return err
 	}
@@ -348,7 +348,7 @@ func (session *BuyerSession) GetRequest(requestFile string) error {
 }
 
 // OnResponse provides the Go interface for E_PlainOtComplaintClientOnResponse()
-func (session *BuyerSession) OnResponse(responseFile, receiptFile string) error {
+func (session *BobSession) OnResponse(responseFile, receiptFile string) error {
 	if err := utils.CheckRegularFileReadPerm(responseFile); err != nil {
 		return err
 	}
@@ -376,7 +376,7 @@ func (session *BuyerSession) OnResponse(responseFile, receiptFile string) error 
 }
 
 // OnSecret provides the Go interface for E_PlainOtComplaintClientOnSecret()
-func (session *BuyerSession) OnSecret(secretFile string) error {
+func (session *BobSession) OnSecret(secretFile string) error {
 	if err := utils.CheckRegularFileReadPerm(secretFile); err != nil {
 		return err
 	}
@@ -397,7 +397,7 @@ func (session *BuyerSession) OnSecret(secretFile string) error {
 }
 
 // Decrypt provides the Go interface for E_PlainOtComplaintClientSaveDecrypted()
-func (session *BuyerSession) Decrypt(outFile string) error {
+func (session *BobSession) Decrypt(outFile string) error {
 	if err := utils.CheckDirOfPathExistence(outFile); err != nil {
 		return err
 	}
@@ -419,7 +419,7 @@ func (session *BuyerSession) Decrypt(outFile string) error {
 }
 
 // GenerateClaim provides the Go interface for E_PlainOtComplaintClientGenerateClaim()
-func (session *BuyerSession) GenerateClaim(claimFile string) error {
+func (session *BobSession) GenerateClaim(claimFile string) error {
 	if err := utils.CheckDirOfPathExistence(claimFile); err != nil {
 		return err
 	}

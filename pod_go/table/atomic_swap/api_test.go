@@ -59,8 +59,8 @@ func prepare(t *testing.T) {
 	inited = true
 }
 
-func prepareSellerSession(t *testing.T) *SellerSession {
-	session, err := NewSellerSession(testPublishPath, sellerID, buyerID)
+func prepareAliceSession(t *testing.T) *AliceSession {
+	session, err := NewAliceSession(testPublishPath, sellerID, buyerID)
 	if err != nil {
 		t.Fatalf("%v\n", err)
 	}
@@ -68,14 +68,14 @@ func prepareSellerSession(t *testing.T) *SellerSession {
 	return session
 }
 
-func prepareBuyerSession(t *testing.T) *BuyerSession {
+func prepareBobSession(t *testing.T) *BobSession {
 	demands := []types.Range{
 		types.Range{1, 10},
 		types.Range{25, 12},
 		types.Range{100, 150},
 	}
 
-	session, err := NewBuyerSession(
+	session, err := NewBobSession(
 		testBulletin, testPublicPath, sellerID, buyerID, demands)
 	if err != nil {
 		t.Fatalf("%v\n", err)
@@ -84,27 +84,27 @@ func prepareBuyerSession(t *testing.T) *BuyerSession {
 	return session
 }
 
-func TestNewSellerSession(t *testing.T) {
+func TestNewAliceSession(t *testing.T) {
 	prepare(t)
 
-	if _, err := NewSellerSession(
+	if _, err := NewAliceSession(
 		testPublishPath, sellerID, buyerID,
 	); err != nil {
 		t.Fatalf("%v\n", err)
 	}
 }
 
-func TestFreeSellerSession(t *testing.T) {
+func TestFreeAliceSession(t *testing.T) {
 	prepare(t)
 
-	session := prepareSellerSession(t)
+	session := prepareAliceSession(t)
 
 	if err := session.Free(); err != nil {
 		t.Fatalf("%v\n", err)
 	}
 }
 
-func TestNewBuyerSession(t *testing.T) {
+func TestNewBobSession(t *testing.T) {
 	prepare(t)
 
 	demands := []types.Range{
@@ -113,17 +113,17 @@ func TestNewBuyerSession(t *testing.T) {
 		types.Range{100, 150},
 	}
 
-	if _, err := NewBuyerSession(
+	if _, err := NewBobSession(
 		testBulletin, testPublicPath, sellerID, buyerID, demands,
 	); err != nil {
 		t.Fatalf("%v\n", err)
 	}
 }
 
-func TestFreeBuyerSession(t *testing.T) {
+func TestFreeBobSession(t *testing.T) {
 	prepare(t)
 
-	session := prepareBuyerSession(t)
+	session := prepareBobSession(t)
 
 	if err := session.Free(); err != nil {
 		t.Fatalf("%v\n", err)
@@ -137,7 +137,7 @@ func TestGetRequest(t *testing.T) {
 
 	prepare(t)
 
-	session := prepareBuyerSession(t)
+	session := prepareBobSession(t)
 	defer session.Free()
 
 	if err := session.GetRequest(requestFile); err != nil {
@@ -153,9 +153,9 @@ func TestOnRequest(t *testing.T) {
 
 	prepare(t)
 
-	buyer := prepareBuyerSession(t)
+	buyer := prepareBobSession(t)
 	defer buyer.Free()
-	seller := prepareSellerSession(t)
+	seller := prepareAliceSession(t)
 	defer seller.Free()
 
 	if err := buyer.GetRequest(requestFile); err != nil {
@@ -176,9 +176,9 @@ func TestOnResponse(t *testing.T) {
 
 	prepare(t)
 
-	buyer := prepareBuyerSession(t)
+	buyer := prepareBobSession(t)
 	defer buyer.Free()
-	seller := prepareSellerSession(t)
+	seller := prepareAliceSession(t)
 	defer seller.Free()
 
 	if err := buyer.GetRequest(requestFile); err != nil {
@@ -205,9 +205,9 @@ func TestOnReceipt(t *testing.T) {
 
 	prepare(t)
 
-	buyer := prepareBuyerSession(t)
+	buyer := prepareBobSession(t)
 	defer buyer.Free()
-	seller := prepareSellerSession(t)
+	seller := prepareAliceSession(t)
 	defer seller.Free()
 
 	if err := buyer.GetRequest(requestFile); err != nil {
@@ -237,9 +237,9 @@ func TestOnSecret(t *testing.T) {
 
 	prepare(t)
 
-	buyer := prepareBuyerSession(t)
+	buyer := prepareBobSession(t)
 	defer buyer.Free()
-	seller := prepareSellerSession(t)
+	seller := prepareAliceSession(t)
 	defer seller.Free()
 
 	if err := buyer.GetRequest(requestFile); err != nil {
@@ -273,9 +273,9 @@ func TestOnSecretFail(t *testing.T) {
 
 	prepare(t)
 
-	buyer := prepareBuyerSession(t)
+	buyer := prepareBobSession(t)
 	defer buyer.Free()
-	seller := prepareSellerSession(t)
+	seller := prepareAliceSession(t)
 	defer seller.Free()
 
 	if err := buyer.GetRequest(requestFile); err != nil {
@@ -311,9 +311,9 @@ func TestDecrypt(t *testing.T) {
 
 	prepare(t)
 
-	buyer := prepareBuyerSession(t)
+	buyer := prepareBobSession(t)
 	defer buyer.Free()
-	seller := prepareSellerSession(t)
+	seller := prepareAliceSession(t)
 	defer seller.Free()
 
 	if err := buyer.GetRequest(requestFile); err != nil {
