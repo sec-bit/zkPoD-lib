@@ -33,7 +33,7 @@ sudo apt-get install libgmp-dev
 
 ```shell
 mkdir zkPoD && cd zkPoD
-git clone zkPoD-lib
+git clone https://github.com/sec-bit/zkPoD-lib.git
 cd zkPoD-lib
 make
 
@@ -161,7 +161,7 @@ export GO111MODULE=on
 make test
 ```
 
-All tests should pass as expected. You could check over [tests](pod_go/plain/batch/api_test.go) to learn about usage.
+All tests should pass as expected. You could check over [tests](pod_go/plain/api_test.go) to learn about usage.
 
 ## License
 
