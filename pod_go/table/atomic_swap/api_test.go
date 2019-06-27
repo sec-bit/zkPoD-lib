@@ -15,9 +15,9 @@ const (
 	testPublicPath  = "../../test_data/publish/table/public"
 	testBulletin    = "../../test_data/publish/table/bulletin"
 
-	testOutputDir = "../../test_data/output/table_batch2"
+	testOutputDir = "../../test_data/output/table_atomic_swap"
 
-	testIncorrectSecret = "../../test_data/table_batch2_incorrect_secret"
+	testIncorrectSecret = "../../test_data/table_atomic_swap_incorrect_secret"
 )
 
 var (
