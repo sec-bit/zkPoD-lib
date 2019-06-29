@@ -12,7 +12,7 @@ zkPoD-lib has four main parts as followed.
 ## Related zkPoD projects
 
 - [zkPoD-node](https://github.com/sec-bit/zkPoD-node) Node application written in Golang for sellers (Alice) and buyers (Bob). It deals with communication, smart contract calling, data transferring, and other zkPoD protocol interactions.
-- [zkPoD-contract](https://github.com/sec-bit/zkPoD-contract) Smart contracts for zkPoD *Decentralized Exchange*.
+- [zkPoD-contract](https://github.com/sec-bit/zkPoD-contract) Smart contracts for zkPoD _Decentralized Exchange_.
 
 ## Dependencies
 
@@ -70,7 +70,6 @@ Use `pod_setup` to generate public parameters.
 
 ### pod_publish
 
-
 ```shell
 $ ./pod_publish -h
 command line options:
@@ -98,12 +97,12 @@ command line options:
                                         thread, 1: disable openmp, 0: default.
 ```
 
-Use `pod_publish` to preprocess target data. 
+Use `pod_publish` to preprocess target data.
 
-zkPoD supports two modes: binary mode and table mode. 
+zkPoD supports two modes: binary mode and table mode.
 
-+ binary mode
-+ table mode (CSV files)
+- binary mode
+- table mode (CSV files)
 
 ```shell
 # binary mode
@@ -141,7 +140,7 @@ command line options:
   --dump_ecc_pub
 ```
 
-`pod_core` supports several mode combinations. We have `atomic-swap` and `complaint` trade mode for binary and table files. Moreover, we could employ *oblivious transfer*, `OT` mode, for privacy-preserving download. Furthermore, we are allowed to do `vrf_query` of structured table data, which could be combined with `OT` mode for the private query.
+`pod_core` supports several mode combinations. We have `atomic-swap` and `complaint` trade mode for binary and table files. Moreover, we could employ _oblivious transfer_, `OT` mode, for privacy-preserving download. Furthermore, we are allowed to do `vrf_query` of structured table data, which could be combined with `OT` mode for the private query.
 
 ```shell
 ./pod_core -e ecc_pub.bin -m plain -a batch_pod -p plain_data -o plain_output --demand_ranges 0-2

@@ -5,8 +5,10 @@
 #include <bitset>
 #include <memory>
 #include <vector>
+#include <iostream>
 
 #include <boost/endian/conversion.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/noncopyable.hpp>
 
 #include "ecc.h"
@@ -28,8 +30,11 @@ class EccPub : boost::noncopyable {
   size_t u1_size() const { return u1_.size(); }
   size_t u2_size() const { return u2_.size(); }
 
-  EccPub(std::string const& file) {
+  EccPub(std::string const& file, uint64_t lb_u1_size = 0,
+         uint64_t lb_u2_size = 0) {
     LoadInternal(file);
+    if (lb_u1_size && u1_.size() < lb_u1_size) throw std::exception();
+    if (lb_u2_size && u2_.size() < lb_u2_size) throw std::exception();
     mcl::bn256::precomputeG2(g2_1_coeff_, G2One());
   }
 
@@ -93,7 +98,7 @@ class EccPub : boost::noncopyable {
     Tick tick(__FUNCTION__);
 
     assert(u1_size && u2_size);
-    //Fr::getOp().p;
+    // Fr::getOp().p;
 
     auto fr_bits = Fr::getBitSize();
     u1_.resize(u1_size);
@@ -595,14 +600,16 @@ class EccPub : boost::noncopyable {
   std::vector<Fp6> g2_1_coeff_;
 };
 
-inline EccPub& GetEccPub(std::string const& file = "") {
-  static EccPub _instance_(file);
+inline EccPub& GetEccPub(std::string const& file = "", uint64_t lb_u1_size = 0,
+                         uint64_t lb_u2_size = 0) {
+  static EccPub _instance_(file, lb_u1_size, lb_u2_size);
   return _instance_;
 }
 
-inline bool LoadEccPub(std::string const& file) {
+inline bool LoadEccPub(std::string const& file, uint64_t lb_u1_size = 0,
+                       uint64_t lb_u2_size = 0) {
   try {
-    GetEccPub(file);
+    GetEccPub(file, lb_u1_size, lb_u2_size);
     return true;
   } catch (std::exception&) {
     return false;
@@ -632,3 +639,37 @@ inline bool operator==(EccPub const& a, EccPub const& b) {
 }
 
 inline bool operator!=(EccPub const& a, EccPub const& b) { return !(a == b); }
+
+inline bool OpenOrCreateEccPub(std::string const& file) {
+  const uint64_t kU1Size = 2050;
+  const uint64_t kU2Size = 2;
+
+  if (LoadEccPub(file, kU1Size, kU2Size)) {
+    return true;
+  }
+
+  try {
+    boost::system::error_code ec;
+    boost::filesystem::remove(file, ec);
+
+    EccPub ecc_pub(kU1Size, kU2Size);
+    if (!ecc_pub.Save(file)) {
+      std::cerr << "Save ecc pub file" << file << " failed.\n";
+      return false;
+    }
+
+#ifdef _DEBUG
+    EccPub ecc_pub2(file);
+    if (ecc_pub != ecc_pub2) {
+      assert(false);
+      abort();
+    }
+#endif
+
+    std::cout << "Create ecc pub file success.\n";
+    return LoadEccPub(file, kU1Size, kU2Size);
+  } catch (std::exception& e) {
+    std::cerr << "Create ecc pub file exception: " << e.what() << "\n";
+    return false;
+  }
+}

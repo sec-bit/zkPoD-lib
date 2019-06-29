@@ -2,9 +2,9 @@
 
 #include <cryptopp/sha.h>
 #include <cassert>
-#include "tick.h"
-#include "public.h"
 #include "misc.h"
+#include "public.h"
+#include "tick.h"
 
 namespace mkl {
 h256_t kEmptyH256 = h256_t();

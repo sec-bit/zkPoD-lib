@@ -17,7 +17,7 @@ AliceData::AliceData(std::string const& publish_path)
 
   if (!LoadBulletin(bulletin_file, bulletin_)) {
     assert(false);
-    throw std::runtime_error("invalid bulletin file");
+    throw std::runtime_error("Alice: invalid bulletin file");
   }
 
   // sigma

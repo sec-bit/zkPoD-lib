@@ -1,9 +1,10 @@
 #pragma once
 
+#ifdef MULTICORE
 #ifndef __clang__
 #include <omp.h>
 #endif
-
+#endif
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -52,6 +53,10 @@ void FrRand(Fr *r, size_t n);
 void FrRand(std::vector<Fr *> &f);
 
 Fr FrInv(Fr const &r);
+
+void FrInv(Fr* begin, uint64_t count);
+
+void FrInv(std::vector<Fr>& vec);
 
 G1 G1Rand();
 

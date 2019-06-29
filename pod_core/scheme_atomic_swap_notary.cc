@@ -6,9 +6,9 @@
 namespace scheme::atomic_swap {
 bool VerifyProof(uint64_t s, Receipt const& receipt, Secret const& secret) {
   std::vector<Fr> v;
-  H2(secret.seed0, (receipt.count + 1) * s, v);
+  ChainKeccak256(secret.seed0, (receipt.count + 1) * s, v);
   std::vector<Fr> w;
-  H2(receipt.seed2, receipt.count, w);
+  ChainKeccak256(receipt.seed2, receipt.count, w);
 
   return VerifyProof(s, receipt.count, receipt.sigma_vw, v, w);
 }

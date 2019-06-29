@@ -10,10 +10,10 @@
 #include "tick.h"
 
 namespace {
-// The session id must be hash(addr_A), and the client id must be hash(addr_B).
+// The alice id must be hash(AliceAddr), and the bob id must be hash(BobAddr).
 // Here just just two dummy values for test.
-const h256_t kDummySessionId = h256_t{{1}};
-const h256_t kDummyClientId = h256_t{{2}};
+const h256_t kDummyAliceId = h256_t{{1}};
+const h256_t kDummyBobId = h256_t{{2}};
 
 class WrapperAliceData {
  public:
@@ -45,15 +45,15 @@ class WrapperBobData {
   handle_t h_;
 };
 
-class WrapperSession {
+class WrapperAlice {
  public:
-  WrapperSession(handle_t c_a, uint8_t const* c_self_id,
-                 uint8_t const* c_peer_id) {
-    h_ = E_PlainOtComplaintSessionNew(c_a, c_self_id, c_peer_id);
+  WrapperAlice(handle_t c_alice_data, uint8_t const* c_self_id,
+               uint8_t const* c_peer_id) {
+    h_ = E_PlainOtComplaintAliceNew(c_alice_data, c_self_id, c_peer_id);
     if (!h_) throw std::runtime_error("");
   }
-  ~WrapperSession() {
-    if (!E_PlainOtComplaintSessionFree(h_)) abort();
+  ~WrapperAlice() {
+    if (!E_PlainOtComplaintAliceFree(h_)) abort();
   }
   handle_t h() const { return h_; }
 
@@ -61,19 +61,18 @@ class WrapperSession {
   handle_t h_;
 };
 
-class WrapperClient {
+class WrapperBob {
  public:
-  WrapperClient(handle_t c_b, uint8_t const* c_self_id,
-                uint8_t const* c_peer_id, range_t const* c_demand,
-                uint64_t c_demand_count, range_t const* c_phantom,
-                uint64_t c_phantom_count) {
-    h_ =
-        E_PlainOtComplaintClientNew(c_b, c_self_id, c_peer_id, c_demand,
-                                    c_demand_count, c_phantom, c_phantom_count);
+  WrapperBob(handle_t c_bob_data, uint8_t const* c_self_id,
+             uint8_t const* c_peer_id, range_t const* c_demand,
+             uint64_t c_demand_count, range_t const* c_phantom,
+             uint64_t c_phantom_count) {
+    h_ = E_PlainOtComplaintBobNew(c_bob_data, c_self_id, c_peer_id, c_demand,
+                                  c_demand_count, c_phantom, c_phantom_count);
     if (!h_) throw std::runtime_error("");
   }
-  ~WrapperClient() {
-    if (!E_PlainOtComplaintClientFree(h_)) abort();
+  ~WrapperBob() {
+    if (!E_PlainOtComplaintBobFree(h_)) abort();
   }
   handle_t h() const { return h_; }
 
@@ -89,7 +88,7 @@ bool Test(std::string const& output_path, WrapperAliceData const& a,
           std::vector<Range> const& phantoms, bool evil) {
   Tick _tick_(__FUNCTION__);
 
-  WrapperSession session(a.h(), kDummySessionId.data(), kDummyClientId.data());
+  WrapperAlice alice(a.h(), kDummyAliceId.data(), kDummyBobId.data());
   std::vector<range_t> c_demand(demands.size());
   for (size_t i = 0; i < demands.size(); ++i) {
     c_demand[i].start = demands[i].start;
@@ -101,11 +100,11 @@ bool Test(std::string const& output_path, WrapperAliceData const& a,
     c_phantom[i].count = phantoms[i].count;
   }
 
-  WrapperClient client(b.h(), kDummyClientId.data(), kDummySessionId.data(),
-                       c_demand.data(), c_demand.size(), c_phantom.data(),
-                       c_phantom.size());
+  WrapperBob bob(b.h(), kDummyBobId.data(), kDummyAliceId.data(),
+                 c_demand.data(), c_demand.size(), c_phantom.data(),
+                 c_phantom.size());
 
-  if (evil) E_PlainOtComplaintSessionSetEvil(session.h());
+  if (evil) E_PlainOtComplaintAliceSetEvil(alice.h());
 
   std::string negoa_request_file = output_path + "/negoa_request";
   std::string negob_request_file = output_path + "/negob_request";
@@ -118,86 +117,82 @@ bool Test(std::string const& output_path, WrapperAliceData const& a,
   std::string claim_file = output_path + "/claim";
   std::string output_file = output_path + "/decrypted_data";
 
-  if (!E_PlainOtComplaintClientGetNegoRequest(client.h(),
-                                              negob_request_file.c_str())) {
+  if (!E_PlainOtComplaintBobGetNegoRequest(bob.h(),
+                                           negob_request_file.c_str())) {
     assert(false);
     return false;
   }
 
-  if (!E_PlainOtComplaintSessionOnNegoRequest(session.h(),
-                                              negob_request_file.c_str(),
-                                              negob_response_file.c_str())) {
+  if (!E_PlainOtComplaintAliceOnNegoRequest(
+          alice.h(), negob_request_file.c_str(), negob_response_file.c_str())) {
     assert(false);
     return false;
   }
 
-  if (!E_PlainOtComplaintClientOnNegoResponse(client.h(),
-                                              negob_response_file.c_str())) {
+  if (!E_PlainOtComplaintBobOnNegoResponse(bob.h(),
+                                           negob_response_file.c_str())) {
     assert(false);
     return false;
   }
 
-  if (!E_PlainOtComplaintSessionGetNegoRequest(session.h(),
-                                               negoa_request_file.c_str())) {
+  if (!E_PlainOtComplaintAliceGetNegoRequest(alice.h(),
+                                             negoa_request_file.c_str())) {
     assert(false);
     return false;
   }
 
-  if (!E_PlainOtComplaintClientOnNegoRequest(client.h(),
-                                             negoa_request_file.c_str(),
+  if (!E_PlainOtComplaintBobOnNegoRequest(bob.h(), negoa_request_file.c_str(),
+                                          negoa_response_file.c_str())) {
+    assert(false);
+    return false;
+  }
+
+  if (!E_PlainOtComplaintAliceOnNegoResponse(alice.h(),
                                              negoa_response_file.c_str())) {
     assert(false);
     return false;
   }
 
-  if (!E_PlainOtComplaintSessionOnNegoResponse(session.h(),
-                                               negoa_response_file.c_str())) {
+  if (!E_PlainOtComplaintBobGetRequest(bob.h(), request_file.c_str())) {
     assert(false);
     return false;
   }
 
-  if (!E_PlainOtComplaintClientGetRequest(client.h(), request_file.c_str())) {
+  if (!E_PlainOtComplaintAliceOnRequest(alice.h(), request_file.c_str(),
+                                        response_file.c_str())) {
     assert(false);
     return false;
   }
 
-  if (!E_PlainOtComplaintSessionOnRequest(session.h(), request_file.c_str(),
-                                          response_file.c_str())) {
+  if (!E_PlainOtComplaintBobOnResponse(bob.h(), response_file.c_str(),
+                                       receipt_file.c_str())) {
     assert(false);
     return false;
   }
 
-  if (!E_PlainOtComplaintClientOnResponse(client.h(), response_file.c_str(),
-                                          receipt_file.c_str())) {
-    assert(false);
-    return false;
-  }
-
-  if (!E_PlainOtComplaintSessionOnReceipt(session.h(), receipt_file.c_str(),
-                                          secret_file.c_str())) {
+  if (!E_PlainOtComplaintAliceOnReceipt(alice.h(), receipt_file.c_str(),
+                                        secret_file.c_str())) {
     assert(false);
     return false;
   }
 
   if (!evil) {
-    if (!E_PlainOtComplaintClientOnSecret(client.h(), secret_file.c_str())) {
+    if (!E_PlainOtComplaintBobOnSecret(bob.h(), secret_file.c_str())) {
       assert(false);
       return false;
     }
 
-    if (!E_PlainOtComplaintClientSaveDecrypted(client.h(),
-                                               output_file.c_str())) {
+    if (!E_PlainOtComplaintBobSaveDecrypted(bob.h(), output_file.c_str())) {
       assert(false);
       return false;
     }
   } else {
-    if (E_PlainOtComplaintClientOnSecret(client.h(), secret_file.c_str())) {
+    if (E_PlainOtComplaintBobOnSecret(bob.h(), secret_file.c_str())) {
       assert(false);
       return false;
     }
 
-    if (!E_PlainOtComplaintClientGenerateClaim(client.h(),
-                                               claim_file.c_str())) {
+    if (!E_PlainOtComplaintBobGenerateClaim(bob.h(), claim_file.c_str())) {
       assert(false);
       return false;
     }
@@ -253,11 +248,12 @@ bool Test(std::string const& publish_path, std::string const& output_path,
           std::vector<Range> const& demands, std::vector<Range> const& phantoms,
           bool test_evil) {
   try {
-    WrapperAliceData a(publish_path.c_str());
+    WrapperAliceData alice_data(publish_path.c_str());
     std::string bulletin_file = publish_path + "/bulletin";
     std::string public_path = publish_path + "/public";
-    WrapperBobData b(bulletin_file.c_str(), public_path.c_str());
-    return Test(output_path, a, b, demands, phantoms, test_evil);
+    WrapperBobData bob_data(bulletin_file.c_str(), public_path.c_str());
+    return Test(output_path, alice_data, bob_data, demands, phantoms,
+                test_evil);
   } catch (std::exception& e) {
     std::cerr << __FUNCTION__ << "\t" << e.what() << "\n";
     return false;

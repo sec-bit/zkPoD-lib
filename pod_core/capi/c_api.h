@@ -16,11 +16,11 @@
 #endif
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-EXPORT void E_InitEcc();
-EXPORT bool E_LoadEccPub(char const* ecc_pub_file);
+    EXPORT bool E_InitAll(char const *data_dir);
 
 #ifdef __cplusplus
 }

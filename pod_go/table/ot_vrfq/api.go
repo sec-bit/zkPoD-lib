@@ -30,7 +30,7 @@ type (
 	}
 )
 
-// NewAliceSession provides the Go interface for E_TableOtVrfqSessionNew().
+// NewAliceSession provides the Go interface for E_TableOtVrfqAliceNew().
 func NewAliceSession(
 	publishPath string, sellerID, buyerID [40]uint8,
 ) (*AliceSession, error) {
@@ -47,31 +47,31 @@ func NewAliceSession(
 
 	handle := C.handle_t(a.CHandle())
 	session := types.CHandle(
-		C.E_TableOtVrfqSessionNew(
+		C.E_TableOtVrfqAliceNew(
 			handle,
 			(*C.uint8_t)(sellerIDCPtr),
 			(*C.uint8_t)(buyerIDCPtr)))
 	if session == nil {
 		a.Free()
 		return nil, fmt.Errorf(
-			"E_TableOtVrfqSessionNew(%v, %v, %v) failed",
+			"E_TableOtVrfqAliceNew(%v, %v, %v) failed",
 			handle, sellerID, buyerID)
 	}
 
 	return &AliceSession{a: a, handle: session}, nil
 }
 
-// Free provides the Go interface for E_TableOtVrfqSessionFree()
+// Free provides the Go interface for E_TableOtVrfqAliceFree()
 func (session *AliceSession) Free() error {
 	handle := C.handle_t(session.handle)
-	ret := bool(C.E_TableOtVrfqSessionFree(handle))
+	ret := bool(C.E_TableOtVrfqAliceFree(handle))
 	if !ret {
-		return fmt.Errorf("E_TableOtVrfqSessionFree(%v) failed", handle)
+		return fmt.Errorf("E_TableOtVrfqAliceFree(%v) failed", handle)
 	}
 	return session.a.Free()
 }
 
-// GetNegoRequest provides the Go interface for E_TableOtVrfqSessionGetNegoRequest()
+// GetNegoRequest provides the Go interface for E_TableOtVrfqAliceGetNegoRequest()
 func (session *AliceSession) GetNegoRequest(requestFile string) error {
 	if err := utils.CheckDirOfPathExistence(requestFile); err != nil {
 		return err
@@ -83,15 +83,15 @@ func (session *AliceSession) GetNegoRequest(requestFile string) error {
 	defer C.free(unsafe.Pointer(requestFileCStr))
 
 	if ret := bool(
-		C.E_TableOtVrfqSessionGetNegoRequest(handle, requestFileCStr)); !ret {
-		return fmt.Errorf("E_TableOtVrfqSessionGetNegoRequest(%v, %s) failed",
+		C.E_TableOtVrfqAliceGetNegoRequest(handle, requestFileCStr)); !ret {
+		return fmt.Errorf("E_TableOtVrfqAliceGetNegoRequest(%v, %s) failed",
 			handle, requestFile)
 	}
 
 	return nil
 }
 
-// OnNegoRequest provides the Go interface for E_TableOtVrfqSessionOnNegoRequest()
+// OnNegoRequest provides the Go interface for E_TableOtVrfqAliceOnNegoRequest()
 func (session *AliceSession) OnNegoRequest(requestFile, responseFile string) error {
 	if err := utils.CheckRegularFileReadPerm(requestFile); err != nil {
 		return err
@@ -108,17 +108,17 @@ func (session *AliceSession) OnNegoRequest(requestFile, responseFile string) err
 	responseFileCStr := C.CString(responseFile)
 	defer C.free(unsafe.Pointer(responseFileCStr))
 
-	if ret := bool(C.E_TableOtVrfqSessionOnNegoRequest(
+	if ret := bool(C.E_TableOtVrfqAliceOnNegoRequest(
 		handle, requestFileCStr, responseFileCStr)); !ret {
 		return fmt.Errorf(
-			"E_TableOtVrfqSessionOnNegoRequest(%v, %s, %s) failed",
+			"E_TableOtVrfqAliceOnNegoRequest(%v, %s, %s) failed",
 			handle, requestFile, responseFile)
 	}
 
 	return nil
 }
 
-// OnNegoResponse provides the Go interface for E_TableOtVrfqSessionOnNegoResponse()
+// OnNegoResponse provides the Go interface for E_TableOtVrfqAliceOnNegoResponse()
 func (session *AliceSession) OnNegoResponse(responseFile string) error {
 	if err := utils.CheckRegularFileReadPerm(responseFile); err != nil {
 		return err
@@ -129,17 +129,17 @@ func (session *AliceSession) OnNegoResponse(responseFile string) error {
 	responseFileCStr := C.CString(responseFile)
 	defer C.free(unsafe.Pointer(responseFileCStr))
 
-	if ret := bool(C.E_TableOtVrfqSessionOnNegoResponse(
+	if ret := bool(C.E_TableOtVrfqAliceOnNegoResponse(
 		handle, responseFileCStr)); !ret {
 		return fmt.Errorf(
-			"E_TableOtVrfqSessionOnNegoResponse(%v, %s) failed",
+			"E_TableOtVrfqAliceOnNegoResponse(%v, %s) failed",
 			handle, responseFile)
 	}
 
 	return nil
 }
 
-// OnRequest provides the Go interface for E_TableOtVrfqSessionOnRequest().
+// OnRequest provides the Go interface for E_TableOtVrfqAliceOnRequest().
 func (session *AliceSession) OnRequest(requestFile, responseFile string) error {
 	if err := utils.CheckRegularFileReadPerm(requestFile); err != nil {
 		return err
@@ -156,18 +156,18 @@ func (session *AliceSession) OnRequest(requestFile, responseFile string) error {
 	responseFileCStr := C.CString(responseFile)
 	defer C.free(unsafe.Pointer(responseFileCStr))
 
-	ret := bool(C.E_TableOtVrfqSessionOnRequest(
+	ret := bool(C.E_TableOtVrfqAliceOnRequest(
 		handle, requestFileCStr, responseFileCStr))
 	if !ret {
 		return fmt.Errorf(
-			"E_TableOtVrfqSessionOnRequest(%v, %s, %s) failed",
+			"E_TableOtVrfqAliceOnRequest(%v, %s, %s) failed",
 			handle, requestFile, responseFile)
 	}
 
 	return nil
 }
 
-// OnReceipt provides the Go interface for E_TableOtVrfqSessionOnReceipt()
+// OnReceipt provides the Go interface for E_TableOtVrfqAliceOnReceipt()
 func (session *AliceSession) OnReceipt(receiptFile, secretFile string) error {
 	if err := utils.CheckRegularFileReadPerm(receiptFile); err != nil {
 		return err
@@ -184,18 +184,18 @@ func (session *AliceSession) OnReceipt(receiptFile, secretFile string) error {
 	secretFileCStr := C.CString(secretFile)
 	defer C.free(unsafe.Pointer(secretFileCStr))
 
-	ret := bool(C.E_TableOtVrfqSessionOnReceipt(
+	ret := bool(C.E_TableOtVrfqAliceOnReceipt(
 		handle, receiptFileCStr, secretFileCStr))
 	if !ret {
 		return fmt.Errorf(
-			"E_TableOtVrfqSessionOnReceipt(%v, %s, %s) failed",
+			"E_TableOtVrfqAliceOnReceipt(%v, %s, %s) failed",
 			handle, receiptFile, secretFile)
 	}
 
 	return nil
 }
 
-// NewBobSession provides the Go interface for E_TableOtVrfqClientNew()
+// NewBobSession provides the Go interface for E_TableOtVrfqBobNew()
 func NewBobSession(
 	bulletinFile, publicPath string, sellerID, buyerID [40]uint8,
 	keyName string, demandKeyValues, phantomKeyValues []string,
@@ -241,7 +241,7 @@ func NewBobSession(
 
 	handle := C.handle_t(b.CHandle())
 	session := types.CHandle(
-		C.E_TableOtVrfqClientNew(
+		C.E_TableOtVrfqBobNew(
 			handle,
 			(*C.uint8_t)(buyerIDCPtr),
 			(*C.uint8_t)(sellerIDCPtr),
@@ -251,7 +251,7 @@ func NewBobSession(
 	if session == nil {
 		b.Free()
 		return nil, fmt.Errorf(
-			"E_TableOtVrfqClientNew(%v, %v, %v, %v, %v, %v, %v, %v) failed",
+			"E_TableOtVrfqBobNew(%v, %v, %v, %v, %v, %v, %v, %v) failed",
 			handle, buyerID, sellerID, keyName,
 			demandKeyValues, nrDemandVals,
 			phantomKeyValues, nrPhantomVals)
@@ -260,17 +260,17 @@ func NewBobSession(
 	return &BobSession{b: b, handle: session}, nil
 }
 
-// Free provides the Go interface for E_TableOtVrfqClientFree()
+// Free provides the Go interface for E_TableOtVrfqBobFree()
 func (session *BobSession) Free() error {
 	handle := C.handle_t(session.handle)
-	ret := bool(C.E_TableOtVrfqClientFree(handle))
+	ret := bool(C.E_TableOtVrfqBobFree(handle))
 	if !ret {
-		return fmt.Errorf("E_TableOtVrfqClientFree(%v) failed", handle)
+		return fmt.Errorf("E_TableOtVrfqBobFree(%v) failed", handle)
 	}
 	return session.b.Free()
 }
 
-// GetNegoRequest provides the Go interface for E_TableOtVrfqClientGetNegoRequest()
+// GetNegoRequest provides the Go interface for E_TableOtVrfqBobGetNegoRequest()
 func (session *BobSession) GetNegoRequest(requestFile string) error {
 	if err := utils.CheckDirOfPathExistence(requestFile); err != nil {
 		return err
@@ -282,15 +282,15 @@ func (session *BobSession) GetNegoRequest(requestFile string) error {
 	defer C.free(unsafe.Pointer(requestFileCStr))
 
 	if ret := bool(
-		C.E_TableOtVrfqClientGetNegoRequest(handle, requestFileCStr)); !ret {
-		return fmt.Errorf("E_TableOtVrfqClientGetNegoRequest(%v, %s) failed",
+		C.E_TableOtVrfqBobGetNegoRequest(handle, requestFileCStr)); !ret {
+		return fmt.Errorf("E_TableOtVrfqBobGetNegoRequest(%v, %s) failed",
 			handle, requestFile)
 	}
 
 	return nil
 }
 
-// OnNegoResponse provides the Go interface for E_TableOtVrfqClientOnNegoResponse()
+// OnNegoResponse provides the Go interface for E_TableOtVrfqBobOnNegoResponse()
 func (session *BobSession) OnNegoResponse(responseFile string) error {
 	if err := utils.CheckRegularFileReadPerm(responseFile); err != nil {
 		return err
@@ -301,17 +301,17 @@ func (session *BobSession) OnNegoResponse(responseFile string) error {
 	responseFileCStr := C.CString(responseFile)
 	defer C.free(unsafe.Pointer(responseFileCStr))
 
-	if ret := bool(C.E_TableOtVrfqClientOnNegoResponse(
+	if ret := bool(C.E_TableOtVrfqBobOnNegoResponse(
 		handle, responseFileCStr)); !ret {
 		return fmt.Errorf(
-			"E_TableOtVrfqClientOnNegoResponse(%v, %s) failed",
+			"E_TableOtVrfqBobOnNegoResponse(%v, %s) failed",
 			handle, responseFile)
 	}
 
 	return nil
 }
 
-// OnNegoRequest provides the Go interface for E_TableOtVrfqClientOnNegoRequest()
+// OnNegoRequest provides the Go interface for E_TableOtVrfqBobOnNegoRequest()
 func (session *BobSession) OnNegoRequest(requestFile, responseFile string) error {
 	if err := utils.CheckRegularFileReadPerm(requestFile); err != nil {
 		return err
@@ -328,17 +328,17 @@ func (session *BobSession) OnNegoRequest(requestFile, responseFile string) error
 	responseFileCStr := C.CString(responseFile)
 	defer C.free(unsafe.Pointer(responseFileCStr))
 
-	if ret := bool(C.E_TableOtVrfqClientOnNegoRequest(
+	if ret := bool(C.E_TableOtVrfqBobOnNegoRequest(
 		handle, requestFileCStr, responseFileCStr)); !ret {
 		return fmt.Errorf(
-			"E_TableOtVrfqClientOnNegoRequest(%v, %s, %s) failed",
+			"E_TableOtVrfqBobOnNegoRequest(%v, %s, %s) failed",
 			handle, requestFile, responseFile)
 	}
 
 	return nil
 }
 
-// GetRequest provides the Go interface for E_TableOtVrfqClientGetRequest()
+// GetRequest provides the Go interface for E_TableOtVrfqBobGetRequest()
 func (session *BobSession) GetRequest(requestFile string) error {
 	if err := utils.CheckDirOfPathExistence(requestFile); err != nil {
 		return err
@@ -350,15 +350,15 @@ func (session *BobSession) GetRequest(requestFile string) error {
 	defer C.free(unsafe.Pointer(requestFileCStr))
 
 	if ret := bool(
-		C.E_TableOtVrfqClientGetRequest(handle, requestFileCStr)); !ret {
-		return fmt.Errorf("E_TableOtVrfqClientGetRequest(%v, %s) failed",
+		C.E_TableOtVrfqBobGetRequest(handle, requestFileCStr)); !ret {
+		return fmt.Errorf("E_TableOtVrfqBobGetRequest(%v, %s) failed",
 			handle, requestFile)
 	}
 
 	return nil
 }
 
-// OnResponse provides the Go interface for E_TableOtVrfqClientOnResponse()
+// OnResponse provides the Go interface for E_TableOtVrfqBobOnResponse()
 func (session *BobSession) OnResponse(responseFile, receiptFile string) error {
 	if err := utils.CheckRegularFileReadPerm(responseFile); err != nil {
 		return err
@@ -375,18 +375,18 @@ func (session *BobSession) OnResponse(responseFile, receiptFile string) error {
 	receiptFileCStr := C.CString(receiptFile)
 	defer C.free(unsafe.Pointer(receiptFileCStr))
 
-	ret := bool(C.E_TableOtVrfqClientOnResponse(
+	ret := bool(C.E_TableOtVrfqBobOnResponse(
 		handle, responseFileCStr, receiptFileCStr))
 	if !ret {
 		return fmt.Errorf(
-			"E_TableOtVrfqClientOnResponse(%v, %s, %s) failed",
+			"E_TableOtVrfqBobOnResponse(%v, %s, %s) failed",
 			handle, responseFile, receiptFile)
 	}
 
 	return nil
 }
 
-// OnSecret provides the Go interface for E_TableOtVrfqClientOnSecret()
+// OnSecret provides the Go interface for E_TableOtVrfqBobOnSecret()
 func (session *BobSession) OnSecret(secretFile, positionsFile string) error {
 	if err := utils.CheckRegularFileReadPerm(secretFile); err != nil {
 		return err
@@ -403,11 +403,11 @@ func (session *BobSession) OnSecret(secretFile, positionsFile string) error {
 	positionsFileCStr := C.CString(positionsFile)
 	defer C.free(unsafe.Pointer(positionsFileCStr))
 
-	ret := bool(C.E_TableOtVrfqClientOnSecret(
+	ret := bool(C.E_TableOtVrfqBobOnSecret(
 		handle, secretFileCStr, positionsFileCStr))
 	if !ret {
 		return fmt.Errorf(
-			"E_TableOtVrfqClientOnSecret(%v, %s, %s) failed",
+			"E_TableOtVrfqBobOnSecret(%v, %s, %s) failed",
 			handle, secretFile, positionsFile)
 	}
 

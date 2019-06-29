@@ -47,12 +47,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)\win\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)\win\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -61,10 +61,10 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>BOOST_SPIRIT_THREADSAFE;MCL_DONT_USE_OPENSSL;MCL_NO_AUTOLINK;_WIN32_WINNT=0x0600;WIN32_LEAN_AND_MEAN;NOMINMAX;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BINARY_OUTPUT;CURVE_ALT_BN128;MONTGOMERY_OUTPUT;BOOST_SPIRIT_THREADSAFE;MCL_DONT_USE_OPENSSL;MCL_NO_AUTOLINK;_WIN32_WINNT=0x0600;WIN32_LEAN_AND_MEAN;NOMINMAX;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)/thirdparty/libff;$(SolutionDir)/thirdparty/libfqfft;$(SolutionDir)/thirdparty/mcl/include;$(SolutionDir)/thirdparty;$(SolutionDir)/public</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/win/include/snark;$(SolutionDir)/thirdparty/mcl/include;$(SolutionDir)/thirdparty;$(SolutionDir)/public</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalOptions>/utf-8 /Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
       <OpenMPSupport>true</OpenMPSupport>
@@ -72,8 +72,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>cryptopp-static.lib;boost_program_options-vc140-mt-gd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)\lib\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>snark.lib;ff.lib;cryptopp-static.lib;boost_program_options-vc140-mt-gd.lib;boost_system-vc140-mt-gd.lib;boost_filesystem-vc140-mt-gd.lib;boost_iostreams-vc140-mt-gd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\win\lib\$(Platform)\$(Configuration);</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -84,10 +84,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>MULTICORE;BOOST_SPIRIT_THREADSAFE;MCL_DONT_USE_OPENSSL;MCL_NO_AUTOLINK;_WIN32_WINNT=0x0600;WIN32_LEAN_AND_MEAN;NOMINMAX;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BINARY_OUTPUT;CURVE_ALT_BN128;MONTGOMERY_OUTPUT;MULTICORE;BOOST_SPIRIT_THREADSAFE;MCL_DONT_USE_OPENSSL;MCL_NO_AUTOLINK;_WIN32_WINNT=0x0600;WIN32_LEAN_AND_MEAN;NOMINMAX;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)/thirdparty/libff;$(SolutionDir)/thirdparty/libfqfft;$(SolutionDir)/thirdparty/mcl/include;$(SolutionDir)/thirdparty;$(SolutionDir)/public</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/win/include/snark;$(SolutionDir)/thirdparty/mcl/include;$(SolutionDir)/thirdparty;$(SolutionDir)/public</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalOptions>/utf-8 /Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
       <OpenMPSupport>true</OpenMPSupport>
@@ -97,16 +97,24 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>cryptopp-static.lib;boost_program_options-vc140-mt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)\lib\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>snark.lib;ff.lib;cryptopp-static.lib;boost_program_options-vc140-mt.lib;boost_system-vc140-mt.lib;boost_filesystem-vc140-mt.lib;boost_iostreams-vc140-mt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\win\lib\$(Platform)\$(Configuration);</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="pod_setup\atomic_swap_vc_keypair_generator.cc" />
     <ClCompile Include="pod_setup\main.cc" />
     <ClCompile Include="public\ecc.cc" />
     <ClCompile Include="public\fp.cc" />
+    <ClCompile Include="public\mimc.cc" />
+    <ClCompile Include="public\zkp.cc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="public\atomic_swap_gadget.h" />
+    <ClInclude Include="public\mimc.h" />
+    <ClInclude Include="public\mimc3_gadget.h" />
+    <ClInclude Include="public\mimcinv_gadget.h" />
+    <ClInclude Include="public\zkp.h" />
     <ClInclude Include="thirdparty\mcl\include\cybozu\array.hpp" />
     <ClInclude Include="thirdparty\mcl\include\cybozu\atoi.hpp" />
     <ClInclude Include="thirdparty\mcl\include\cybozu\benchmark.hpp" />
@@ -160,7 +168,6 @@
     <ClInclude Include="thirdparty\mcl\include\mcl\vint.hpp" />
     <ClInclude Include="thirdparty\mcl\include\mcl\window_method.hpp" />
     <ClInclude Include="public\ecc.h" />
-    <ClInclude Include="public\ecc_pub.h" />
     <ClInclude Include="public\msvc_hack.h" />
     <ClInclude Include="public\tick.h" />
   </ItemGroup>

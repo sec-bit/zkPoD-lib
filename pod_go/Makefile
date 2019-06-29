@@ -33,15 +33,15 @@ ifeq ($(OS_TYPE),Windows)
 endif
 
 # -a option of pod_setup
-POD_SETUP_OPTION_A := 1026
+POD_SETUP_OPTION_A := 1024
 # -c option of pod_publish in plain mode
-POD_PUBLISH_OPTION_C := 1023
+POD_PUBLISH_OPTION_C := 1024
 
 CGO_LDFLAGS := -L$(POD_CORE_DIR)
 
 TEST_DATA_DIR := $(PWD)/test_data
 
-TEST_ECC_PUB := $(TEST_DATA_DIR)/ecc_pub.bin
+TEST_ZKSNARK_PUB := $(TEST_DATA_DIR)/zksnark_key
 TEST_PLAIN_FILE := $(TEST_DATA_DIR)/plain.txt
 TEST_TABLE_FILE := $(TEST_DATA_DIR)/table.csv
 
@@ -74,23 +74,21 @@ test: test_publish pod_core
 
 test_publish: test_publish_plain test_publish_table
 
-test_publish_plain: $(POD_PUBLISH) $(TEST_ECC_PUB) $(TEST_PLAIN_FILE)
+test_publish_plain: $(POD_PUBLISH) $(TEST_ZKSNARK_PUB) $(TEST_PLAIN_FILE)
 	@echo "+ Publishing " $(TEST_PLAIN_FILE) "..."
 	$(V) rm -rf $(TEST_PUBLISH_PLAIN_DIR)
 	$(V) mkdir -p $(TEST_PUBLISH_PLAIN_DIR)
 	$(V) $(POD_PUBLISH) \
-		-e $(TEST_ECC_PUB) \
 		-m plain \
 		-f $(TEST_PLAIN_FILE) \
 		-o $(TEST_PUBLISH_PLAIN_DIR) \
 		-c $(POD_PUBLISH_OPTION_C)
 
-test_publish_table: $(POD_PUBLISH) $(TEST_ECC_PUB) $(TEST_TABLE_FILE)
+test_publish_table: $(POD_PUBLISH) $(TEST_ZKSNARK_PUB) $(TEST_TABLE_FILE)
 	@echo "+ Publishing " $(TEST_TABLE_FILE) "..."
 	$(V) rm -rf $(TEST_PUBLISH_TABLE_DIR)
 	$(V) mkdir -p $(TEST_PUBLISH_TABLE_DIR)
 	$(V) $(POD_PUBLISH) \
-		-e $(TEST_ECC_PUB) \
 		-m table \
 		-f $(TEST_TABLE_FILE) \
 		-o $(TEST_PUBLISH_TABLE_DIR) \
@@ -109,11 +107,11 @@ $(POD_PUBLISH):
 	@echo "+ Building pod_publish ..."
 	$(V) cd $(POD_PUBLISH_DIR); $(MAKE)
 
-$(TEST_ECC_PUB): $(POD_SETUP)
-	@echo "+ Generating ecc_pub"
-	$(V) $(POD_SETUP) -o $(TEST_ECC_PUB) -a $(POD_SETUP_OPTION_A)
+$(TEST_ZKSNARK_PUB): $(POD_SETUP)
+	@echo "+ Generating zksnark_pub"
+	@echo "+ "$(POD_SETUP)" -o "$(TEST_ZKSNARK_PUB)
+	$(V) $(POD_SETUP) -o $(TEST_ZKSNARK_PUB)
 
 clean:
-	$(V) rm -f $(TEST_ECC_PUB)
 	$(V) rm -rf $(TEST_PUBLISH_DIR)
 	$(V) rm -rf $(TEST_OUTPUT_DIR)

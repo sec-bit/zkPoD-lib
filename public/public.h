@@ -15,7 +15,6 @@
 #include <algorithm>
 #include <array>
 #include <atomic>
-#include <boost/any.hpp>
 #include <chrono>
 #include <condition_variable>
 #if defined(_MSC_VER)
@@ -39,6 +38,7 @@
 //#include <boost/archive/binary_iarchive.hpp>
 //#include <boost/archive/binary_oarchive.hpp>
 //#include <boost/asio.hpp>
+#include <boost/any.hpp>
 #include <boost/endian/conversion.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/iostreams/device/array.hpp>

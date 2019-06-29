@@ -1,8 +1,8 @@
 #pragma once
 
 #include <stdint.h>
-#include <string>
 #include <memory>
+#include <string>
 
 #include "basic_types.h"
 #include "bp.h"
@@ -38,7 +38,6 @@ class AliceData {
   mkl::Tree sigma_mkl_tree_;
   std::vector<Fr> m_;  // secret
   std::vector<std::vector<Fr>> key_m_;
-
 };
 
 typedef std::shared_ptr<AliceData> AliceDataPtr;

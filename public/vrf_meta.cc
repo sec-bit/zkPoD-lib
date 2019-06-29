@@ -283,7 +283,7 @@ void BuildKeyBp(uint64_t n, uint64_t s, std::vector<Fr> const& m,
   memcpy(seed + 32, keycol_mkl_root.data(), keycol_mkl_root.size());
   std::vector<Fr> v(n);
   for (uint64_t i = 0; i < n; ++i) {
-    v[i] = Chain(seed, sizeof(seed), i);
+    v[i] = ChainKeccak256(seed, sizeof(seed), i);
   }
 
   std::vector<Fr> mv(bp_count);
@@ -336,7 +336,7 @@ bool VerifyKeyBp(uint64_t n, uint64_t s, std::vector<Fr> const& km,
   memcpy(seed + 32, keycol_mkl_root.data(), keycol_mkl_root.size());
   std::vector<Fr> v(n);
   for (uint64_t i = 0; i < n; ++i) {
-    v[i] = Chain(seed, sizeof(seed), i);
+    v[i] = ChainKeccak256(seed, sizeof(seed), i);
   }
 
   std::vector<G1> sigmas2(n);

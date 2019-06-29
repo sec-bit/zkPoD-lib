@@ -37,6 +37,15 @@
     <ClCompile Include="public\ecc.cc">
       <Filter>public</Filter>
     </ClCompile>
+    <ClCompile Include="pod_setup\atomic_swap_vc_keypair_generator.cc">
+      <Filter>local</Filter>
+    </ClCompile>
+    <ClCompile Include="public\mimc.cc">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="public\zkp.cc">
+      <Filter>public</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="thirdparty\mcl\include\mcl\aggregate_sig.hpp">
@@ -198,13 +207,25 @@
     <ClInclude Include="public\ecc.h">
       <Filter>public</Filter>
     </ClInclude>
-    <ClInclude Include="public\ecc_pub.h">
-      <Filter>public</Filter>
-    </ClInclude>
     <ClInclude Include="public\msvc_hack.h">
       <Filter>public</Filter>
     </ClInclude>
     <ClInclude Include="public\tick.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="public\mimcinv_gadget.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="public\mimc3_gadget.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="public\atomic_swap_gadget.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="public\mimc.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="public\zkp.h">
       <Filter>public</Filter>
     </ClInclude>
   </ItemGroup>

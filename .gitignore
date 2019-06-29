@@ -1,7 +1,64 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+*.d.o
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+# Executables
+*.exe
+*.out
+*.app
+
+# vc
+*.vc.*
+*.ipch
+x64/Debug/
+x64/Release/
+.vs/
+ipch/
+*.suo
+*.pdb
+*.log
+*.tlog
+*.idb
+*.sdf
+*.bin
+
+bin/
+
+build/
+
+# Generated executable files
+pod_setup/pod_setup
+pod_setup/pod_setupd
+pod_publish/pod_publish
+pod_publish/pod_publishd
+pod_core/pod_core
+pod_core/pod_cored
+
+# Generated test data for pod_go
 pod_go/test_data/ecc_pub.bin
-pod_go/test_data/output
 pod_go/test_data/publish
-pod_*/build
-# pod_*/*.so
-# pod_core/pod_core
-# pod_core/pod_cored
+pod_go/test_data/output
+
+win/lib
+win/include
+depends/install

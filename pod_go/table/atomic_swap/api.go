@@ -30,7 +30,7 @@ type (
 	}
 )
 
-// NewAliceSession provides the Go interface for E_TableAtomicSwapSessionNew().
+// NewAliceSession provides the Go interface for E_TableAtomicSwapAliceNew().
 func NewAliceSession(
 	publishPath string, sellerID, buyerID [40]uint8,
 ) (*AliceSession, error) {
@@ -47,31 +47,31 @@ func NewAliceSession(
 
 	handle := C.handle_t(a.CHandle())
 	session := types.CHandle(
-		C.E_TableAtomicSwapSessionNew(
+		C.E_TableAtomicSwapAliceNew(
 			handle,
 			(*C.uint8_t)(sellerIDCPtr),
 			(*C.uint8_t)(buyerIDCPtr)))
 	if session == nil {
 		a.Free()
 		return nil, fmt.Errorf(
-			"E_TableAtomicSwapSessionNew(%v, %v, %v) failed",
+			"E_TableAtomicSwapAliceNew(%v, %v, %v) failed",
 			handle, sellerID, buyerID)
 	}
 
 	return &AliceSession{a: a, handle: session}, nil
 }
 
-// Free provides the Go interface for E_TableAtomicSwapSessionFree()
+// Free provides the Go interface for E_TableAtomicSwapAliceFree()
 func (session *AliceSession) Free() error {
 	handle := C.handle_t(session.handle)
-	ret := bool(C.E_TableAtomicSwapSessionFree(handle))
+	ret := bool(C.E_TableAtomicSwapAliceFree(handle))
 	if !ret {
-		return fmt.Errorf("E_TableAtomicSwapSessionFree(%v) failed", handle)
+		return fmt.Errorf("E_TableAtomicSwapAliceFree(%v) failed", handle)
 	}
 	return session.a.Free()
 }
 
-// OnRequest provides the Go interface for E_TableAtomicSwapSessionOnRequest().
+// OnRequest provides the Go interface for E_TableAtomicSwapAliceOnRequest().
 func (session *AliceSession) OnRequest(requestFile, responseFile string) error {
 	if err := utils.CheckRegularFileReadPerm(requestFile); err != nil {
 		return err
@@ -88,18 +88,18 @@ func (session *AliceSession) OnRequest(requestFile, responseFile string) error {
 	responseFileCStr := C.CString(responseFile)
 	defer C.free(unsafe.Pointer(responseFileCStr))
 
-	ret := bool(C.E_TableAtomicSwapSessionOnRequest(
+	ret := bool(C.E_TableAtomicSwapAliceOnRequest(
 		handle, requestFileCStr, responseFileCStr))
 	if !ret {
 		return fmt.Errorf(
-			"E_TableAtomicSwapSessionOnRequest(%v, %s, %s) failed",
+			"E_TableAtomicSwapAliceOnRequest(%v, %s, %s) failed",
 			handle, requestFile, responseFile)
 	}
 
 	return nil
 }
 
-// OnReceipt provides the Go interface for E_TableAtomicSwapSessionOnReceipt()
+// OnReceipt provides the Go interface for E_TableAtomicSwapAliceOnReceipt()
 func (session *AliceSession) OnReceipt(receiptFile, secretFile string) error {
 	if err := utils.CheckRegularFileReadPerm(receiptFile); err != nil {
 		return err
@@ -116,18 +116,18 @@ func (session *AliceSession) OnReceipt(receiptFile, secretFile string) error {
 	secretFileCStr := C.CString(secretFile)
 	defer C.free(unsafe.Pointer(secretFileCStr))
 
-	ret := bool(C.E_TableAtomicSwapSessionOnReceipt(
+	ret := bool(C.E_TableAtomicSwapAliceOnReceipt(
 		handle, receiptFileCStr, secretFileCStr))
 	if !ret {
 		return fmt.Errorf(
-			"E_TableAtomicSwapSessionOnReceipt(%v, %s, %s) failed",
+			"E_TableAtomicSwapAliceOnReceipt(%v, %s, %s) failed",
 			handle, receiptFile, secretFile)
 	}
 
 	return nil
 }
 
-// NewBobSession provides the Go interface for E_TableAtomicSwapClientNew()
+// NewBobSession provides the Go interface for E_TableAtomicSwapBobNew()
 func NewBobSession(
 	bulletinFile, publicPath string,
 	sellerID, buyerID [40]uint8, demands []types.Range,
@@ -154,7 +154,7 @@ func NewBobSession(
 
 	handle := C.handle_t(b.CHandle())
 	session := types.CHandle(
-		C.E_TableAtomicSwapClientNew(
+		C.E_TableAtomicSwapBobNew(
 			handle,
 			(*C.uint8_t)(buyerIDCPtr),
 			(*C.uint8_t)(sellerIDCPtr),
@@ -163,24 +163,24 @@ func NewBobSession(
 	if session == nil {
 		b.Free()
 		return nil, fmt.Errorf(
-			"E_TableAtomicSwapClientNew(%v, %v, %v, %v, %d) failed",
+			"E_TableAtomicSwapBobNew(%v, %v, %v, %v, %d) failed",
 			handle, buyerID, sellerID, demands, nrDemands)
 	}
 
 	return &BobSession{b: b, handle: session}, nil
 }
 
-// Free provides the Go interface for E_TableAtomicSwapClientFree()
+// Free provides the Go interface for E_TableAtomicSwapBobFree()
 func (session *BobSession) Free() error {
 	handle := C.handle_t(session.handle)
-	ret := bool(C.E_TableAtomicSwapClientFree(handle))
+	ret := bool(C.E_TableAtomicSwapBobFree(handle))
 	if !ret {
-		return fmt.Errorf("E_TableAtomicSwapClientFree(%v) failed", handle)
+		return fmt.Errorf("E_TableAtomicSwapBobFree(%v) failed", handle)
 	}
 	return session.b.Free()
 }
 
-// GetRequest provides the Go interface for E_TableAtomicSwapClientGetRequest()
+// GetRequest provides the Go interface for E_TableAtomicSwapBobGetRequest()
 func (session *BobSession) GetRequest(requestFile string) error {
 	if err := utils.CheckDirOfPathExistence(requestFile); err != nil {
 		return err
@@ -192,15 +192,15 @@ func (session *BobSession) GetRequest(requestFile string) error {
 	defer C.free(unsafe.Pointer(requestFileCStr))
 
 	if ret := bool(
-		C.E_TableAtomicSwapClientGetRequest(handle, requestFileCStr)); !ret {
-		return fmt.Errorf("E_TableAtomicSwapClientGetRequest(%v, %s) failed",
+		C.E_TableAtomicSwapBobGetRequest(handle, requestFileCStr)); !ret {
+		return fmt.Errorf("E_TableAtomicSwapBobGetRequest(%v, %s) failed",
 			handle, requestFile)
 	}
 
 	return nil
 }
 
-// OnResponse provides the Go interface for E_TableAtomicSwapClientOnResponse()
+// OnResponse provides the Go interface for E_TableAtomicSwapBobOnResponse()
 func (session *BobSession) OnResponse(responseFile, receiptFile string) error {
 	if err := utils.CheckRegularFileReadPerm(responseFile); err != nil {
 		return err
@@ -217,18 +217,18 @@ func (session *BobSession) OnResponse(responseFile, receiptFile string) error {
 	receiptFileCStr := C.CString(receiptFile)
 	defer C.free(unsafe.Pointer(receiptFileCStr))
 
-	ret := bool(C.E_TableAtomicSwapClientOnResponse(
+	ret := bool(C.E_TableAtomicSwapBobOnResponse(
 		handle, responseFileCStr, receiptFileCStr))
 	if !ret {
 		return fmt.Errorf(
-			"E_TableAtomicSwapClientOnResponse(%v, %s, %s) failed",
+			"E_TableAtomicSwapBobOnResponse(%v, %s, %s) failed",
 			handle, responseFile, receiptFile)
 	}
 
 	return nil
 }
 
-// OnSecret provides the Go interface for E_TableAtomicSwapClientOnSecret()
+// OnSecret provides the Go interface for E_TableAtomicSwapBobOnSecret()
 func (session *BobSession) OnSecret(secretFile string) error {
 	if err := utils.CheckRegularFileReadPerm(secretFile); err != nil {
 		return err
@@ -239,17 +239,17 @@ func (session *BobSession) OnSecret(secretFile string) error {
 	secretFileCStr := C.CString(secretFile)
 	defer C.free(unsafe.Pointer(secretFileCStr))
 
-	ret := bool(C.E_TableAtomicSwapClientOnSecret(handle, secretFileCStr))
+	ret := bool(C.E_TableAtomicSwapBobOnSecret(handle, secretFileCStr))
 	if !ret {
 		return fmt.Errorf(
-			"E_TableAtomicSwapClientOnSecret(%v, %s) failed",
+			"E_TableAtomicSwapBobOnSecret(%v, %s) failed",
 			handle, secretFile)
 	}
 
 	return nil
 }
 
-// Decrypt provides the Go interface for E_TableAtomicSwapClientSaveDecrypted()
+// Decrypt provides the Go interface for E_TableAtomicSwapBobSaveDecrypted()
 func (session *BobSession) Decrypt(outFile string) error {
 	if err := utils.CheckDirOfPathExistence(outFile); err != nil {
 		return err
@@ -260,11 +260,11 @@ func (session *BobSession) Decrypt(outFile string) error {
 	outFileCStr := C.CString(outFile)
 	defer C.free(unsafe.Pointer(outFileCStr))
 
-	ret := bool(C.E_TableAtomicSwapClientSaveDecrypted(
+	ret := bool(C.E_TableAtomicSwapBobSaveDecrypted(
 		handle, outFileCStr))
 	if !ret {
 		return fmt.Errorf(
-			"E_TableAtomicSwapClientSaveDecrypted(%v, %s) failed",
+			"E_TableAtomicSwapBobSaveDecrypted(%v, %s) failed",
 			handle, outFile)
 	}
 

@@ -8,9 +8,9 @@
 #include <boost/endian/conversion.hpp>
 
 #include "ecc.h"
+#include "misc.h"
 #include "multiexp.h"
 #include "tick.h"
-#include "misc.h"
 
 namespace bp {
 
@@ -295,12 +295,17 @@ P2Proof P2Prove(P1Committment const& p1_committment, GET_G const& get_g,
 
     G1 L, R;
     if (nn >= (1024 * 32)) {
+#ifdef MULTICORE
 #pragma omp parallel sections
+#endif
       {
+#ifdef MULTICORE
 #pragma omp section
+#endif
         { L = MultiExpGH(&g[nn], &a[0], &h[0], &b[nn], nn); }
-
+#ifdef MULTICORE
 #pragma omp section
+#endif
         { R = MultiExpGH(&g[0], &a[nn], &h[nn], &b[0], nn); }
       }
     } else {
@@ -318,7 +323,9 @@ P2Proof P2Prove(P1Committment const& p1_committment, GET_G const& get_g,
     std::vector<G1> gg;
     gg.resize(nn);
 // very slow
+#ifdef MULTICORE
 #pragma omp parallel for
+#endif
     for (int64_t i = 0; i < (int64_t)nn; ++i) {
       gg[i] = MultiExp(g[i], x_inverse, g[nn + i], x);
     }
@@ -326,7 +333,9 @@ P2Proof P2Prove(P1Committment const& p1_committment, GET_G const& get_g,
     std::vector<G1> hh;
     hh.resize(nn);
 // very slow
+#ifdef MULTICORE
 #pragma omp parallel for
+#endif
     for (int64_t i = 0; i < (int64_t)nn; ++i) {
       hh[i] = MultiExp(h[i], x, h[nn + i], x_inverse);
     }
@@ -335,14 +344,18 @@ P2Proof P2Prove(P1Committment const& p1_committment, GET_G const& get_g,
 
     std::vector<Fr> aa;
     aa.resize(nn);
+#ifdef MULTICORE
 #pragma omp parallel for
+#endif
     for (int64_t i = 0; i < (int64_t)nn; ++i) {
       aa[i] = a[i] * x + a[nn + i] * x_inverse;
     }
 
     std::vector<Fr> bb;
     bb.resize(nn);
+#ifdef MULTICORE
 #pragma omp parallel for
+#endif
     for (int64_t i = 0; i < (int64_t)nn; ++i) {
       bb[i] = b[i] * x_inverse + b[nn + i] * x;
     }
@@ -409,7 +422,9 @@ bool P2Verify(P1Committment const& p1_committment, GET_G const& get_g,
   ss.resize(g_count);
   ss_inverse.resize(g_count);
 
+#ifdef MULTICORE
 #pragma omp parallel for
+#endif
   for (int64_t i = 0; i < (int64_t)g_count; ++i) {
     ss[i] = Fr::one();
     for (size_t j = 0; j < x_count; ++j) {
@@ -422,12 +437,19 @@ bool P2Verify(P1Committment const& p1_committment, GET_G const& get_g,
 
   G1 last_g, last_h;
 
+#ifdef MULTICORE
 #pragma omp parallel sections
+#endif
+
   {
+#ifdef MULTICORE
 #pragma omp section
+#endif
     { last_g = MultiExpBdlo12(&g[0], &ss[0], g_count); }
 
+#ifdef MULTICORE
 #pragma omp section
+#endif
     { last_h = MultiExpBdlo12(&h[0], &ss_inverse[0], g_count); }
   }
 
@@ -485,7 +507,6 @@ bool P1Verify(P1Proof const& p1_proof, GET_G const& get_g, uint64_t count) {
   return p1_proof.p2_proof.q == p1_proof.committment.q(challenge.u());
 }
 
-
 inline bool Test() {
   size_t count = 1024;  // * 1024;
   std::vector<G1> g(count);
@@ -497,7 +518,7 @@ inline bool Test() {
     i = FrRand();
   }
 
-  Challenge challenge(count, rand(), false); // NOTE: use rand() for test
+  Challenge challenge(count, rand(), false);  // NOTE: use rand() for test
 
   auto get_g = [&g](uint64_t i) {
     if (i < g.size())

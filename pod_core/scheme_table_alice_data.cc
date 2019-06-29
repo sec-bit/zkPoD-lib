@@ -1,15 +1,14 @@
 #include "scheme_table_alice_data.h"
-#include "public.h"
 #include "misc.h"
+#include "public.h"
 
-namespace {
-
-}  // namespace
+namespace {}  // namespace
 
 namespace scheme::table {
 
-AliceData::AliceData(std::string const& publish_path) : publish_path_(publish_path) {
-  std::string public_path = publish_path_ +"/public";
+AliceData::AliceData(std::string const& publish_path)
+    : publish_path_(publish_path) {
+  std::string public_path = publish_path_ + "/public";
   std::string private_path = publish_path_ + "/private";
   std::string matrix_file = private_path + "/matrix";
   std::string bulletin_file = publish_path_ + "/bulletin";
@@ -21,7 +20,7 @@ AliceData::AliceData(std::string const& publish_path) : publish_path_(publish_pa
 
   if (!LoadBulletin(bulletin_file, bulletin_)) {
     assert(false);
-    throw std::runtime_error("invalid bulletin file");
+    throw std::runtime_error("Alice: invalid bulletin file");
   }
 
   // vrf meta
@@ -45,7 +44,7 @@ AliceData::AliceData(std::string const& publish_path) : publish_path_(publish_pa
   key_m_.resize(vrf_meta_.keys.size());
   for (size_t i = 0; i < key_m_.size(); ++i) {
     auto& km = key_m_[i];
-    auto key_m_file = public_path + "/key_m_" + std::to_string(i);    
+    auto key_m_file = public_path + "/key_m_" + std::to_string(i);
     if (!LoadMatrix(key_m_file, bulletin_.n, km)) {
       assert(false);
       throw std::runtime_error("invalid key m file");
@@ -85,16 +84,15 @@ AliceData::AliceData(std::string const& publish_path) : publish_path_(publish_pa
 
 VrfKeyMeta const* AliceData::GetKeyMetaByName(std::string const& name) {
   auto const& names = vrf_meta_.column_names;
-  auto it_name = std::find(names.begin(),names.end(), name);
+  auto it_name = std::find(names.begin(), names.end(), name);
   if (it_name == names.end()) return nullptr;
   auto col_index = std::distance(names.begin(), it_name);
 
   for (uint64_t i = 0; i < vrf_meta_.keys.size(); ++i) {
     auto const& vrf_key = vrf_meta_.keys[i];
-    if (vrf_meta_.keys[i].column_index == (uint64_t)col_index) 
-      return &vrf_key;
+    if (vrf_meta_.keys[i].column_index == (uint64_t)col_index) return &vrf_key;
   }
   return nullptr;
 }
 
-}  // namespace scheme_table
+}  // namespace scheme::table

@@ -3,11 +3,11 @@ package plain
 import (
 	"testing"
 
-	"github.com/sec-bit/zkPoD-lib/pod_go/ecc"
+	"github.com/sec-bit/zkPoD-lib/pod_go/setup"
 )
 
 const (
-	testEccPubFile = "../test_data/ecc_pub.bin"
+	testEccPubFile = "../test_data"
 
 	testPlainPublishPathSucc = "../test_data/publish/plain"
 	testPlainPublishPathFail = "../test_data/publish/plain_not_exist_dir"
@@ -25,9 +25,8 @@ var (
 
 func prepare(t *testing.T) {
 	if !inited {
-		ecc.Init()
 
-		if ret := ecc.Load(testEccPubFile); !ret {
+		if ret := setup.Load(testEccPubFile); !ret {
 			t.Fatalf("failed to load %s\n", testEccPubFile)
 		}
 		inited = true

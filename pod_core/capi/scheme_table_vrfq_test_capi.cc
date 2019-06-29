@@ -10,10 +10,10 @@
 #include "tick.h"
 
 namespace {
-// The session id must be hash(addr_A), and the client id must be hash(addr_B).
+// The alice id must be hash(AliceAddr), and the bob id must be hash(BobAddr).
 // Here just just two dummy values for test.
-const h256_t kDummySessionId = h256_t{{1}};
-const h256_t kDummyClientId = h256_t{{2}};
+const h256_t kDummyAliceId = h256_t{{1}};
+const h256_t kDummyBobId = h256_t{{2}};
 
 class WrapperAliceData {
  public:
@@ -45,15 +45,15 @@ class WrapperBobData {
   handle_t h_;
 };
 
-class WrapperSession {
+class WrapperAlice {
  public:
-  WrapperSession(handle_t c_a, uint8_t const* c_self_id,
-                 uint8_t const* c_peer_id) {
-    h_ = E_TableVrfqSessionNew(c_a, c_self_id, c_peer_id);
+  WrapperAlice(handle_t c_alice_data, uint8_t const* c_self_id,
+               uint8_t const* c_peer_id) {
+    h_ = E_TableVrfqAliceNew(c_alice_data, c_self_id, c_peer_id);
     if (!h_) throw std::runtime_error("");
   }
-  ~WrapperSession() {
-    if (!E_TableVrfqSessionFree(h_)) abort();
+  ~WrapperAlice() {
+    if (!E_TableVrfqAliceFree(h_)) abort();
   }
   handle_t h() const { return h_; }
 
@@ -61,17 +61,17 @@ class WrapperSession {
   handle_t h_;
 };
 
-class WrapperClient {
+class WrapperBob {
  public:
-  WrapperClient(handle_t c_b, uint8_t const* c_self_id,
-                uint8_t const* c_peer_id, char const* c_query_key,
-                char const* c_query_values[], uint64_t c_query_value_count) {
-    h_ = E_TableVrfqClientNew(c_b, c_self_id, c_peer_id, c_query_key,
-                              c_query_values, c_query_value_count);
+  WrapperBob(handle_t c_bob_data, uint8_t const* c_self_id,
+             uint8_t const* c_peer_id, char const* c_query_key,
+             char const* c_query_values[], uint64_t c_query_value_count) {
+    h_ = E_TableVrfqBobNew(c_bob_data, c_self_id, c_peer_id, c_query_key,
+                           c_query_values, c_query_value_count);
     if (!h_) throw std::runtime_error("");
   }
-  ~WrapperClient() {
-    if (!E_TableVrfqClientFree(h_)) abort();
+  ~WrapperBob() {
+    if (!E_TableVrfqBobFree(h_)) abort();
   }
   handle_t h() const { return h_; }
 
@@ -86,15 +86,15 @@ bool QueryInternal(WrapperAliceData const& a, WrapperBobData const& b,
                    std::string const& output_path, std::string const& query_key,
                    std::vector<std::string> const& query_values,
                    std::vector<std::vector<uint64_t>>& positions) {
-  WrapperSession session(a.h(), kDummySessionId.data(), kDummyClientId.data());
+  WrapperAlice alice(a.h(), kDummyAliceId.data(), kDummyBobId.data());
   std::vector<char const*> c_query_values(query_values.size());
   for (size_t i = 0; i < query_values.size(); ++i) {
     c_query_values[i] = query_values[i].c_str();
   }
 
-  WrapperClient client(b.h(), kDummyClientId.data(), kDummySessionId.data(),
-                       query_key.c_str(), c_query_values.data(),
-                       c_query_values.size());
+  WrapperBob bob(b.h(), kDummyBobId.data(), kDummyAliceId.data(),
+                 query_key.c_str(), c_query_values.data(),
+                 c_query_values.size());
 
   std::string request_file = output_path + "/request";
   std::string response_file = output_path + "/response";
@@ -102,31 +102,31 @@ bool QueryInternal(WrapperAliceData const& a, WrapperBobData const& b,
   std::string secret_file = output_path + "/secret";
   std::string positions_file = output_path + "/positions";
 
-  if (!E_TableVrfqClientGetRequest(client.h(), request_file.c_str())) {
+  if (!E_TableVrfqBobGetRequest(bob.h(), request_file.c_str())) {
     assert(false);
     return false;
   }
 
-  if (!E_TableVrfqSessionOnRequest(session.h(), request_file.c_str(),
-                                   response_file.c_str())) {
+  if (!E_TableVrfqAliceOnRequest(alice.h(), request_file.c_str(),
+                                 response_file.c_str())) {
     assert(false);
     return false;
   }
 
-  if (!E_TableVrfqClientOnResponse(client.h(), response_file.c_str(),
-                                   receipt_file.c_str())) {
+  if (!E_TableVrfqBobOnResponse(bob.h(), response_file.c_str(),
+                                receipt_file.c_str())) {
     assert(false);
     return false;
   }
 
-  if (!E_TableVrfqSessionOnReceipt(session.h(), receipt_file.c_str(),
-                                   secret_file.c_str())) {
+  if (!E_TableVrfqAliceOnReceipt(alice.h(), receipt_file.c_str(),
+                                 secret_file.c_str())) {
     assert(false);
     return false;
   }
 
-  if (!E_TableVrfqClientOnSecret(client.h(), secret_file.c_str(),
-                                 positions_file.c_str())) {
+  if (!E_TableVrfqBobOnSecret(bob.h(), secret_file.c_str(),
+                              positions_file.c_str())) {
     assert(false);
     return false;
   }
@@ -211,11 +211,11 @@ bool Test(std::string const& publish_path, std::string const& output_path,
           std::string const& query_key,
           std::vector<std::string> const& query_values) {
   try {
-    WrapperAliceData a(publish_path.c_str());
+    WrapperAliceData alice_data(publish_path.c_str());
     std::string bulletin_file = publish_path + "/bulletin";
     std::string public_path = publish_path + "/public";
-    WrapperBobData b(bulletin_file.c_str(), public_path.c_str());
-    return Test(a, b, output_path, query_key, query_values);
+    WrapperBobData bob_data(bulletin_file.c_str(), public_path.c_str());
+    return Test(alice_data, bob_data, output_path, query_key, query_values);
   } catch (std::exception& e) {
     std::cerr << __FUNCTION__ << "\t" << e.what() << "\n";
     return false;

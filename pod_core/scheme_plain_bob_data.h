@@ -18,6 +18,7 @@ class BobData {
   std::vector<G1> sigmas() const { return sigmas_; }
   bool SaveDecryped(std::string const& file, std::vector<Range> const& demands,
                     std::vector<Fr> const& decrypted);
+
  private:
   void LoadData();
   bool NeedVerify();

@@ -9,10 +9,11 @@ BobData::BobData(Bulletin const& bulletin, std::string const& public_path)
   LoadData();
 }
 
-BobData::BobData(std::string const& bulletin_file, std::string const& public_path)
+BobData::BobData(std::string const& bulletin_file,
+                 std::string const& public_path)
     : public_path_(public_path) {
   if (!LoadBulletin(bulletin_file, bulletin_))
-    throw std::runtime_error("invalid bulletin file");
+    throw std::runtime_error("Bob: invalid bulletin file");
   LoadData();
 }
 
@@ -40,7 +41,7 @@ bool BobData::NeedVerify() {
 // throw
 void BobData::LoadData() {
   if (!bulletin_.n || !bulletin_.s)
-    throw std::runtime_error("invalid bulletin");
+    throw std::runtime_error("Bob: invalid bulletin");
 
   std::string verify_file = public_path_ + "/.verify";
   std::string sigma_file = public_path_ + "/sigma";
@@ -103,8 +104,9 @@ void BobData::LoadData() {
   }
 }
 
-bool BobData::SaveDecryped(std::string const& file, std::vector<Range> const& demands,
-                  std::vector<Fr> const& decrypted) {
+bool BobData::SaveDecryped(std::string const& file,
+                           std::vector<Range> const& demands,
+                           std::vector<Fr> const& decrypted) {
   Tick _tick_(__FUNCTION__);
 
   return DecryptedRangeMToFile(file, bulletin_.s, vrf_meta_, demands,

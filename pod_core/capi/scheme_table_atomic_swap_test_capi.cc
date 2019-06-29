@@ -10,10 +10,10 @@
 #include "tick.h"
 
 namespace {
-// The session id must be hash(addr_A), and the client id must be hash(addr_B).
+// The alice id must be hash(AliceAddr), and the bob id must be hash(BobAddr).
 // Here just just two dummy values for test.
-const h256_t kDummySessionId = h256_t{{1}};
-const h256_t kDummyClientId = h256_t{{2}};
+const h256_t kDummyAliceId = h256_t{{1}};
+const h256_t kDummyBobId = h256_t{{2}};
 
 class WrapperAliceData {
  public:
@@ -45,15 +45,15 @@ class WrapperBobData {
   handle_t h_;
 };
 
-class WrapperSession {
+class WrapperAlice {
  public:
-  WrapperSession(handle_t c_a, uint8_t const* c_self_id,
-                 uint8_t const* c_peer_id) {
-    h_ = E_TableAtomicSwapSessionNew(c_a, c_self_id, c_peer_id);
+  WrapperAlice(handle_t c_alice_data, uint8_t const* c_self_id,
+               uint8_t const* c_peer_id) {
+    h_ = E_TableAtomicSwapAliceNew(c_alice_data, c_self_id, c_peer_id);
     if (!h_) throw std::runtime_error("");
   }
-  ~WrapperSession() {
-    if (!E_TableAtomicSwapSessionFree(h_)) abort();
+  ~WrapperAlice() {
+    if (!E_TableAtomicSwapAliceFree(h_)) abort();
   }
   handle_t h() const { return h_; }
 
@@ -61,17 +61,17 @@ class WrapperSession {
   handle_t h_;
 };
 
-class WrapperClient {
+class WrapperBob {
  public:
-  WrapperClient(handle_t c_b, uint8_t const* c_self_id,
-                uint8_t const* c_peer_id, range_t const* c_demand,
-                uint64_t c_demand_count) {
-    h_ = E_TableAtomicSwapClientNew(c_b, c_self_id, c_peer_id, c_demand,
-                                    c_demand_count);
+  WrapperBob(handle_t c_bob_data, uint8_t const* c_self_id,
+             uint8_t const* c_peer_id, range_t const* c_demand,
+             uint64_t c_demand_count) {
+    h_ = E_TableAtomicSwapBobNew(c_bob_data, c_self_id, c_peer_id, c_demand,
+                                 c_demand_count);
     if (!h_) throw std::runtime_error("");
   }
-  ~WrapperClient() {
-    if (!E_TableAtomicSwapClientFree(h_)) abort();
+  ~WrapperBob() {
+    if (!E_TableAtomicSwapBobFree(h_)) abort();
   }
   handle_t h() const { return h_; }
 
@@ -87,15 +87,15 @@ bool Test(std::string const& output_path, WrapperAliceData const& a,
           bool evil) {
   Tick _tick_(__FUNCTION__);
 
-  WrapperSession session(a.h(), kDummySessionId.data(), kDummyClientId.data());
+  WrapperAlice alice(a.h(), kDummyAliceId.data(), kDummyBobId.data());
   std::vector<range_t> c_demand(demands.size());
   for (size_t i = 0; i < demands.size(); ++i) {
     c_demand[i].start = demands[i].start;
     c_demand[i].count = demands[i].count;
   }
-  WrapperClient client(b.h(), kDummyClientId.data(), kDummySessionId.data(),
-                       c_demand.data(), c_demand.size());
-  if (evil) E_TableAtomicSwapSessionSetEvil(session.h());
+  WrapperBob bob(b.h(), kDummyBobId.data(), kDummyAliceId.data(),
+                 c_demand.data(), c_demand.size());
+  if (evil) E_TableAtomicSwapAliceSetEvil(alice.h());
 
   std::string request_file = output_path + "/request";
   std::string response_file = output_path + "/response";
@@ -103,42 +103,41 @@ bool Test(std::string const& output_path, WrapperAliceData const& a,
   std::string secret_file = output_path + "/secret";
   std::string output_file = output_path + "/decrypted_data";
 
-  if (!E_TableAtomicSwapClientGetRequest(client.h(), request_file.c_str())) {
+  if (!E_TableAtomicSwapBobGetRequest(bob.h(), request_file.c_str())) {
     assert(false);
     return false;
   }
 
-  if (!E_TableAtomicSwapSessionOnRequest(session.h(), request_file.c_str(),
-                                         response_file.c_str())) {
+  if (!E_TableAtomicSwapAliceOnRequest(alice.h(), request_file.c_str(),
+                                       response_file.c_str())) {
     assert(false);
     return false;
   }
 
-  if (!E_TableAtomicSwapClientOnResponse(client.h(), response_file.c_str(),
-                                         receipt_file.c_str())) {
+  if (!E_TableAtomicSwapBobOnResponse(bob.h(), response_file.c_str(),
+                                      receipt_file.c_str())) {
     assert(false);
     return false;
   }
 
-  if (!E_TableAtomicSwapSessionOnReceipt(session.h(), receipt_file.c_str(),
-                                         secret_file.c_str())) {
+  if (!E_TableAtomicSwapAliceOnReceipt(alice.h(), receipt_file.c_str(),
+                                       secret_file.c_str())) {
     assert(false);
     return false;
   }
 
   if (!evil) {
-    if (!E_TableAtomicSwapClientOnSecret(client.h(), secret_file.c_str())) {
+    if (!E_TableAtomicSwapBobOnSecret(bob.h(), secret_file.c_str())) {
       assert(false);
       return false;
     }
 
-    if (!E_TableAtomicSwapClientSaveDecrypted(client.h(),
-                                              output_file.c_str())) {
+    if (!E_TableAtomicSwapBobSaveDecrypted(bob.h(), output_file.c_str())) {
       assert(false);
       return false;
     }
   } else {
-    if (E_TableAtomicSwapClientOnSecret(client.h(), secret_file.c_str())) {
+    if (E_TableAtomicSwapBobOnSecret(bob.h(), secret_file.c_str())) {
       assert(false);
       return false;
     }
@@ -150,11 +149,11 @@ bool Test(std::string const& output_path, WrapperAliceData const& a,
 bool Test(std::string const& publish_path, std::string const& output_path,
           std::vector<Range> const& demands, bool test_evil) {
   try {
-    WrapperAliceData a(publish_path.c_str());
+    WrapperAliceData alice_data(publish_path.c_str());
     std::string bulletin_file = publish_path + "/bulletin";
     std::string public_path = publish_path + "/public";
-    WrapperBobData b(bulletin_file.c_str(), public_path.c_str());
-    return Test(output_path, a, b, demands, test_evil);
+    WrapperBobData bob_data(bulletin_file.c_str(), public_path.c_str());
+    return Test(output_path, alice_data, bob_data, demands, test_evil);
   } catch (std::exception& e) {
     std::cerr << __FUNCTION__ << "\t" << e.what() << "\n";
     return false;

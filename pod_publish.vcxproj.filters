@@ -67,6 +67,12 @@
     <ClCompile Include="public\scheme_error.cc">
       <Filter>public</Filter>
     </ClCompile>
+    <ClCompile Include="public\chain.cc">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="public\mimc.cc">
+      <Filter>public</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="thirdparty\mcl\include\mcl\aggregate_sig.hpp">

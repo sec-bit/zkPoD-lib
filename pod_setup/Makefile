@@ -20,9 +20,11 @@ ifdef CXX11_HOME
   CXX := LD_LIBRARY_PATH=${CXX11_HOME}/lib $(CXX11_HOME)/bin/g++
 endif
 
+HOME = ../linux
 THIRD_PARTY_HOME = ../thirdparty
 MCL_HOME = ../thirdparty/mcl/include
 PUB_HOME = ../public
+SNARK_HOME = ../depends/install
 
 INC_FLAGS :=  \
  -I $(MCL_HOME) \
@@ -41,7 +43,7 @@ CXXFLAGS := \
  -g3 \
  -fPIC \
  -fopenmp \
- -std=c++14 \
+ -std=c++17 \
  -Wall \
  -Wextra \
  -gdwarf-2 \
@@ -49,7 +51,16 @@ CXXFLAGS := \
  -Wno-parentheses \
  -Wdeprecated-declarations \
  -fmerge-all-constants  \
- $(INC_FLAGS)
+ $(INC_FLAGS) \
+ -isystem $(SNARK_HOME)/include \
+
+SNARK_FLAGS = \
+ -DBINARY_OUTPUT \
+ -DBN_SUPPORT_SNARK=1 \
+ -DCURVE_BN128 \
+ -DMONTGOMERY_OUTPUT \
+ -DUSE_ASM \
+ -DNO_PROCPS \
 
 MCL_FLAGS := \
  -DMCL_DONT_USE_OPENSSL
@@ -72,9 +83,7 @@ DEBUG_FLAGS := \
 
 LDFLAGS += \
  -fmerge-all-constants \
- -L${CXX11_HOME}/lib64
-
- 
+ -L$(SNARK_HOME)/lib
 
 LIBS := \
  -lpthread \
@@ -86,7 +95,10 @@ LIBS := \
  -lboost_filesystem \
  -lboost_system \
  -lboost_iostreams \
- -lboost_program_options
+ -lboost_program_options  \
+ -lsnark \
+ -lff \
+ -lzm \
 
 ifeq ($(OS_TYPE),Darwin)
   TMPVAR := $(CXXFLAGS)
@@ -103,6 +115,7 @@ endif
 BUILD := ./build/self
 BUILDPUB := ./build/public
 
+$(shell mkdir -p $(HOME)/bin)
 $(shell mkdir -p $(BUILD))
 $(shell mkdir -p $(BUILDPUB))
 
@@ -112,6 +125,8 @@ SRC := $(foreach d, $(DIR), $(wildcard $(d)/*.cc))
 
 SRC += ../public/ecc.cc
 SRC += ../public/fp.cc
+SRC += ../public/mimc.cc
+SRC += ../public/zkp.cc
 
 RELEASE_OBJ := $(patsubst %.cc, $(BUILD)/%.o, $(SRC))
 
@@ -127,10 +142,10 @@ endif
 all: $(RELEASE_BIN) $(DEBUG_BIN)
 
 $(BUILD)/%.o : %.cc
-	$(CXX) -c $^ $(CXXFLAGS) $(RELEASE_FLAGS) $(MCL_FLAGS) -o $@
+	$(CXX) -c $^ $(CXXFLAGS) $(RELEASE_FLAGS) $(MCL_FLAGS)  $(SNARK_FLAGS)  -o $@
 
 $(BUILD)/%.d.o : %.cc
-	$(CXX) -c $^ $(CXXFLAGS) $(DEBUG_FLAGS) $(MCL_FLAGS) -o $@
+	$(CXX) -c $^ $(CXXFLAGS) $(DEBUG_FLAGS) $(MCL_FLAGS)  $(SNARK_FLAGS)  -o $@
 
 $(DEBUG_BIN): $(DEBUG_OBJ)
 	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS)

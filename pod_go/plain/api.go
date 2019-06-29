@@ -29,7 +29,7 @@ type (
 
 // NewA provides the Go interface for E_PlainAliceDataNew()
 //
-// XXX: ecc.Load() must have been called.
+// XXX: setup.Load() must have been called.
 func NewA(publishPath string) (*A, error) {
 	if err := utils.CheckDirReadPerm(publishPath); err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func (a *A) Free() error {
 
 // NewB provides the Go interface for E_PlainBobDataNew()
 //
-// XXX: ecc.Load() must have been called.
+// XXX: setup.Load() must have been called.
 func NewB(bulletinFile, publicPath string) (*B, error) {
 	if err := utils.CheckRegularFileReadPerm(bulletinFile); err != nil {
 		return nil, err

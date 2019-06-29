@@ -30,7 +30,7 @@ type (
 	}
 )
 
-// NewAliceSession provides the Go interface for E_TableVrfqSessionNew().
+// NewAliceSession provides the Go interface for E_TableVrfqAliceNew().
 func NewAliceSession(
 	publishPath string, sellerID, buyerID [40]uint8,
 ) (*AliceSession, error) {
@@ -47,31 +47,31 @@ func NewAliceSession(
 
 	handle := C.handle_t(a.CHandle())
 	session := types.CHandle(
-		C.E_TableVrfqSessionNew(
+		C.E_TableVrfqAliceNew(
 			handle,
 			(*C.uint8_t)(sellerIDCPtr),
 			(*C.uint8_t)(buyerIDCPtr)))
 	if session == nil {
 		a.Free()
 		return nil, fmt.Errorf(
-			"E_TableVrfqSessionNew(%v, %v, %v) failed",
+			"E_TableVrfqAliceNew(%v, %v, %v) failed",
 			handle, sellerID, buyerID)
 	}
 
 	return &AliceSession{a: a, handle: session}, nil
 }
 
-// Free provides the Go interface for E_TableVrfqSessionFree()
+// Free provides the Go interface for E_TableVrfqAliceFree()
 func (session *AliceSession) Free() error {
 	handle := C.handle_t(session.handle)
-	ret := bool(C.E_TableVrfqSessionFree(handle))
+	ret := bool(C.E_TableVrfqAliceFree(handle))
 	if !ret {
-		return fmt.Errorf("E_TableVrfqSessionFree(%v) failed", handle)
+		return fmt.Errorf("E_TableVrfqAliceFree(%v) failed", handle)
 	}
 	return session.a.Free()
 }
 
-// OnRequest provides the Go interface for E_TableVrfqSessionOnRequest().
+// OnRequest provides the Go interface for E_TableVrfqAliceOnRequest().
 func (session *AliceSession) OnRequest(requestFile, responseFile string) error {
 	if err := utils.CheckRegularFileReadPerm(requestFile); err != nil {
 		return err
@@ -88,18 +88,18 @@ func (session *AliceSession) OnRequest(requestFile, responseFile string) error {
 	responseFileCStr := C.CString(responseFile)
 	defer C.free(unsafe.Pointer(responseFileCStr))
 
-	ret := bool(C.E_TableVrfqSessionOnRequest(
+	ret := bool(C.E_TableVrfqAliceOnRequest(
 		handle, requestFileCStr, responseFileCStr))
 	if !ret {
 		return fmt.Errorf(
-			"E_TableVrfqSessionOnRequest(%v, %s, %s) failed",
+			"E_TableVrfqAliceOnRequest(%v, %s, %s) failed",
 			handle, requestFile, responseFile)
 	}
 
 	return nil
 }
 
-// OnReceipt provides the Go interface for E_TableVrfqSessionOnReceipt()
+// OnReceipt provides the Go interface for E_TableVrfqAliceOnReceipt()
 func (session *AliceSession) OnReceipt(receiptFile, secretFile string) error {
 	if err := utils.CheckRegularFileReadPerm(receiptFile); err != nil {
 		return err
@@ -116,18 +116,18 @@ func (session *AliceSession) OnReceipt(receiptFile, secretFile string) error {
 	secretFileCStr := C.CString(secretFile)
 	defer C.free(unsafe.Pointer(secretFileCStr))
 
-	ret := bool(C.E_TableVrfqSessionOnReceipt(
+	ret := bool(C.E_TableVrfqAliceOnReceipt(
 		handle, receiptFileCStr, secretFileCStr))
 	if !ret {
 		return fmt.Errorf(
-			"E_TableVrfqSessionOnReceipt(%v, %s, %s) failed",
+			"E_TableVrfqAliceOnReceipt(%v, %s, %s) failed",
 			handle, receiptFile, secretFile)
 	}
 
 	return nil
 }
 
-// NewBobSession provides the Go interface for E_TableVrfqClientNew()
+// NewBobSession provides the Go interface for E_TableVrfqBobNew()
 func NewBobSession(
 	bulletinFile, publicPath string, sellerID, buyerID [40]uint8,
 	keyName string, keyValues []string,
@@ -161,7 +161,7 @@ func NewBobSession(
 
 	handle := C.handle_t(b.CHandle())
 	session := types.CHandle(
-		C.E_TableVrfqClientNew(
+		C.E_TableVrfqBobNew(
 			handle,
 			(*C.uint8_t)(buyerIDCPtr),
 			(*C.uint8_t)(sellerIDCPtr),
@@ -171,24 +171,24 @@ func NewBobSession(
 	if session == nil {
 		b.Free()
 		return nil, fmt.Errorf(
-			"E_TableVrfqClientNew(%v, %v, %v, %v, %v, %v) failed",
+			"E_TableVrfqBobNew(%v, %v, %v, %v, %v, %v) failed",
 			handle, buyerID, sellerID, keyName, keyValues, nrVals)
 	}
 
 	return &BobSession{b: b, handle: session}, nil
 }
 
-// Free provides the Go interface for E_TableVrfqClientFree()
+// Free provides the Go interface for E_TableVrfqBobFree()
 func (session *BobSession) Free() error {
 	handle := C.handle_t(session.handle)
-	ret := bool(C.E_TableVrfqClientFree(handle))
+	ret := bool(C.E_TableVrfqBobFree(handle))
 	if !ret {
-		return fmt.Errorf("E_TableVrfqClientFree(%v) failed", handle)
+		return fmt.Errorf("E_TableVrfqBobFree(%v) failed", handle)
 	}
 	return session.b.Free()
 }
 
-// GetRequest provides the Go interface for E_TableVrfqClientGetRequest()
+// GetRequest provides the Go interface for E_TableVrfqBobGetRequest()
 func (session *BobSession) GetRequest(requestFile string) error {
 	if err := utils.CheckDirOfPathExistence(requestFile); err != nil {
 		return err
@@ -200,15 +200,15 @@ func (session *BobSession) GetRequest(requestFile string) error {
 	defer C.free(unsafe.Pointer(requestFileCStr))
 
 	if ret := bool(
-		C.E_TableVrfqClientGetRequest(handle, requestFileCStr)); !ret {
-		return fmt.Errorf("E_TableVrfqClientGetRequest(%v, %s) failed",
+		C.E_TableVrfqBobGetRequest(handle, requestFileCStr)); !ret {
+		return fmt.Errorf("E_TableVrfqBobGetRequest(%v, %s) failed",
 			handle, requestFile)
 	}
 
 	return nil
 }
 
-// OnResponse provides the Go interface for E_TableVrfqClientOnResponse()
+// OnResponse provides the Go interface for E_TableVrfqBobOnResponse()
 func (session *BobSession) OnResponse(responseFile, receiptFile string) error {
 	if err := utils.CheckRegularFileReadPerm(responseFile); err != nil {
 		return err
@@ -225,18 +225,18 @@ func (session *BobSession) OnResponse(responseFile, receiptFile string) error {
 	receiptFileCStr := C.CString(receiptFile)
 	defer C.free(unsafe.Pointer(receiptFileCStr))
 
-	ret := bool(C.E_TableVrfqClientOnResponse(
+	ret := bool(C.E_TableVrfqBobOnResponse(
 		handle, responseFileCStr, receiptFileCStr))
 	if !ret {
 		return fmt.Errorf(
-			"E_TableVrfqClientOnResponse(%v, %s, %s) failed",
+			"E_TableVrfqBobOnResponse(%v, %s, %s) failed",
 			handle, responseFile, receiptFile)
 	}
 
 	return nil
 }
 
-// OnSecret provides the Go interface for E_TableVrfqClientOnSecret()
+// OnSecret provides the Go interface for E_TableVrfqBobOnSecret()
 func (session *BobSession) OnSecret(secretFile, positionsFile string) error {
 	if err := utils.CheckRegularFileReadPerm(secretFile); err != nil {
 		return err
@@ -253,11 +253,11 @@ func (session *BobSession) OnSecret(secretFile, positionsFile string) error {
 	positionsFileCStr := C.CString(positionsFile)
 	defer C.free(unsafe.Pointer(positionsFileCStr))
 
-	ret := bool(C.E_TableVrfqClientOnSecret(
+	ret := bool(C.E_TableVrfqBobOnSecret(
 		handle, secretFileCStr, positionsFileCStr))
 	if !ret {
 		return fmt.Errorf(
-			"E_TableVrfqClientOnSecret(%v, %s, %s) failed",
+			"E_TableVrfqBobOnSecret(%v, %s, %s) failed",
 			handle, secretFile, positionsFile)
 	}
 

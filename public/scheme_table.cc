@@ -148,7 +148,9 @@ void DataToM(Table const& table, std::vector<uint64_t> columens_index,
   auto record_fr_num = s - 1 - columens_index.size();
   auto n = table.size();
 
+#ifdef MULTICORE
 #pragma omp parallel for
+#endif
   for (uint64_t i = 0; i < n; ++i) {
     std::vector<uint8_t> bin(31 * record_fr_num);
     auto const& record = table[i];

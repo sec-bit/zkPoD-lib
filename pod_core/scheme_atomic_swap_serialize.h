@@ -5,13 +5,13 @@
 #include "scheme_atomic_swap_protocol.h"
 
 namespace scheme::atomic_swap {
-// save to bin
+// save to json
 template <typename Ar>
 void serialize(Ar &ar, Request const &t) {
   ar &YAS_OBJECT_NVP("Request", ("s", t.seed2_seed), ("p", t.demands));
 }
 
-// load from bin
+// load from json
 template <typename Ar>
 void serialize(Ar &ar, Request &t) {
   ar &YAS_OBJECT_NVP("Request", ("s", t.seed2_seed), ("p", t.demands));

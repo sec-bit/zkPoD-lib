@@ -25,6 +25,7 @@
 #include "basic_types.h"
 #include "ecc.h"
 #include "misc.h"
+#include "zkp.h"
 
 inline constexpr size_t YasBinF() {
   return yas::options::binary | yas::options::ebig | yas::options::compacted;
@@ -33,15 +34,28 @@ inline constexpr size_t YasBinF() {
 // save
 template <typename Ar>
 void serialize(Ar &ar, Range const &t) {
-  ar &t.start;
-  ar &t.count;
+  if (ar.type() == yas::binary) {
+    ar &t.start;
+    ar &t.count;
+  } else {
+    assert(ar.type() == yas::json);
+    std::string str = Range::to_string(t);
+    ar &str;
+  }
 }
 
 // load
 template <typename Ar>
 void serialize(Ar &ar, Range &t) {
-  ar &t.start;
-  ar &t.count;
+  if (ar.type() == yas::binary) {
+    ar &t.start;
+    ar &t.count;
+  } else {
+    assert(ar.type() == yas::json);
+    std::string str;
+    ar &str;
+    t = Range::from_string(str); // throw
+  }
 }
 
 // save
@@ -155,3 +169,23 @@ void serialize(Ar &ar, Fr &t) {
   }
 }
 }  // namespace mcl
+
+namespace libsnark {
+// save
+template <typename Ar>
+void serialize(Ar &ar, ZkProof const &t) {
+  assert(ar.type() == yas::binary);
+  std::array<uint8_t, kZkProofSerializeSize> bin;
+  ZkProofToBin(t, bin);
+  ar &bin;
+}
+
+// load
+template <typename Ar>
+void serialize(Ar &ar, ZkProof &t) {
+  assert(ar.type() == yas::binary);
+  std::array<uint8_t, kZkProofSerializeSize> bin;
+  ar &bin;
+  ZkProofFromBin(t, bin);
+}
+}

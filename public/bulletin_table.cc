@@ -8,6 +8,7 @@ namespace scheme {
 namespace table {
 bool IsBulletinValid(Bulletin const& bulletin) {
   auto const& ecc_pub = GetEccPub();
+  std::cout << bulletin.n << "," << bulletin.s << "," << ecc_pub.u1().size() << "\n";
   return bulletin.n && bulletin.s > 0 && bulletin.s <= ecc_pub.u1().size();
 }
 
@@ -36,15 +37,17 @@ bool LoadBulletin(std::string const& input, Bulletin& bulletin) {
   try {
     pt::ptree tree;
     pt::read_json(input, tree);
-    if (tree.get<std::string>("mode") != "table") return false;
+    if (tree.get<std::string>("mode") != "table") throw std::exception();
     bulletin.n = tree.get<uint64_t>("n");
     bulletin.s = tree.get<uint64_t>("s");
     misc::HexStrToH256(tree.get<std::string>("sigma_mkl_root"),
                        bulletin.sigma_mkl_root);
     misc::HexStrToH256(tree.get<std::string>("vrf_meta_digest"),
                        bulletin.vrf_meta_digest);
-    return IsBulletinValid(bulletin);
+    if (!IsBulletinValid(bulletin)) throw std::exception();
+    return true;
   } catch (std::exception&) {
+    std::cout << "bulletin invalid: " << input << "\n";
     assert(false);
     return false;
   }

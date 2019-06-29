@@ -2,9 +2,9 @@
 
 #include <cryptopp/osrng.h>
 
-#include "public.h"
-#include "mpz.h"
 #include "basic_types.h"
+#include "mpz.h"
+#include "public.h"
 
 namespace misc {
 inline std::string HexToStr(void const* p, size_t len) {
@@ -49,7 +49,7 @@ std::array<uint8_t, T> StrToH(std::string const& s) {
 }
 
 inline void RandomBytes(uint8_t* x, uint64_t xlen) {
-  CryptoPP::NonblockingRng rng; //CryptoPP::AutoSeededRandomPool rng;
+  CryptoPP::NonblockingRng rng;  // CryptoPP::AutoSeededRandomPool rng;
   rng.GenerateBlock(x, xlen);
 }
 

@@ -8,15 +8,18 @@
 #include <unordered_map>
 #include <vector>
 
-#include "../scheme_atomic_swap_client.h"
+#include "../scheme_atomic_swap_alice.h"
+#include "../scheme_atomic_swap_bob.h"
 #include "../scheme_atomic_swap_serialize.h"
-#include "../scheme_atomic_swap_session.h"
-#include "../scheme_complaint_client.h"
+#include "../scheme_atomic_swap_vc_alice.h"
+#include "../scheme_atomic_swap_vc_bob.h"
+#include "../scheme_atomic_swap_vc_serialize.h"
+#include "../scheme_complaint_alice.h"
+#include "../scheme_complaint_bob.h"
 #include "../scheme_complaint_serialize.h"
-#include "../scheme_complaint_session.h"
-#include "../scheme_ot_complaint_client.h"
+#include "../scheme_ot_complaint_alice.h"
+#include "../scheme_ot_complaint_bob.h"
 #include "../scheme_ot_complaint_serialize.h"
-#include "../scheme_ot_complaint_session.h"
 #include "../scheme_plain_alice_data.h"
 #include "../scheme_plain_bob_data.h"
 
@@ -49,11 +52,12 @@ EXPORT handle_t E_PlainBobDataNew(char const* bulletin_file,
   }
 }
 
-EXPORT bool E_PlainAliceBulletin(handle_t h, plain_bulletin_t* bulletin) {
+EXPORT bool E_PlainAliceBulletin(handle_t c_alice_data,
+                                 plain_bulletin_t* bulletin) {
   using namespace scheme::plain;
-  AliceDataPtr a = CapiObject<AliceData>::Get(h);
-  if (!a) return false;
-  Bulletin const& v = a->bulletin();
+  AliceDataPtr alice_data = CapiObject<AliceData>::Get(c_alice_data);
+  if (!alice_data) return false;
+  Bulletin const& v = alice_data->bulletin();
   bulletin->n = v.n;
   bulletin->s = v.s;
   bulletin->size = v.size;
@@ -61,11 +65,12 @@ EXPORT bool E_PlainAliceBulletin(handle_t h, plain_bulletin_t* bulletin) {
   return true;
 }
 
-EXPORT bool E_PlainBobBulletin(handle_t h, plain_bulletin_t* bulletin) {
+EXPORT bool E_PlainBobBulletin(handle_t c_bob_data,
+                               plain_bulletin_t* bulletin) {
   using namespace scheme::plain;
-  BobDataPtr b = CapiObject<BobData>::Get(h);
-  if (!b) return false;
-  Bulletin const& v = b->bulletin();
+  BobDataPtr bob_data = CapiObject<BobData>::Get(c_bob_data);
+  if (!bob_data) return false;
+  Bulletin const& v = bob_data->bulletin();
   bulletin->n = v.n;
   bulletin->s = v.s;
   bulletin->size = v.size;
@@ -73,26 +78,26 @@ EXPORT bool E_PlainBobBulletin(handle_t h, plain_bulletin_t* bulletin) {
   return true;
 }
 
-EXPORT bool E_PlainAliceDataFree(handle_t h) {
+EXPORT bool E_PlainAliceDataFree(handle_t c_alice_data) {
   using namespace scheme::plain;
-  return CapiObject<AliceData>::Del(h);
+  return CapiObject<AliceData>::Del(c_alice_data);
 }
 
-EXPORT bool E_PlainBobDataFree(handle_t h) {
+EXPORT bool E_PlainBobDataFree(handle_t c_bob_data) {
   using namespace scheme::plain;
-  return CapiObject<BobData>::Del(h);
+  return CapiObject<BobData>::Del(c_bob_data);
 }
 }  // extern "C"
 
 // complaint
 extern "C" {
-EXPORT handle_t E_PlainComplaintSessionNew(handle_t c_a,
-                                           uint8_t const* c_self_id,
-                                           uint8_t const* c_peer_id) {
+EXPORT handle_t E_PlainComplaintAliceNew(handle_t c_alice_data,
+                                         uint8_t const* c_self_id,
+                                         uint8_t const* c_peer_id) {
   using namespace scheme::plain;
   using namespace scheme::complaint;
-  AliceDataPtr a = CapiObject<AliceData>::Get(c_a);
-  if (!a) return nullptr;
+  AliceDataPtr alice_data = CapiObject<AliceData>::Get(c_alice_data);
+  if (!alice_data) return nullptr;
 
   h256_t self_id;
   memcpy(self_id.data(), c_self_id, h256_t::size_value);
@@ -100,30 +105,30 @@ EXPORT handle_t E_PlainComplaintSessionNew(handle_t c_a,
   memcpy(peer_id.data(), c_peer_id, h256_t::size_value);
 
   try {
-    auto p = new Session<AliceData>(a, self_id, peer_id);
-    CapiObject<Session<AliceData>>::Add(p);
+    auto p = new Alice<AliceData>(alice_data, self_id, peer_id);
+    CapiObject<Alice<AliceData>>::Add(p);
     return p;
   } catch (std::exception&) {
     return nullptr;
   }
 }
 
-EXPORT bool E_PlainComplaintSessionOnRequest(handle_t c_session,
-                                             char const* request_file,
-                                             char const* response_file) {
+EXPORT bool E_PlainComplaintAliceOnRequest(handle_t c_alice,
+                                           char const* request_file,
+                                           char const* response_file) {
   using namespace scheme::plain;
   using namespace scheme::complaint;
-  auto session = CapiObject<Session<AliceData>>::Get(c_session);
-  if (!session) return false;
+  auto alice = CapiObject<Alice<AliceData>>::Get(c_alice);
+  if (!alice) return false;
 
   try {
     Request request;
     yas::file_istream is(request_file);
-    yas::binary_iarchive<yas::file_istream, YasBinF()> ia(is);
+    yas::json_iarchive<yas::file_istream> ia(is);
     ia.serialize(request);
 
     Response response;
-    if (!session->OnRequest(request, response)) return false;
+    if (!alice->OnRequest(request, response)) return false;
 
     yas::file_ostream os(response_file);
     yas::binary_oarchive<yas::file_ostream, YasBinF()> oa(os);
@@ -135,13 +140,13 @@ EXPORT bool E_PlainComplaintSessionOnRequest(handle_t c_session,
   return true;
 }
 
-EXPORT bool E_PlainComplaintSessionOnReceipt(handle_t c_session,
-                                             char const* receipt_file,
-                                             char const* secret_file) {
+EXPORT bool E_PlainComplaintAliceOnReceipt(handle_t c_alice,
+                                           char const* receipt_file,
+                                           char const* secret_file) {
   using namespace scheme::plain;
   using namespace scheme::complaint;
-  auto session = CapiObject<Session<AliceData>>::Get(c_session);
-  if (!session) return false;
+  auto alice = CapiObject<Alice<AliceData>>::Get(c_alice);
+  if (!alice) return false;
 
   try {
     Receipt receipt;
@@ -150,7 +155,7 @@ EXPORT bool E_PlainComplaintSessionOnReceipt(handle_t c_session,
     ia.serialize(receipt);
 
     Secret secret;
-    if (!session->OnReceipt(receipt, secret)) return false;
+    if (!alice->OnReceipt(receipt, secret)) return false;
 
     yas::file_ostream os(secret_file);
     yas::json_oarchive<yas::file_ostream> oa(os);
@@ -162,30 +167,30 @@ EXPORT bool E_PlainComplaintSessionOnReceipt(handle_t c_session,
   return true;
 }
 
-EXPORT bool E_PlainComplaintSessionSetEvil(handle_t c_session) {
+EXPORT bool E_PlainComplaintAliceSetEvil(handle_t c_alice) {
   using namespace scheme::plain;
   using namespace scheme::complaint;
-  auto session = CapiObject<Session<AliceData>>::Get(c_session);
-  if (!session) return false;
-  session->TestSetEvil();
+  auto alice = CapiObject<Alice<AliceData>>::Get(c_alice);
+  if (!alice) return false;
+  alice->TestSetEvil();
   return true;
 }
 
-EXPORT bool E_PlainComplaintSessionFree(handle_t h) {
+EXPORT bool E_PlainComplaintAliceFree(handle_t c_alice) {
   using namespace scheme::plain;
   using namespace scheme::complaint;
-  return CapiObject<Session<AliceData>>::Del(h);
+  return CapiObject<Alice<AliceData>>::Del(c_alice);
 }
 
-EXPORT handle_t E_PlainComplaintClientNew(handle_t c_b,
-                                          uint8_t const* c_self_id,
-                                          uint8_t const* c_peer_id,
-                                          range_t const* c_demand,
-                                          uint64_t c_demand_count) {
+EXPORT handle_t E_PlainComplaintBobNew(handle_t c_bob_data,
+                                       uint8_t const* c_self_id,
+                                       uint8_t const* c_peer_id,
+                                       range_t const* c_demand,
+                                       uint64_t c_demand_count) {
   using namespace scheme::plain;
   using namespace scheme::complaint;
-  BobDataPtr b = CapiObject<BobData>::Get(c_b);
-  if (!b) return nullptr;
+  BobDataPtr bob_data = CapiObject<BobData>::Get(c_bob_data);
+  if (!bob_data) return nullptr;
 
   h256_t self_id;
   memcpy(self_id.data(), c_self_id, h256_t::size_value);
@@ -199,26 +204,26 @@ EXPORT handle_t E_PlainComplaintClientNew(handle_t c_b,
   }
 
   try {
-    auto p = new Client<BobData>(b, self_id, peer_id, std::move(demands));
-    CapiObject<Client<BobData>>::Add(p);
+    auto p = new Bob<BobData>(bob_data, self_id, peer_id, std::move(demands));
+    CapiObject<Bob<BobData>>::Add(p);
     return p;
   } catch (std::exception&) {
     return nullptr;
   }
 }
 
-EXPORT bool E_PlainComplaintClientGetRequest(handle_t c_client,
-                                             char const* request_file) {
+EXPORT bool E_PlainComplaintBobGetRequest(handle_t c_bob,
+                                          char const* request_file) {
   using namespace scheme::plain;
   using namespace scheme::complaint;
-  auto client = CapiObject<Client<BobData>>::Get(c_client);
-  if (!client) return false;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
 
   try {
     Request request;
-    client->GetRequest(request);
+    bob->GetRequest(request);
     yas::file_ostream os(request_file);
-    yas::binary_oarchive<yas::file_ostream, YasBinF()> oa(os);
+    yas::json_oarchive<yas::file_ostream> oa(os);
     oa.serialize(request);
   } catch (std::exception&) {
     return false;
@@ -227,13 +232,13 @@ EXPORT bool E_PlainComplaintClientGetRequest(handle_t c_client,
   return true;
 }
 
-EXPORT bool E_PlainComplaintClientOnResponse(handle_t c_client,
-                                             char const* response_file,
-                                             char const* receipt_file) {
+EXPORT bool E_PlainComplaintBobOnResponse(handle_t c_bob,
+                                          char const* response_file,
+                                          char const* receipt_file) {
   using namespace scheme::plain;
   using namespace scheme::complaint;
-  auto client = CapiObject<Client<BobData>>::Get(c_client);
-  if (!client) return false;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
 
   try {
     Response response;
@@ -242,7 +247,7 @@ EXPORT bool E_PlainComplaintClientOnResponse(handle_t c_client,
     ia.serialize(response);
 
     Receipt receipt;
-    if (!client->OnResponse(std::move(response), receipt)) return false;
+    if (!bob->OnResponse(std::move(response), receipt)) return false;
 
     yas::file_ostream os(receipt_file);
     yas::json_oarchive<yas::file_ostream> oa(os);
@@ -254,19 +259,19 @@ EXPORT bool E_PlainComplaintClientOnResponse(handle_t c_client,
   return true;
 }
 
-EXPORT bool E_PlainComplaintClientOnSecret(handle_t c_client,
-                                           char const* secret_file) {
+EXPORT bool E_PlainComplaintBobOnSecret(handle_t c_bob,
+                                        char const* secret_file) {
   using namespace scheme::plain;
   using namespace scheme::complaint;
-  auto client = CapiObject<Client<BobData>>::Get(c_client);
-  if (!client) return false;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
 
   try {
     Secret secret;
     yas::file_istream is(secret_file);
     yas::json_iarchive<yas::file_istream> ia(is);
     ia.serialize(secret);
-    return client->OnSecret(secret);
+    return bob->OnSecret(secret);
   } catch (std::exception&) {
     return false;
   }
@@ -274,16 +279,16 @@ EXPORT bool E_PlainComplaintClientOnSecret(handle_t c_client,
   return true;
 }
 
-EXPORT bool E_PlainComplaintClientGenerateClaim(handle_t c_client,
-                                                char const* claim_file) {
+EXPORT bool E_PlainComplaintBobGenerateClaim(handle_t c_bob,
+                                             char const* claim_file) {
   using namespace scheme::plain;
   using namespace scheme::complaint;
-  auto client = CapiObject<Client<BobData>>::Get(c_client);
-  if (!client) return false;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
 
   try {
     Claim claim;
-    if (!client->GenerateClaim(claim)) return false;
+    if (!bob->GenerateClaim(claim)) return false;
 
     yas::file_ostream os(claim_file);
     yas::json_oarchive<yas::file_ostream> oa(os);
@@ -295,36 +300,35 @@ EXPORT bool E_PlainComplaintClientGenerateClaim(handle_t c_client,
   return true;
 }
 
-EXPORT bool E_PlainComplaintClientSaveDecrypted(handle_t c_client,
-                                                char const* file) {
+EXPORT bool E_PlainComplaintBobSaveDecrypted(handle_t c_bob, char const* file) {
   using namespace scheme::plain;
   using namespace scheme::complaint;
-  auto client = CapiObject<Client<BobData>>::Get(c_client);
-  if (!client) return false;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
 
   try {
-    return client->SaveDecrypted(file);
+    return bob->SaveDecrypted(file);
   } catch (std::exception&) {
     return false;
   }
 }
 
-EXPORT bool E_PlainComplaintClientFree(handle_t h) {
+EXPORT bool E_PlainComplaintBobFree(handle_t c_bob) {
   using namespace scheme::plain;
   using namespace scheme::complaint;
-  return CapiObject<Client<BobData>>::Del(h);
+  return CapiObject<Bob<BobData>>::Del(c_bob);
 }
 }  // extern "C" complaint
 
 // atomic_swap
 extern "C" {
-EXPORT handle_t E_PlainAtomicSwapSessionNew(handle_t c_a,
-                                            uint8_t const* c_self_id,
-                                            uint8_t const* c_peer_id) {
+EXPORT handle_t E_PlainAtomicSwapAliceNew(handle_t c_alice_data,
+                                          uint8_t const* c_self_id,
+                                          uint8_t const* c_peer_id) {
   using namespace scheme::plain;
   using namespace scheme::atomic_swap;
-  AliceDataPtr a = CapiObject<AliceData>::Get(c_a);
-  if (!a) return nullptr;
+  AliceDataPtr alice_data = CapiObject<AliceData>::Get(c_alice_data);
+  if (!alice_data) return nullptr;
 
   h256_t self_id;
   memcpy(self_id.data(), c_self_id, h256_t::size_value);
@@ -332,30 +336,30 @@ EXPORT handle_t E_PlainAtomicSwapSessionNew(handle_t c_a,
   memcpy(peer_id.data(), c_peer_id, h256_t::size_value);
 
   try {
-    auto p = new Session<AliceData>(a, self_id, peer_id);
-    CapiObject<Session<AliceData>>::Add(p);
+    auto p = new Alice<AliceData>(alice_data, self_id, peer_id);
+    CapiObject<Alice<AliceData>>::Add(p);
     return p;
   } catch (std::exception&) {
     return nullptr;
   }
 }
 
-EXPORT bool E_PlainAtomicSwapSessionOnRequest(handle_t c_session,
-                                              char const* request_file,
-                                              char const* response_file) {
+EXPORT bool E_PlainAtomicSwapAliceOnRequest(handle_t c_alice,
+                                            char const* request_file,
+                                            char const* response_file) {
   using namespace scheme::plain;
   using namespace scheme::atomic_swap;
-  auto session = CapiObject<Session<AliceData>>::Get(c_session);
-  if (!session) return false;
+  auto alice = CapiObject<Alice<AliceData>>::Get(c_alice);
+  if (!alice) return false;
 
   try {
     Request request;
     yas::file_istream is(request_file);
-    yas::binary_iarchive<yas::file_istream, YasBinF()> ia(is);
+    yas::json_iarchive<yas::file_istream> ia(is);
     ia.serialize(request);
 
     Response response;
-    if (!session->OnRequest(request, response)) return false;
+    if (!alice->OnRequest(request, response)) return false;
 
     yas::file_ostream os(response_file);
     yas::binary_oarchive<yas::file_ostream, YasBinF()> oa(os);
@@ -367,13 +371,13 @@ EXPORT bool E_PlainAtomicSwapSessionOnRequest(handle_t c_session,
   return true;
 }
 
-EXPORT bool E_PlainAtomicSwapSessionOnReceipt(handle_t c_session,
-                                              char const* receipt_file,
-                                              char const* secret_file) {
+EXPORT bool E_PlainAtomicSwapAliceOnReceipt(handle_t c_alice,
+                                            char const* receipt_file,
+                                            char const* secret_file) {
   using namespace scheme::plain;
   using namespace scheme::atomic_swap;
-  auto session = CapiObject<Session<AliceData>>::Get(c_session);
-  if (!session) return false;
+  auto alice = CapiObject<Alice<AliceData>>::Get(c_alice);
+  if (!alice) return false;
 
   try {
     Receipt receipt;
@@ -382,7 +386,7 @@ EXPORT bool E_PlainAtomicSwapSessionOnReceipt(handle_t c_session,
     ia.serialize(receipt);
 
     Secret secret;
-    if (!session->OnReceipt(receipt, secret)) return false;
+    if (!alice->OnReceipt(receipt, secret)) return false;
 
     yas::file_ostream os(secret_file);
     yas::json_oarchive<yas::file_ostream> oa(os);
@@ -394,30 +398,30 @@ EXPORT bool E_PlainAtomicSwapSessionOnReceipt(handle_t c_session,
   return true;
 }
 
-EXPORT bool E_PlainAtomicSwapSessionSetEvil(handle_t c_session) {
+EXPORT bool E_PlainAtomicSwapAliceSetEvil(handle_t c_alice) {
   using namespace scheme::plain;
   using namespace scheme::atomic_swap;
-  auto session = CapiObject<Session<AliceData>>::Get(c_session);
-  if (!session) return false;
-  session->TestSetEvil();
+  auto alice = CapiObject<Alice<AliceData>>::Get(c_alice);
+  if (!alice) return false;
+  alice->TestSetEvil();
   return true;
 }
 
-EXPORT bool E_PlainAtomicSwapSessionFree(handle_t h) {
+EXPORT bool E_PlainAtomicSwapAliceFree(handle_t c_alice) {
   using namespace scheme::plain;
   using namespace scheme::atomic_swap;
-  return CapiObject<Session<AliceData>>::Del(h);
+  return CapiObject<Alice<AliceData>>::Del(c_alice);
 }
 
-EXPORT handle_t E_PlainAtomicSwapClientNew(handle_t c_b,
-                                           uint8_t const* c_self_id,
-                                           uint8_t const* c_peer_id,
-                                           range_t const* c_demand,
-                                           uint64_t c_demand_count) {
+EXPORT handle_t E_PlainAtomicSwapBobNew(handle_t c_bob_data,
+                                        uint8_t const* c_self_id,
+                                        uint8_t const* c_peer_id,
+                                        range_t const* c_demand,
+                                        uint64_t c_demand_count) {
   using namespace scheme::plain;
   using namespace scheme::atomic_swap;
-  BobDataPtr b = CapiObject<BobData>::Get(c_b);
-  if (!b) return nullptr;
+  BobDataPtr bob_data = CapiObject<BobData>::Get(c_bob_data);
+  if (!bob_data) return nullptr;
 
   h256_t self_id;
   memcpy(self_id.data(), c_self_id, h256_t::size_value);
@@ -431,26 +435,26 @@ EXPORT handle_t E_PlainAtomicSwapClientNew(handle_t c_b,
   }
 
   try {
-    auto p = new Client<BobData>(b, self_id, peer_id, std::move(demands));
-    CapiObject<Client<BobData>>::Add(p);
+    auto p = new Bob<BobData>(bob_data, self_id, peer_id, std::move(demands));
+    CapiObject<Bob<BobData>>::Add(p);
     return p;
   } catch (std::exception&) {
     return nullptr;
   }
 }
 
-EXPORT bool E_PlainAtomicSwapClientGetRequest(handle_t c_client,
-                                              char const* request_file) {
+EXPORT bool E_PlainAtomicSwapBobGetRequest(handle_t c_bob,
+                                           char const* request_file) {
   using namespace scheme::plain;
   using namespace scheme::atomic_swap;
-  auto client = CapiObject<Client<BobData>>::Get(c_client);
-  if (!client) return false;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
 
   try {
     Request request;
-    client->GetRequest(request);
+    bob->GetRequest(request);
     yas::file_ostream os(request_file);
-    yas::binary_oarchive<yas::file_ostream, YasBinF()> oa(os);
+    yas::json_oarchive<yas::file_ostream> oa(os);
     oa.serialize(request);
   } catch (std::exception&) {
     return false;
@@ -459,13 +463,13 @@ EXPORT bool E_PlainAtomicSwapClientGetRequest(handle_t c_client,
   return true;
 }
 
-EXPORT bool E_PlainAtomicSwapClientOnResponse(handle_t c_client,
-                                              char const* response_file,
-                                              char const* receipt_file) {
+EXPORT bool E_PlainAtomicSwapBobOnResponse(handle_t c_bob,
+                                           char const* response_file,
+                                           char const* receipt_file) {
   using namespace scheme::plain;
   using namespace scheme::atomic_swap;
-  auto client = CapiObject<Client<BobData>>::Get(c_client);
-  if (!client) return false;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
 
   try {
     Response response;
@@ -474,7 +478,7 @@ EXPORT bool E_PlainAtomicSwapClientOnResponse(handle_t c_client,
     ia.serialize(response);
 
     Receipt receipt;
-    if (!client->OnResponse(std::move(response), receipt)) return false;
+    if (!bob->OnResponse(std::move(response), receipt)) return false;
 
     yas::file_ostream os(receipt_file);
     yas::json_oarchive<yas::file_ostream> oa(os);
@@ -486,19 +490,19 @@ EXPORT bool E_PlainAtomicSwapClientOnResponse(handle_t c_client,
   return true;
 }
 
-EXPORT bool E_PlainAtomicSwapClientOnSecret(handle_t c_client,
-                                            char const* secret_file) {
+EXPORT bool E_PlainAtomicSwapBobOnSecret(handle_t c_bob,
+                                         char const* secret_file) {
   using namespace scheme::plain;
   using namespace scheme::atomic_swap;
-  auto client = CapiObject<Client<BobData>>::Get(c_client);
-  if (!client) return false;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
 
   try {
     Secret secret;
     yas::file_istream is(secret_file);
     yas::json_iarchive<yas::file_istream> ia(is);
     ia.serialize(secret);
-    return client->OnSecret(secret);
+    return bob->OnSecret(secret);
   } catch (std::exception&) {
     return false;
   }
@@ -506,36 +510,36 @@ EXPORT bool E_PlainAtomicSwapClientOnSecret(handle_t c_client,
   return true;
 }
 
-EXPORT bool E_PlainAtomicSwapClientSaveDecrypted(handle_t c_client,
-                                                 char const* file) {
+EXPORT bool E_PlainAtomicSwapBobSaveDecrypted(handle_t c_bob,
+                                              char const* file) {
   using namespace scheme::plain;
   using namespace scheme::atomic_swap;
-  auto client = CapiObject<Client<BobData>>::Get(c_client);
-  if (!client) return false;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
 
   try {
-    return client->SaveDecrypted(file);
+    return bob->SaveDecrypted(file);
   } catch (std::exception&) {
     return false;
   }
 }
 
-EXPORT bool E_PlainAtomicSwapClientFree(handle_t h) {
+EXPORT bool E_PlainAtomicSwapBobFree(handle_t c_bob) {
   using namespace scheme::plain;
   using namespace scheme::atomic_swap;
-  return CapiObject<Client<BobData>>::Del(h);
+  return CapiObject<Bob<BobData>>::Del(c_bob);
 }
 }  // extern "C" atomic_swap
 
 // ot_complaint
 extern "C" {
-EXPORT handle_t E_PlainOtComplaintSessionNew(handle_t c_a,
-                                             uint8_t const* c_self_id,
-                                             uint8_t const* c_peer_id) {
+EXPORT handle_t E_PlainOtComplaintAliceNew(handle_t c_alice_data,
+                                           uint8_t const* c_self_id,
+                                           uint8_t const* c_peer_id) {
   using namespace scheme::plain;
   using namespace scheme::ot_complaint;
-  AliceDataPtr a = CapiObject<AliceData>::Get(c_a);
-  if (!a) return nullptr;
+  AliceDataPtr alice_data = CapiObject<AliceData>::Get(c_alice_data);
+  if (!alice_data) return nullptr;
 
   h256_t self_id;
   memcpy(self_id.data(), c_self_id, h256_t::size_value);
@@ -543,24 +547,24 @@ EXPORT handle_t E_PlainOtComplaintSessionNew(handle_t c_a,
   memcpy(peer_id.data(), c_peer_id, h256_t::size_value);
 
   try {
-    auto p = new Session<AliceData>(a, self_id, peer_id);
-    CapiObject<Session<AliceData>>::Add(p);
+    auto p = new Alice<AliceData>(alice_data, self_id, peer_id);
+    CapiObject<Alice<AliceData>>::Add(p);
     return p;
   } catch (std::exception&) {
     return nullptr;
   }
 }
 
-EXPORT bool E_PlainOtComplaintSessionGetNegoRequest(handle_t c_session,
-                                                    char const* request_file) {
+EXPORT bool E_PlainOtComplaintAliceGetNegoRequest(handle_t c_alice,
+                                                  char const* request_file) {
   using namespace scheme::plain;
   using namespace scheme::ot_complaint;
-  auto session = CapiObject<Session<AliceData>>::Get(c_session);
-  if (!session) return false;
+  auto alice = CapiObject<Alice<AliceData>>::Get(c_alice);
+  if (!alice) return false;
 
   try {
     NegoARequest request;
-    session->GetNegoReqeust(request);
+    alice->GetNegoReqeust(request);
     yas::file_ostream os(request_file);
     yas::binary_oarchive<yas::file_ostream, YasBinF()> oa(os);
     oa.serialize(request);
@@ -571,13 +575,13 @@ EXPORT bool E_PlainOtComplaintSessionGetNegoRequest(handle_t c_session,
   return true;
 }
 
-EXPORT bool E_PlainOtComplaintSessionOnNegoRequest(handle_t c_session,
-                                                   char const* request_file,
-                                                   char const* response_file) {
+EXPORT bool E_PlainOtComplaintAliceOnNegoRequest(handle_t c_alice,
+                                                 char const* request_file,
+                                                 char const* response_file) {
   using namespace scheme::plain;
   using namespace scheme::ot_complaint;
-  auto session = CapiObject<Session<AliceData>>::Get(c_session);
-  if (!session) return false;
+  auto alice = CapiObject<Alice<AliceData>>::Get(c_alice);
+  if (!alice) return false;
 
   try {
     NegoBRequest request;
@@ -586,7 +590,7 @@ EXPORT bool E_PlainOtComplaintSessionOnNegoRequest(handle_t c_session,
     ia.serialize(request);
 
     NegoBResponse response;
-    if (!session->OnNegoRequest(request, response)) return false;
+    if (!alice->OnNegoRequest(request, response)) return false;
 
     yas::file_ostream os(response_file);
     yas::binary_oarchive<yas::file_ostream, YasBinF()> oa(os);
@@ -598,12 +602,12 @@ EXPORT bool E_PlainOtComplaintSessionOnNegoRequest(handle_t c_session,
   return true;
 }
 
-EXPORT bool E_PlainOtComplaintSessionOnNegoResponse(handle_t c_session,
-                                                    char const* response_file) {
+EXPORT bool E_PlainOtComplaintAliceOnNegoResponse(handle_t c_alice,
+                                                  char const* response_file) {
   using namespace scheme::plain;
   using namespace scheme::ot_complaint;
-  auto session = CapiObject<Session<AliceData>>::Get(c_session);
-  if (!session) return false;
+  auto alice = CapiObject<Alice<AliceData>>::Get(c_alice);
+  if (!alice) return false;
 
   try {
     NegoAResponse response;
@@ -611,7 +615,7 @@ EXPORT bool E_PlainOtComplaintSessionOnNegoResponse(handle_t c_session,
     yas::binary_iarchive<yas::file_istream, YasBinF()> ia(is);
     ia.serialize(response);
 
-    if (!session->OnNegoResponse(response)) return false;
+    if (!alice->OnNegoResponse(response)) return false;
   } catch (std::exception&) {
     return false;
   }
@@ -619,22 +623,22 @@ EXPORT bool E_PlainOtComplaintSessionOnNegoResponse(handle_t c_session,
   return true;
 }
 
-EXPORT bool E_PlainOtComplaintSessionOnRequest(handle_t c_session,
-                                               char const* request_file,
-                                               char const* response_file) {
+EXPORT bool E_PlainOtComplaintAliceOnRequest(handle_t c_alice,
+                                             char const* request_file,
+                                             char const* response_file) {
   using namespace scheme::plain;
   using namespace scheme::ot_complaint;
-  auto session = CapiObject<Session<AliceData>>::Get(c_session);
-  if (!session) return false;
+  auto alice = CapiObject<Alice<AliceData>>::Get(c_alice);
+  if (!alice) return false;
 
   try {
     Request request;
     yas::file_istream is(request_file);
-    yas::binary_iarchive<yas::file_istream, YasBinF()> ia(is);
+    yas::json_iarchive<yas::file_istream> ia(is);
     ia.serialize(request);
 
     Response response;
-    if (!session->OnRequest(request, response)) return false;
+    if (!alice->OnRequest(request, response)) return false;
 
     yas::file_ostream os(response_file);
     yas::binary_oarchive<yas::file_ostream, YasBinF()> oa(os);
@@ -646,13 +650,13 @@ EXPORT bool E_PlainOtComplaintSessionOnRequest(handle_t c_session,
   return true;
 }
 
-EXPORT bool E_PlainOtComplaintSessionOnReceipt(handle_t c_session,
-                                               char const* receipt_file,
-                                               char const* secret_file) {
+EXPORT bool E_PlainOtComplaintAliceOnReceipt(handle_t c_alice,
+                                             char const* receipt_file,
+                                             char const* secret_file) {
   using namespace scheme::plain;
   using namespace scheme::ot_complaint;
-  auto session = CapiObject<Session<AliceData>>::Get(c_session);
-  if (!session) return false;
+  auto alice = CapiObject<Alice<AliceData>>::Get(c_alice);
+  if (!alice) return false;
 
   try {
     Receipt receipt;
@@ -661,7 +665,7 @@ EXPORT bool E_PlainOtComplaintSessionOnReceipt(handle_t c_session,
     ia.serialize(receipt);
 
     Secret secret;
-    if (!session->OnReceipt(receipt, secret)) return false;
+    if (!alice->OnReceipt(receipt, secret)) return false;
 
     yas::file_ostream os(secret_file);
     yas::json_oarchive<yas::file_ostream> oa(os);
@@ -673,29 +677,29 @@ EXPORT bool E_PlainOtComplaintSessionOnReceipt(handle_t c_session,
   return true;
 }
 
-EXPORT bool E_PlainOtComplaintSessionSetEvil(handle_t c_session) {
+EXPORT bool E_PlainOtComplaintAliceSetEvil(handle_t c_alice) {
   using namespace scheme::plain;
   using namespace scheme::ot_complaint;
-  auto session = CapiObject<Session<AliceData>>::Get(c_session);
-  if (!session) return false;
-  session->TestSetEvil();
+  auto alice = CapiObject<Alice<AliceData>>::Get(c_alice);
+  if (!alice) return false;
+  alice->TestSetEvil();
   return true;
 }
 
-EXPORT bool E_PlainOtComplaintSessionFree(handle_t h) {
+EXPORT bool E_PlainOtComplaintAliceFree(handle_t c_alice) {
   using namespace scheme::plain;
   using namespace scheme::ot_complaint;
-  return CapiObject<Session<AliceData>>::Del(h);
+  return CapiObject<Alice<AliceData>>::Del(c_alice);
 }
 
-EXPORT handle_t E_PlainOtComplaintClientNew(
-    handle_t c_b, uint8_t const* c_self_id, uint8_t const* c_peer_id,
+EXPORT handle_t E_PlainOtComplaintBobNew(
+    handle_t c_bob_data, uint8_t const* c_self_id, uint8_t const* c_peer_id,
     range_t const* c_demand, uint64_t c_demand_count, range_t const* c_phantom,
     uint64_t c_phantom_count) {
   using namespace scheme::plain;
   using namespace scheme::ot_complaint;
-  BobDataPtr b = CapiObject<BobData>::Get(c_b);
-  if (!b) return nullptr;
+  BobDataPtr bob_data = CapiObject<BobData>::Get(c_bob_data);
+  if (!bob_data) return nullptr;
 
   h256_t self_id;
   memcpy(self_id.data(), c_self_id, h256_t::size_value);
@@ -715,25 +719,25 @@ EXPORT handle_t E_PlainOtComplaintClientNew(
   }
 
   try {
-    auto p = new Client<BobData>(b, self_id, peer_id, std::move(demands),
-                                 std::move(phantoms));
-    CapiObject<Client<BobData>>::Add(p);
+    auto p = new Bob<BobData>(bob_data, self_id, peer_id, std::move(demands),
+                              std::move(phantoms));
+    CapiObject<Bob<BobData>>::Add(p);
     return p;
   } catch (std::exception&) {
     return nullptr;
   }
 }
 
-EXPORT bool E_PlainOtComplaintClientGetNegoRequest(handle_t c_client,
-                                                   char const* request_file) {
+EXPORT bool E_PlainOtComplaintBobGetNegoRequest(handle_t c_bob,
+                                                char const* request_file) {
   using namespace scheme::plain;
   using namespace scheme::ot_complaint;
-  auto client = CapiObject<Client<BobData>>::Get(c_client);
-  if (!client) return false;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
 
   try {
     NegoBRequest request;
-    client->GetNegoReqeust(request);
+    bob->GetNegoReqeust(request);
     yas::file_ostream os(request_file);
     yas::binary_oarchive<yas::file_ostream, YasBinF()> oa(os);
     oa.serialize(request);
@@ -744,13 +748,13 @@ EXPORT bool E_PlainOtComplaintClientGetNegoRequest(handle_t c_client,
   return true;
 }
 
-EXPORT bool E_PlainOtComplaintClientOnNegoRequest(handle_t c_client,
-                                                  char const* request_file,
-                                                  char const* response_file) {
+EXPORT bool E_PlainOtComplaintBobOnNegoRequest(handle_t c_bob,
+                                               char const* request_file,
+                                               char const* response_file) {
   using namespace scheme::plain;
   using namespace scheme::ot_complaint;
-  auto client = CapiObject<Client<BobData>>::Get(c_client);
-  if (!client) return false;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
 
   try {
     NegoARequest request;
@@ -759,7 +763,7 @@ EXPORT bool E_PlainOtComplaintClientOnNegoRequest(handle_t c_client,
     ia.serialize(request);
 
     NegoAResponse response;
-    if (!client->OnNegoRequest(request, response)) return false;
+    if (!bob->OnNegoRequest(request, response)) return false;
 
     yas::file_ostream os(response_file);
     yas::binary_oarchive<yas::file_ostream, YasBinF()> oa(os);
@@ -771,19 +775,19 @@ EXPORT bool E_PlainOtComplaintClientOnNegoRequest(handle_t c_client,
   return true;
 }
 
-EXPORT bool E_PlainOtComplaintClientOnNegoResponse(handle_t c_client,
-                                                   char const* response_file) {
+EXPORT bool E_PlainOtComplaintBobOnNegoResponse(handle_t c_bob,
+                                                char const* response_file) {
   using namespace scheme::plain;
   using namespace scheme::ot_complaint;
-  auto client = CapiObject<Client<BobData>>::Get(c_client);
-  if (!client) return false;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
 
   try {
     NegoBResponse response;
     yas::file_istream is(response_file);
     yas::binary_iarchive<yas::file_istream, YasBinF()> ia(is);
     ia.serialize(response);
-    return client->OnNegoResponse(response);
+    return bob->OnNegoResponse(response);
   } catch (std::exception&) {
     return false;
   }
@@ -791,18 +795,18 @@ EXPORT bool E_PlainOtComplaintClientOnNegoResponse(handle_t c_client,
   return true;
 }
 
-EXPORT bool E_PlainOtComplaintClientGetRequest(handle_t c_client,
-                                               char const* request_file) {
+EXPORT bool E_PlainOtComplaintBobGetRequest(handle_t c_bob,
+                                            char const* request_file) {
   using namespace scheme::plain;
   using namespace scheme::ot_complaint;
-  auto client = CapiObject<Client<BobData>>::Get(c_client);
-  if (!client) return false;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
 
   try {
     Request request;
-    client->GetRequest(request);
+    bob->GetRequest(request);
     yas::file_ostream os(request_file);
-    yas::binary_oarchive<yas::file_ostream, YasBinF()> oa(os);
+    yas::json_oarchive<yas::file_ostream> oa(os);
     oa.serialize(request);
   } catch (std::exception&) {
     return false;
@@ -811,13 +815,13 @@ EXPORT bool E_PlainOtComplaintClientGetRequest(handle_t c_client,
   return true;
 }
 
-EXPORT bool E_PlainOtComplaintClientOnResponse(handle_t c_client,
-                                               char const* response_file,
-                                               char const* receipt_file) {
+EXPORT bool E_PlainOtComplaintBobOnResponse(handle_t c_bob,
+                                            char const* response_file,
+                                            char const* receipt_file) {
   using namespace scheme::plain;
   using namespace scheme::ot_complaint;
-  auto client = CapiObject<Client<BobData>>::Get(c_client);
-  if (!client) return false;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
 
   try {
     Response response;
@@ -826,7 +830,7 @@ EXPORT bool E_PlainOtComplaintClientOnResponse(handle_t c_client,
     ia.serialize(response);
 
     Receipt receipt;
-    if (!client->OnResponse(std::move(response), receipt)) return false;
+    if (!bob->OnResponse(std::move(response), receipt)) return false;
 
     yas::file_ostream os(receipt_file);
     yas::json_oarchive<yas::file_ostream> oa(os);
@@ -838,19 +842,19 @@ EXPORT bool E_PlainOtComplaintClientOnResponse(handle_t c_client,
   return true;
 }
 
-EXPORT bool E_PlainOtComplaintClientOnSecret(handle_t c_client,
-                                             char const* secret_file) {
+EXPORT bool E_PlainOtComplaintBobOnSecret(handle_t c_bob,
+                                          char const* secret_file) {
   using namespace scheme::plain;
   using namespace scheme::ot_complaint;
-  auto client = CapiObject<Client<BobData>>::Get(c_client);
-  if (!client) return false;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
 
   try {
     Secret secret;
     yas::file_istream is(secret_file);
     yas::json_iarchive<yas::file_istream> ia(is);
     ia.serialize(secret);
-    return client->OnSecret(secret);
+    return bob->OnSecret(secret);
   } catch (std::exception&) {
     return false;
   }
@@ -858,16 +862,16 @@ EXPORT bool E_PlainOtComplaintClientOnSecret(handle_t c_client,
   return true;
 }
 
-EXPORT bool E_PlainOtComplaintClientGenerateClaim(handle_t c_client,
-                                                  char const* claim_file) {
+EXPORT bool E_PlainOtComplaintBobGenerateClaim(handle_t c_bob,
+                                               char const* claim_file) {
   using namespace scheme::plain;
   using namespace scheme::ot_complaint;
-  auto client = CapiObject<Client<BobData>>::Get(c_client);
-  if (!client) return false;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
 
   try {
     Claim claim;
-    if (!client->GenerateClaim(claim)) return false;
+    if (!bob->GenerateClaim(claim)) return false;
 
     yas::file_ostream os(claim_file);
     yas::json_oarchive<yas::file_ostream> oa(os);
@@ -879,23 +883,234 @@ EXPORT bool E_PlainOtComplaintClientGenerateClaim(handle_t c_client,
   return true;
 }
 
-EXPORT bool E_PlainOtComplaintClientSaveDecrypted(handle_t c_client,
-                                                  char const* file) {
+EXPORT bool E_PlainOtComplaintBobSaveDecrypted(handle_t c_bob,
+                                               char const* file) {
   using namespace scheme::plain;
   using namespace scheme::ot_complaint;
-  auto client = CapiObject<Client<BobData>>::Get(c_client);
-  if (!client) return false;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
 
   try {
-    return client->SaveDecrypted(file);
+    return bob->SaveDecrypted(file);
   } catch (std::exception&) {
     return false;
   }
 }
 
-EXPORT bool E_PlainOtComplaintClientFree(handle_t h) {
+EXPORT bool E_PlainOtComplaintBobFree(handle_t c_bob) {
   using namespace scheme::plain;
   using namespace scheme::ot_complaint;
-  return CapiObject<Client<BobData>>::Del(h);
+  return CapiObject<Bob<BobData>>::Del(c_bob);
 }
 }  // extern "C" ot_complaint
+
+// atomic_swap_vc
+extern "C" {
+EXPORT handle_t E_PlainAtomicSwapVcAliceNew(handle_t c_alice_data,
+                                            uint8_t const* c_self_id,
+                                            uint8_t const* c_peer_id) {
+  using namespace scheme::plain;
+  using namespace scheme::atomic_swap_vc;
+  AliceDataPtr alice_data = CapiObject<AliceData>::Get(c_alice_data);
+  if (!alice_data) return nullptr;
+
+  h256_t self_id;
+  memcpy(self_id.data(), c_self_id, h256_t::size_value);
+  h256_t peer_id;
+  memcpy(peer_id.data(), c_peer_id, h256_t::size_value);
+
+  try {
+    auto p = new Alice<AliceData>(alice_data, self_id, peer_id);
+    CapiObject<Alice<AliceData>>::Add(p);
+    return p;
+  } catch (std::exception&) {
+    return nullptr;
+  }
+}
+
+EXPORT bool E_PlainAtomicSwapVcAliceOnRequest(handle_t c_alice,
+                                              char const* request_file,
+                                              char const* response_file) {
+  using namespace scheme::plain;
+  using namespace scheme::atomic_swap_vc;
+  auto alice = CapiObject<Alice<AliceData>>::Get(c_alice);
+  if (!alice) return false;
+
+  try {
+    Request request;
+    yas::file_istream is(request_file);
+    yas::json_iarchive<yas::file_istream> ia(is);
+    ia.serialize(request);
+
+    Response response;
+    if (!alice->OnRequest(request, response)) return false;
+
+    yas::file_ostream os(response_file);
+    yas::binary_oarchive<yas::file_ostream, YasBinF()> oa(os);
+    oa.serialize(response);
+  } catch (std::exception&) {
+    return false;
+  }
+
+  return true;
+}
+
+EXPORT bool E_PlainAtomicSwapVcAliceOnReceipt(handle_t c_alice,
+                                              char const* receipt_file,
+                                              char const* secret_file) {
+  using namespace scheme::plain;
+  using namespace scheme::atomic_swap_vc;
+  auto alice = CapiObject<Alice<AliceData>>::Get(c_alice);
+  if (!alice) return false;
+
+  try {
+    Receipt receipt;
+    yas::file_istream is(receipt_file);
+    yas::json_iarchive<yas::file_istream> ia(is);
+    ia.serialize(receipt);
+
+    Secret secret;
+    if (!alice->OnReceipt(receipt, secret)) return false;
+
+    yas::file_ostream os(secret_file);
+    yas::json_oarchive<yas::file_ostream> oa(os);
+    oa.serialize(secret);
+  } catch (std::exception&) {
+    return false;
+  }
+
+  return true;
+}
+
+EXPORT bool E_PlainAtomicSwapVcAliceSetEvil(handle_t c_alice) {
+  using namespace scheme::plain;
+  using namespace scheme::atomic_swap_vc;
+  auto alice = CapiObject<Alice<AliceData>>::Get(c_alice);
+  if (!alice) return false;
+  alice->TestSetEvil();
+  return true;
+}
+
+EXPORT bool E_PlainAtomicSwapVcAliceFree(handle_t c_alice) {
+  using namespace scheme::plain;
+  using namespace scheme::atomic_swap_vc;
+  return CapiObject<Alice<AliceData>>::Del(c_alice);
+}
+
+EXPORT handle_t E_PlainAtomicSwapVcBobNew(handle_t c_bob_data,
+                                          uint8_t const* c_self_id,
+                                          uint8_t const* c_peer_id,
+                                          range_t const* c_demand,
+                                          uint64_t c_demand_count) {
+  using namespace scheme::plain;
+  using namespace scheme::atomic_swap_vc;
+  BobDataPtr bob_data = CapiObject<BobData>::Get(c_bob_data);
+  if (!bob_data) return nullptr;
+
+  h256_t self_id;
+  memcpy(self_id.data(), c_self_id, h256_t::size_value);
+  h256_t peer_id;
+  memcpy(peer_id.data(), c_peer_id, h256_t::size_value);
+
+  std::vector<Range> demands(c_demand_count);
+  for (uint64_t i = 0; i < c_demand_count; ++i) {
+    demands[i].start = c_demand[i].start;
+    demands[i].count = c_demand[i].count;
+  }
+
+  try {
+    auto p = new Bob<BobData>(bob_data, self_id, peer_id, std::move(demands));
+    CapiObject<Bob<BobData>>::Add(p);
+    return p;
+  } catch (std::exception&) {
+    return nullptr;
+  }
+}
+
+EXPORT bool E_PlainAtomicSwapVcBobGetRequest(handle_t c_bob,
+                                             char const* request_file) {
+  using namespace scheme::plain;
+  using namespace scheme::atomic_swap_vc;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
+
+  try {
+    Request request;
+    bob->GetRequest(request);
+    yas::file_ostream os(request_file);
+    yas::json_oarchive<yas::file_ostream> oa(os);
+    oa.serialize(request);
+  } catch (std::exception&) {
+    return false;
+  }
+
+  return true;
+}
+
+EXPORT bool E_PlainAtomicSwapVcBobOnResponse(handle_t c_bob,
+                                             char const* response_file,
+                                             char const* receipt_file) {
+  using namespace scheme::plain;
+  using namespace scheme::atomic_swap_vc;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
+
+  try {
+    Response response;
+    yas::file_istream is(response_file);
+    yas::binary_iarchive<yas::file_istream, YasBinF()> ia(is);
+    ia.serialize(response);
+
+    Receipt receipt;
+    if (!bob->OnResponse(std::move(response), receipt)) return false;
+
+    yas::file_ostream os(receipt_file);
+    yas::json_oarchive<yas::file_ostream> oa(os);
+    oa.serialize(receipt);
+  } catch (std::exception&) {
+    return false;
+  }
+
+  return true;
+}
+
+EXPORT bool E_PlainAtomicSwapVcBobOnSecret(handle_t c_bob,
+                                           char const* secret_file) {
+  using namespace scheme::plain;
+  using namespace scheme::atomic_swap_vc;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
+
+  try {
+    Secret secret;
+    yas::file_istream is(secret_file);
+    yas::json_iarchive<yas::file_istream> ia(is);
+    ia.serialize(secret);
+    return bob->OnSecret(secret);
+  } catch (std::exception&) {
+    return false;
+  }
+
+  return true;
+}
+
+EXPORT bool E_PlainAtomicSwapVcBobSaveDecrypted(handle_t c_bob,
+                                                char const* file) {
+  using namespace scheme::plain;
+  using namespace scheme::atomic_swap_vc;
+  auto bob = CapiObject<Bob<BobData>>::Get(c_bob);
+  if (!bob) return false;
+
+  try {
+    return bob->SaveDecrypted(file);
+  } catch (std::exception&) {
+    return false;
+  }
+}
+
+EXPORT bool E_PlainAtomicSwapVcBobFree(handle_t c_bob) {
+  using namespace scheme::plain;
+  using namespace scheme::atomic_swap_vc;
+  return CapiObject<Bob<BobData>>::Del(c_bob);
+}
+}  // extern "C" atomic_swap_vc

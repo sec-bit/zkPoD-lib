@@ -24,6 +24,7 @@ class BobData {
   std::vector<std::vector<Fr>> const& key_m() const { return key_m_; }
   bool SaveDecryped(std::string const& file, std::vector<Range> const& demands,
                     std::vector<Fr> const& decrypted);
+
  private:
   void LoadData();
   bool NeedVerify();

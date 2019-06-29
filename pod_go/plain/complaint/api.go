@@ -30,7 +30,7 @@ type (
 	}
 )
 
-// NewAliceSession provides the Go interface for E_PlainComplaintSessionNew().
+// NewAliceSession provides the Go interface for E_PlainComplaintAliceNew().
 func NewAliceSession(
 	publishPath string, sellerID, buyerID [40]uint8,
 ) (*AliceSession, error) {
@@ -47,31 +47,31 @@ func NewAliceSession(
 
 	handle := C.handle_t(a.CHandle())
 	session := types.CHandle(
-		C.E_PlainComplaintSessionNew(
+		C.E_PlainComplaintAliceNew(
 			handle,
 			(*C.uint8_t)(sellerIDCPtr),
 			(*C.uint8_t)(buyerIDCPtr)))
 	if session == nil {
 		a.Free()
 		return nil, fmt.Errorf(
-			"E_PlainComplaintSessionNew(%v, %v, %v) failed",
+			"E_PlainComplaintAliceNew(%v, %v, %v) failed",
 			handle, sellerID, buyerID)
 	}
 
 	return &AliceSession{a: a, handle: session}, nil
 }
 
-// Free provides the Go interface for E_PlainComplaintSessionFree()
+// Free provides the Go interface for E_PlainComplaintAliceFree()
 func (session *AliceSession) Free() error {
 	handle := C.handle_t(session.handle)
-	ret := bool(C.E_PlainComplaintSessionFree(handle))
+	ret := bool(C.E_PlainComplaintAliceFree(handle))
 	if !ret {
-		return fmt.Errorf("E_PlainComplaintSessionFree(%v) failed", handle)
+		return fmt.Errorf("E_PlainComplaintAliceFree(%v) failed", handle)
 	}
 	return session.a.Free()
 }
 
-// OnRequest provides the Go interface for E_PlainComplaintSessionOnRequest().
+// OnRequest provides the Go interface for E_PlainComplaintAliceOnRequest().
 func (session *AliceSession) OnRequest(requestFile, responseFile string) error {
 	if err := utils.CheckRegularFileReadPerm(requestFile); err != nil {
 		return err
@@ -88,18 +88,18 @@ func (session *AliceSession) OnRequest(requestFile, responseFile string) error {
 	responseFileCStr := C.CString(responseFile)
 	defer C.free(unsafe.Pointer(responseFileCStr))
 
-	ret := bool(C.E_PlainComplaintSessionOnRequest(
+	ret := bool(C.E_PlainComplaintAliceOnRequest(
 		handle, requestFileCStr, responseFileCStr))
 	if !ret {
 		return fmt.Errorf(
-			"E_PlainComplaintSessionOnRequest(%v, %s, %s) failed",
+			"E_PlainComplaintAliceOnRequest(%v, %s, %s) failed",
 			handle, requestFile, responseFile)
 	}
 
 	return nil
 }
 
-// OnReceipt provides the Go interface for E_PlainComplaintSessionOnReceipt()
+// OnReceipt provides the Go interface for E_PlainComplaintAliceOnReceipt()
 func (session *AliceSession) OnReceipt(receiptFile, secretFile string) error {
 	if err := utils.CheckRegularFileReadPerm(receiptFile); err != nil {
 		return err
@@ -116,18 +116,18 @@ func (session *AliceSession) OnReceipt(receiptFile, secretFile string) error {
 	secretFileCStr := C.CString(secretFile)
 	defer C.free(unsafe.Pointer(secretFileCStr))
 
-	ret := bool(C.E_PlainComplaintSessionOnReceipt(
+	ret := bool(C.E_PlainComplaintAliceOnReceipt(
 		handle, receiptFileCStr, secretFileCStr))
 	if !ret {
 		return fmt.Errorf(
-			"E_PlainComplaintSessionOnReceipt(%v, %s, %s) failed",
+			"E_PlainComplaintAliceOnReceipt(%v, %s, %s) failed",
 			handle, receiptFile, secretFile)
 	}
 
 	return nil
 }
 
-// NewBobSession provides the Go interface for E_PlainComplaintClientNew()
+// NewBobSession provides the Go interface for E_PlainComplaintBobNew()
 func NewBobSession(
 	bulletinFile, publicPath string,
 	sellerID, buyerID [40]uint8, demands []types.Range,
@@ -154,7 +154,7 @@ func NewBobSession(
 
 	handle := C.handle_t(b.CHandle())
 	session := types.CHandle(
-		C.E_PlainComplaintClientNew(
+		C.E_PlainComplaintBobNew(
 			handle,
 			(*C.uint8_t)(buyerIDCPtr),
 			(*C.uint8_t)(sellerIDCPtr),
@@ -163,24 +163,24 @@ func NewBobSession(
 	if session == nil {
 		b.Free()
 		return nil, fmt.Errorf(
-			"E_PlainComplaintClientNew(%v, %v, %v, %v, %d) failed",
+			"E_PlainComplaintBobNew(%v, %v, %v, %v, %d) failed",
 			handle, buyerID, sellerID, demands, nrDemands)
 	}
 
 	return &BobSession{b: b, handle: session}, nil
 }
 
-// Free provides the Go interface for E_PlainComplaintClientFree()
+// Free provides the Go interface for E_PlainComplaintBobFree()
 func (session *BobSession) Free() error {
 	handle := C.handle_t(session.handle)
-	ret := bool(C.E_PlainComplaintClientFree(handle))
+	ret := bool(C.E_PlainComplaintBobFree(handle))
 	if !ret {
-		return fmt.Errorf("E_PlainComplaintClientFree(%v) failed", handle)
+		return fmt.Errorf("E_PlainComplaintBobFree(%v) failed", handle)
 	}
 	return session.b.Free()
 }
 
-// GetRequest provides the Go interface for E_PlainComplaintClientGetRequest()
+// GetRequest provides the Go interface for E_PlainComplaintBobGetRequest()
 func (session *BobSession) GetRequest(requestFile string) error {
 	if err := utils.CheckDirOfPathExistence(requestFile); err != nil {
 		return err
@@ -192,15 +192,15 @@ func (session *BobSession) GetRequest(requestFile string) error {
 	defer C.free(unsafe.Pointer(requestFileCStr))
 
 	if ret := bool(
-		C.E_PlainComplaintClientGetRequest(handle, requestFileCStr)); !ret {
-		return fmt.Errorf("E_PlainComplaintClientGetRequest(%v, %s) failed",
+		C.E_PlainComplaintBobGetRequest(handle, requestFileCStr)); !ret {
+		return fmt.Errorf("E_PlainComplaintBobGetRequest(%v, %s) failed",
 			handle, requestFile)
 	}
 
 	return nil
 }
 
-// OnResponse provides the Go interface for E_PlainComplaintClientOnResponse()
+// OnResponse provides the Go interface for E_PlainComplaintBobOnResponse()
 func (session *BobSession) OnResponse(responseFile, receiptFile string) error {
 	if err := utils.CheckRegularFileReadPerm(responseFile); err != nil {
 		return err
@@ -217,18 +217,18 @@ func (session *BobSession) OnResponse(responseFile, receiptFile string) error {
 	receiptFileCStr := C.CString(receiptFile)
 	defer C.free(unsafe.Pointer(receiptFileCStr))
 
-	ret := bool(C.E_PlainComplaintClientOnResponse(
+	ret := bool(C.E_PlainComplaintBobOnResponse(
 		handle, responseFileCStr, receiptFileCStr))
 	if !ret {
 		return fmt.Errorf(
-			"E_PlainComplaintClientOnResponse(%v, %s, %s) failed",
+			"E_PlainComplaintBobOnResponse(%v, %s, %s) failed",
 			handle, responseFile, receiptFile)
 	}
 
 	return nil
 }
 
-// OnSecret provides the Go interface for E_PlainComplaintClientOnSecret()
+// OnSecret provides the Go interface for E_PlainComplaintBobOnSecret()
 func (session *BobSession) OnSecret(secretFile string) error {
 	if err := utils.CheckRegularFileReadPerm(secretFile); err != nil {
 		return err
@@ -239,17 +239,17 @@ func (session *BobSession) OnSecret(secretFile string) error {
 	secretFileCStr := C.CString(secretFile)
 	defer C.free(unsafe.Pointer(secretFileCStr))
 
-	ret := bool(C.E_PlainComplaintClientOnSecret(handle, secretFileCStr))
+	ret := bool(C.E_PlainComplaintBobOnSecret(handle, secretFileCStr))
 	if !ret {
 		return fmt.Errorf(
-			"E_PlainComplaintClientOnSecret(%v, %s) failed",
+			"E_PlainComplaintBobOnSecret(%v, %s) failed",
 			handle, secretFile)
 	}
 
 	return nil
 }
 
-// Decrypt provides the Go interface for E_PlainComplaintClientSaveDecrypted()
+// Decrypt provides the Go interface for E_PlainComplaintBobSaveDecrypted()
 func (session *BobSession) Decrypt(outFile string) error {
 	if err := utils.CheckDirOfPathExistence(outFile); err != nil {
 		return err
@@ -260,18 +260,18 @@ func (session *BobSession) Decrypt(outFile string) error {
 	outFileCStr := C.CString(outFile)
 	defer C.free(unsafe.Pointer(outFileCStr))
 
-	ret := bool(C.E_PlainComplaintClientSaveDecrypted(
+	ret := bool(C.E_PlainComplaintBobSaveDecrypted(
 		handle, outFileCStr))
 	if !ret {
 		return fmt.Errorf(
-			"E_PlainComplaintClientSaveDecrypted(%v, %s) failed",
+			"E_PlainComplaintBobSaveDecrypted(%v, %s) failed",
 			handle, outFile)
 	}
 
 	return nil
 }
 
-// GenerateClaim provides the Go interface for E_PlainComplaintClientGenerateClaim()
+// GenerateClaim provides the Go interface for E_PlainComplaintBobGenerateClaim()
 func (session *BobSession) GenerateClaim(claimFile string) error {
 	if err := utils.CheckDirOfPathExistence(claimFile); err != nil {
 		return err
@@ -282,10 +282,10 @@ func (session *BobSession) GenerateClaim(claimFile string) error {
 	claimFileCStr := C.CString(claimFile)
 	defer C.free(unsafe.Pointer(claimFileCStr))
 
-	ret := bool(C.E_PlainComplaintClientGenerateClaim(handle, claimFileCStr))
+	ret := bool(C.E_PlainComplaintBobGenerateClaim(handle, claimFileCStr))
 	if !ret {
 		return fmt.Errorf(
-			"E_PlainComplaintClientGenerateClaim(%v, %s) failed",
+			"E_PlainComplaintBobGenerateClaim(%v, %s) failed",
 			handle, claimFile)
 	}
 

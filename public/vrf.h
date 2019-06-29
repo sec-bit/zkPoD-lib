@@ -19,14 +19,13 @@
 //    e(pie[i], g2^x[i]*t[i]) == e(pie[i-1], g2)
 //    e(pie[n], u2) == fsk
 
-
 namespace vrf {
 
 namespace detail {
-  inline G2 GetU() {
-    auto& ecc_pub = GetEccPub();
-    return ecc_pub.u2()[1];
-  }
+inline G2 GetU() {
+  auto& ecc_pub = GetEccPub();
+  return ecc_pub.u2()[1];
+}
 }  // namespace detail
 
 template <size_t N = 32>
@@ -42,7 +41,7 @@ using Fsk = Fp12;
 
 template <size_t N = 32>
 void Generate(Pk<N>& pk, Sk<N>& sk) {
-  //Tick tick(__FUNCTION__);
+  // Tick tick(__FUNCTION__);
   auto& ecc_pub = GetEccPub();
   for (size_t i = 0; i < N; ++i) {
     sk[i] = FrRand();
@@ -52,7 +51,7 @@ void Generate(Pk<N>& pk, Sk<N>& sk) {
 
 template <size_t N = 32>
 Fsk Vrf(Sk<N> const& sk, uint8_t const* x) {
-  //Tick tick(__FUNCTION__);
+  // Tick tick(__FUNCTION__);
   auto& ecc_pub = GetEccPub();
   Fr a = FrOne();
   for (size_t i = 0; i < N; ++i) {
@@ -75,9 +74,11 @@ void Prove(Sk<N> const& sk, uint8_t const* x, Psk<N>& psk) {
   for (size_t i = 1; i < N; ++i) {
     a[i] = a[i - 1] * (sk[i] + x[i]);
   }
-  for (auto& i : a) {
-    i = FrInv(i);
-  }
+
+  FrInv(a.data(), N);
+  //for (auto& i : a) {
+  //  i = FrInv(i);
+  //}
   for (size_t i = 0; i < N; ++i) {
     psk[i] = ecc_pub.PowerG1(a[i]);
   }
@@ -123,9 +124,10 @@ void ProveWithR(Sk<N> const& sk, uint8_t const* x, Fr const& r,
   for (size_t i = 1; i < N; ++i) {
     a[i] = a[i - 1] * (sk[i] + x[i]);
   }
-  for (auto& i : a) {
-    i = FrInv(i);
-  }
+  FrInv(a.data(), a.size());
+  //for (auto& i : a) {
+  //  i = FrInv(i);
+  //}
   for (size_t i = 0; i < N; ++i) {
     psk_exp_r[i] = ecc_pub.PowerG1(a[i] * r);
   }
@@ -169,7 +171,7 @@ inline bool Test() {
   Generate<>(pk, sk);
   std::array<uint8_t, 32> x;
   for (auto& i : x) {
-    i = (uint8_t)rand(); // NOTE: use rand() for test
+    i = (uint8_t)rand();  // NOTE: use rand() for test
   }
 
   Fsk fsk = Vrf<>(sk, x.data());
@@ -185,7 +187,6 @@ inline bool Test() {
   Psk<> psk_exp_r;
   ProveWithR<>(sk, x.data(), r, psk_exp_r);
 
-  
   G1 g1_exp_r = ecc_pub.PowerG1(r);
   ret = VerifyWithR<>(pk, x.data(), psk_exp_r, g1_exp_r);
   assert(ret);

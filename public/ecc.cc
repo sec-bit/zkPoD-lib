@@ -50,12 +50,16 @@ Fr FrRand() {
 void FrRand(Fr* r, size_t n) {
   std::vector<uint8_t> h(n * 32);
 
+#ifdef MULTICORE
 #pragma omp parallel for
+#endif
   for (size_t i = 0; i < 4; ++i) {
     rng.GenerateBlock(h.data() + 8 * i * n, 8 * n);
   }
 
+#ifdef MULTICORE
 #pragma omp parallel for
+#endif
   for (size_t i = 0; i < n; ++i) {
     r[i].setArrayMask(h.data() + i * 32, 32);
   }
@@ -64,12 +68,16 @@ void FrRand(Fr* r, size_t n) {
 void FrRand(std::vector<Fr*>& f) {
   auto n = f.size();
   std::vector<uint8_t> h(n * 32);
+#ifdef MULTICORE
 #pragma omp parallel for
+#endif
   for (size_t i = 0; i < 4; ++i) {
     rng.GenerateBlock(h.data() + 8 * i * n, 8 * n);
   }
 
+#ifdef MULTICORE
 #pragma omp parallel for
+#endif
   for (size_t i = 0; i < f.size(); ++i) {
     f[i]->setArrayMask(h.data() + i * 32, 32);
   }
@@ -80,6 +88,30 @@ Fr FrInv(Fr const& r) {
   Fr::inv(r_inv, r);
   return r_inv;
 }
+
+void FrInv(Fr* begin, uint64_t count) {
+  assert(count > 0);
+
+  std::vector<Fr> prod(count);
+
+  Fr acc(1);
+
+  for (size_t i = 0; i < count; ++i) {
+    assert(!begin[i].isZero());
+    prod[i] = acc;
+    acc *= begin[i];
+  }
+
+  Fr acc_inverse = FrInv(acc);
+
+  for (int64_t i = (int64_t)count - 1; i >= 0; --i) {
+    Fr old_el = begin[i];
+    begin[i] = acc_inverse * prod[i];
+    acc_inverse *= old_el;
+  }
+}
+
+void FrInv(std::vector<Fr>& vec) { FrInv(vec.data(), vec.size()); }
 
 G1 G1Rand() {
   G1 out;
@@ -514,11 +546,11 @@ Fr FrPower(Fr const& base, mpz_class const& exp) {
   Fr z;
   Fr::pow(z, base, exp);
   return z;
-  //Fr result(1);
-  //bool begin = false;
-  //auto e = exp.get_mpz_t();
-  //ssize_t n = mpz_sizeinbase(e, 2);
-  //for (ssize_t i = n - 1; i >= 0; --i) {
+  // Fr result(1);
+  // bool begin = false;
+  // auto e = exp.get_mpz_t();
+  // ssize_t n = mpz_sizeinbase(e, 2);
+  // for (ssize_t i = n - 1; i >= 0; --i) {
   //  if (begin) {
   //    result = result * result;
   //  }
@@ -528,7 +560,7 @@ Fr FrPower(Fr const& base, mpz_class const& exp) {
   //    result *= base;
   //  }
   //}
-  //return result;
+  // return result;
 }
 
 Fr MapToFr(void const* b, size_t n) {
@@ -543,3 +575,4 @@ Fr MapToFr(uint64_t b) {
   auto b_big = boost::endian::native_to_big(b);
   return MapToFr((uint8_t const*)&b_big, sizeof(b_big));
 }
+

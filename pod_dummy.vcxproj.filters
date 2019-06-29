@@ -199,13 +199,13 @@
     <ClInclude Include="ecc.h">
       <Filter>public</Filter>
     </ClInclude>
-    <ClInclude Include="ecc_pub.h">
-      <Filter>public</Filter>
-    </ClInclude>
     <ClInclude Include="msvc_hack.h">
       <Filter>public</Filter>
     </ClInclude>
     <ClInclude Include="tick.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="public\ecc_pub.h">
       <Filter>public</Filter>
     </ClInclude>
   </ItemGroup>

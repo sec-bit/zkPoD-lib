@@ -1,0 +1,3 @@
+[submodule "depends/libsnark"]
+	path = depends/libsnark
+	url = git://github.com/huyuguang/libsnark.git
