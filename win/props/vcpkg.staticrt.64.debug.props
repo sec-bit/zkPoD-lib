@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <IncludePath>C:\vcpkg\installed\x64-windows-static\include;$(SolutionDir)/../depends/install/include;$(SolutionDir)\..\depends\install\include\depends\mcl\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>C:\vcpkg\installed\x64-windows-static\debug\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>MCL_NO_AUTOLINK;MCL_DONT_USE_OPENSSL;BOOST_SPIRIT_THREADSAFE;BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE;BINARY_OUTPUT;CURVE_MCL_BN128;MONTGOMERY_OUTPUT;NO_PROCPS;USE_ASM;WIN32_LEAN_AND_MEAN;NOMINMAX;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(SolutionDir)/../depends/libsnark/msvc/lib/x64/debug</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

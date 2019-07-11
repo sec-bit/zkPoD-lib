@@ -44,6 +44,8 @@ AliceData::AliceData(std::string const& publish_path)
   //  assert(false);
   //  throw std::runtime_error("invalid sigma");
   //}
+  std::cout << "alice: bulletin: n=" << bulletin_.n << ", s=" << bulletin_.s
+            << "\n";
 }
 
 }  // namespace scheme::plain

@@ -8,8 +8,12 @@ namespace scheme {
 namespace table {
 bool IsBulletinValid(Bulletin const& bulletin) {
   auto const& ecc_pub = GetEccPub();
-  std::cout << bulletin.n << "," << bulletin.s << "," << ecc_pub.u1().size() << "\n";
-  return bulletin.n && bulletin.s > 0 && bulletin.s <= ecc_pub.u1().size();
+  bool ret = bulletin.n && bulletin.s > 0 && bulletin.s <= ecc_pub.u1().size();
+  if (!ret) {
+    std::cerr << "invalid bulletin: n=" << bulletin.n << ", s=" << bulletin.s
+              << "\n";
+  }
+  return ret;
 }
 
 bool SaveBulletin(std::string const& output, Bulletin const& bulletin) {

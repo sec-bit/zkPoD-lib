@@ -22,10 +22,11 @@ ifdef CXX11_HOME
 endif
 
 THIRD_PARTY_HOME = ../thirdparty
-MCL_HOME = ../thirdparty/mcl/include
+#MCL_HOME = ../thirdparty/mcl/include
 CSV_HOME = ../thirdparty/csv
 PUB_HOME = ../public
 SNARK_HOME = ../depends/install
+MCL_HOME = $(SNARK_HOME)/include/depends/mcl/include
 
 INC_FLAGS :=  \
  -I $(MCL_HOME) \
@@ -64,8 +65,9 @@ CXXFLAGS := \
  SNARK_FLAGS = \
  -DBINARY_OUTPUT \
  -DBN_SUPPORT_SNARK=1 \
- -DCURVE_BN128 \
+ -DCURVE_MCL_BN128 \
  -DMONTGOMERY_OUTPUT \
+ -DMULTICORE=1 \
  -DUSE_ASM \
  -DNO_PROCPS \
 
@@ -108,7 +110,7 @@ LIBS := \
  -lboost_program_options \
  -lsnark \
  -lff \
- -lzm \
+ -lmcl \
 
 ifeq ($(OS_TYPE),Darwin)
   TMPVAR := $(CXXFLAGS)
@@ -120,6 +122,9 @@ ifeq ($(OS_TYPE),Darwin)
   TMPVAR := $(LIBS)
   TMPVAR := $(filter-out -lgomp, $(TMPVAR))
   LIBS := $(filter-out -lrt, $(TMPVAR))
+
+  TMPVAR := $(SNARK_FLAGS)
+  SNARK_FLAGS := $(filter-out -DMULTICORE=1, $(TMPVAR))
 endif
 
 BUILD := ./build/self
