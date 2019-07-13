@@ -40,7 +40,7 @@ POD_PUBLISH_OPTION_C := 1024
 CGO_LDFLAGS := -L$(POD_CORE_DIR)
 
 TEST_DATA_DIR := $(PWD)/test_data
-
+TEST_ECC_PUB := $(TEST_DATA_DIR)/ecc_pub.bin
 TEST_ZKSNARK_PUB := $(TEST_DATA_DIR)/zksnark_key
 TEST_PLAIN_FILE := $(TEST_DATA_DIR)/plain.txt
 TEST_TABLE_FILE := $(TEST_DATA_DIR)/table.csv
@@ -65,7 +65,7 @@ GO_TEST := $(LIBRARY_PATH) \
 
 all:
 
-test: test_publish pod_core
+test: clean test_publish pod_core
 	@echo "+ Testing ..."
 	$(V) rm -rf $(TEST_OUTPUT_DIR)
 	$(V) mkdir -p $(TEST_OUTPUT_DIR)
@@ -113,5 +113,8 @@ $(TEST_ZKSNARK_PUB): $(POD_SETUP)
 	$(V) $(POD_SETUP) -o $(TEST_ZKSNARK_PUB)
 
 clean:
+	@echo "+ Cleaning ..."
+	$(V) rm -f $(TEST_ECC_PUB)
+	$(V) rm -rf $(TEST_ZKSNARK_PUB)
 	$(V) rm -rf $(TEST_PUBLISH_DIR)
 	$(V) rm -rf $(TEST_OUTPUT_DIR)

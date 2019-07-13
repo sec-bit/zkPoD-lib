@@ -16,7 +16,7 @@ zkPoD-lib has four main parts as followed.
 
 ## Dependencies
 
-- g++ 8.0
+- GCC 7.3 or above
 - Go 1.11
 - Boost 1.69.0 or newer
 - OpenMP 5.3.1 or newer
@@ -32,16 +32,33 @@ sudo apt-get install libgmp-dev
 ## Build
 
 ```shell
+# Download zkPoD-lib code
 mkdir zkPoD && cd zkPoD
 git clone https://github.com/sec-bit/zkPoD-lib.git
+
+# Pull libsnark submodule
 cd zkPoD-lib
+git submodule init && git submodule update
+cd depends/libsnark
+git submodule init && git submodule update
+
+# Build libsnark
+mkdir build && cd build
+# - On Ubuntu
+cmake -DCMAKE_INSTALL_PREFIX=../../install -DMULTICORE=ON -DWITH_PROCPS=OFF -DWITH_SUPERCOP=OFF -DCURVE=MCL_BN128 ..
+# - Or on macOS ref https://github.com/scipr-lab/libsnark/issues/99#issuecomment-367677834
+CPPFLAGS=-I/usr/local/opt/openssl/include LDFLAGS=-L/usr/local/opt/openssl/lib PKG_CONFIG_PATH=/usr/local/opt/openssl/lib/pkgconfig cmake -DCMAKE_INSTALL_PREFIX=../../install -DMULTICORE=OFF -DWITH_PROCPS=OFF -DWITH_SUPERCOP=OFF -DCURVE=MCL_BN128 ..
+make && make install
+
+# Build zkPoD-lib
+cd ../../..
 make
 
 # These files should be generated after successful build.
-# pod_publish/pod_setup
+# pod_setup/pod_setup
 # pod_publish/pod_publish
-# pod_core/pod_core
 # pod_core/libpod_core.so
+# pod_core/pod_core
 ```
 
 ## Usage
