@@ -20,21 +20,21 @@ ifdef CXX11_HOME
   CXX := LD_LIBRARY_PATH=${CXX11_HOME}/lib $(CXX11_HOME)/bin/g++
 endif
 
-HOME = ../linux
+# HOME = ../linux
 THIRD_PARTY_HOME = ../thirdparty
-#MCL_HOME = ../thirdparty/mcl/include
 PUB_HOME = ../public
 SNARK_HOME = ../depends/install
 MCL_HOME = $(SNARK_HOME)/include/depends/mcl/include
 
 INC_FLAGS :=  \
+ -I /usr/local/include \
+ -I /usr/include \
  -I $(MCL_HOME) \
  -I $(PUB_HOME) \
  -I $(THIRD_PARTY_HOME) \
- -I /usr/local/include \
- -I /usr/include \
+ -isystem $(SNARK_HOME)/include \
  -I. \
- -I..
+ -I.. \
 
 ifdef CXX11_HOME
   INC_FLAGS += -I $(CXX11_HOME)/include
@@ -53,7 +53,6 @@ CXXFLAGS := \
  -Wdeprecated-declarations \
  -fmerge-all-constants  \
  $(INC_FLAGS) \
- -isystem $(SNARK_HOME)/include \
 
 SNARK_FLAGS = \
  -DBINARY_OUTPUT \
@@ -69,7 +68,6 @@ MCL_FLAGS := \
 
 RELEASE_FLAGS := \
  -O3 \
- -DDTREE_ICASE \
  -DNDEBUG \
  -DLINUX \
 
@@ -78,14 +76,9 @@ DEBUG_FLAGS := \
  -D_DEBUG \
  -DLINUX \
  
-#LDFLAGS += \
-# -static-libstdc++ -static-libgcc \
-# -fmerge-all-constants \
-# -L${CXX11_HOME}/lib64
-
 LDFLAGS += \
  -fmerge-all-constants \
- -L$(SNARK_HOME)/lib
+ -L$(SNARK_HOME)/lib \
 
 LIBS := \
  -lpthread \
@@ -97,7 +90,7 @@ LIBS := \
  -lboost_filesystem \
  -lboost_system \
  -lboost_iostreams \
- -lboost_program_options  \
+ -lboost_program_options \
  -lsnark \
  -lff \
  -lmcl \
@@ -106,30 +99,26 @@ ifeq ($(OS_TYPE),Darwin)
   TMPVAR := $(CXXFLAGS)
   CXXFLAGS := $(filter-out -fopenmp, $(TMPVAR))
 
-  TMPVAR := $(LDFLAGS)
-  LDFLAGS := $(filter-out -static-libgcc, $(TMPVAR))
+  TMPVAR := $(SNARK_FLAGS)
+  SNARK_FLAGS := $(filter-out -DMULTICORE=1, $(TMPVAR))
 
   TMPVAR := $(LIBS)
   TMPVAR := $(filter-out -lgomp, $(TMPVAR))
   LIBS := $(filter-out -lrt, $(TMPVAR))
-
-  TMPVAR := $(SNARK_FLAGS)
-  SNARK_FLAGS := $(filter-out -DMULTICORE=1, $(TMPVAR))
 endif
 
 BUILD := ./build/self
 BUILDPUB := ./build/public
 
-$(shell mkdir -p $(HOME)/bin)
+# $(shell mkdir -p $(HOME)/bin)
 $(shell mkdir -p $(BUILD))
 $(shell mkdir -p $(BUILDPUB))
 
-DIR := .
+DIR := . 
 
 SRC := $(foreach d, $(DIR), $(wildcard $(d)/*.cc))
 
 SRC += ../public/ecc.cc
-# SRC += ../public/fp.cc
 SRC += ../public/mimc.cc
 SRC += ../public/zkp.cc
 
