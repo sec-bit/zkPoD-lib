@@ -27,6 +27,11 @@ sudo apt-get install libomp-dev
 sudo apt-get install libcrypto++-dev
 sudo apt-get install libboost-all-dev
 sudo apt-get install libgmp-dev
+
+# For macOS
+brew install libcryptopp
+brew install boost
+brew install gmp
 ```
 
 ## Build
@@ -69,21 +74,20 @@ make
 $ ./pod_setup -h
 
 command line options:
-  -h [ --help ]                    Use -h or --help to list all arguments
-  -o [ --output ] arg              Provide the output ecc pub file
-  -a [ --u1_size ] arg (=1026)     Provide the max number of u1
-  -b [ --u2_size ] arg (=2)        Provide the max number of u2
-  -t [ --omp_thread_num ] arg (=0) Provide the number of the openmp thread, 1:
-                                   disable openmp, 0: default.
+  -h [ --help ]                         Use -h or --help to list all arguments
+  -o [ --output_path ] arg (=zksnark_key)
+                                        Provide the output path
+  -c [ --count ] arg (=1024)            Provide the count
+  -v [ --verbose ] arg (=0)             Enable libff log
 ```
 
-Use `pod_setup` to generate public parameters.
+Use `pod_setup` to generate zkPoD zkSNARK public parameters.
 
 ```shell
-./pod_setup -o ecc_pub.bin
+./pod_setup
 ```
 
-`ecc_pub.bin` is generated after a successful setup.
+`zksnark_key` is generated after a successful setup.
 
 ### pod_publish
 
@@ -91,14 +95,14 @@ Use `pod_setup` to generate public parameters.
 $ ./pod_publish -h
 command line options:
   -h [ --help ]                         Use -h or --help to list all arguments
-  ---e ecc_pub_file -m table -f file -o output_path -t table_type -k keys
+  ---d data_dir -m table -f file -o output_dir -t table_type -k keys
                                         publish table file
-  ---e ecc_pub_file -m plain -f file -o output_path -c column_num
+  ---d data_dir -m plain -f file -o output_dir -c column_num
                                         publish plain file
-  -e [ --ecc_pub_file ] arg             Provide the ecc pub file
+  -d [ --data_dir ] arg (=.)            Provide the configure file dir
   -m [ --mode ] arg (=plain)            Provide pod mode (plain, table)
   -f [ --publish_file ] arg             Provide the file which want to publish
-  -o [ --output_path ] arg              Provide the publish path
+  -o [ --output_dir ] arg               Provide the publish path
   -t [ --table_type ] arg (=csv)        Provide the publish file type in table
                                         mode (csv)
   -c [ --column_num ] arg (=1023)       Provide the column number per
@@ -123,10 +127,10 @@ zkPoD supports two modes: binary mode and table mode.
 
 ```shell
 # binary mode
-./pod_publish -e ecc_pub.bin -m plain -f test.txt -o plain_data -c 1024
+./pod_publish -m plain -f test.txt -o plain_data -c 1024
 
 # table mode
-./pod_publish -e ecc_pub.bin -m table -f test1000.csv -o table_data -t csv -k 0 1
+./pod_publish -m table -f test1000.csv -o table_data -t csv -k 0 1
 ```
 
 Check the output folder after publishing.
@@ -136,22 +140,22 @@ Check the output folder after publishing.
 ```shell
 $ ./pod_core -h
 command line options:
-  -h [ --help ]             Use -h or --help to list all arguments
-  -e [ --ecc_pub_file ] arg Provide the ecc pub file
-  -m [ --mode ] arg         Provide pod mode (plain, table)
-  -a [ --action ] arg       Provide action (range_pod, ot_range_pod, vrf_query,
-                            ot_vrf_query...)
-  -p [ --publish_path ] arg Provide the publish path
-  -o [ --output_path ] arg  Provide the output path
-  --demand_ranges arg       Provide the demand ranges
-  --phantom_ranges arg      Provide the phantom range(plain mode)
-  -k [ --query_key ] arg    Provide the query key name(table mode)
-  -v [ --key_value ] arg    Provide the query key values(table mode, for
-                            example -v value_a value_b value_c)
-  -n [ --phantom_key ] arg  Provide the query key phantoms(table mode, for
-                            example -n phantoms_a phantoms_b phantoms_c)
-  --omp_thread_num arg      Provide the number of the openmp thread, 1: disable
-                            openmp, 0: default.
+  -h [ --help ]              Use -h or --help to list all arguments
+  -d [ --data_dir ] arg (=.) Provide the configure file dir
+  -m [ --mode ] arg          Provide pod mode (plain, table)
+  -a [ --action ] arg        Provide action (range_pod, ot_range_pod,
+                             vrf_query, ot_vrf_query...)
+  -p [ --publish_dir ] arg   Provide the publish dir
+  -o [ --output_dir ] arg    Provide the output dir
+  --demand_ranges arg        Provide the demand ranges
+  --phantom_ranges arg       Provide the phantom range(plain mode)
+  -k [ --query_key ] arg     Provide the query key name(table mode)
+  -v [ --key_value ] arg     Provide the query key values(table mode, for
+                             example -v value_a value_b value_c)
+  -n [ --phantom_key ] arg   Provide the query key phantoms(table mode, for
+                             example -n phantoms_a phantoms_b phantoms_c)
+  --omp_thread_num arg       Provide the number of the openmp thread, 1:
+                             disable openmp, 0: default.
   -c [ --use_c_api ]
   --test_evil
   --dump_ecc_pub
@@ -160,12 +164,16 @@ command line options:
 `pod_core` supports several mode combinations. We have `atomic-swap` and `complaint` trade mode for binary and table files. Moreover, we could employ _oblivious transfer_, `OT` mode, for privacy-preserving download. Furthermore, we are allowed to do `vrf_query` of structured table data, which could be combined with `OT` mode for the private query.
 
 ```shell
-./pod_core -e ecc_pub.bin -m plain -a batch_pod -p plain_data -o plain_output --demand_ranges 0-2
+./pod_core -m plain -a complaint_pod -p plain_data -o plain_output --demand_ranges 0-2
 
-./pod_core -e ecc_pub.bin -m table -a ot_vrf_query -p table_data -o table_output -k "Emp ID" -v 313736 964888 abc -n 350922 aaa eee bbb
+./pod_core -m plain -a atomic_swap_pod -p plain_data -o plain_output --demand_ranges 1-10
+
+./pod_core -m plain -a atomic_swap_pod_vc -p plain_data -o plain_output --demand_ranges 1-10
+
+./pod_core -m table -a ot_vrf_query -p table_data -o table_output -k "Emp ID" -v 313736 964888 abc -n 350922 aaa eee bbb
 ```
 
-Check [here](pod_core/README.md) for more CLI interface examples. You could look over [each](pod_core/scheme_batch_test.cc) [test](pod_core/scheme_batch2_test.cc) for detailed protocol implementation.
+Check [here](pod_core/README.md) for more CLI interface examples. You could look over [each](pod_core/scheme_atomic_swap_test.cc) [test](pod_core/scheme_atomic_swap_vc_test.cc) for detailed protocol implementation.
 
 ### pod_go
 
@@ -178,6 +186,12 @@ make test
 ```
 
 All tests should pass as expected. You could check over [tests](pod_go/plain/api_test.go) to learn about usage.
+
+## Learn more?
+
++ White paper: an overview introduction of the zkPoD system.
++ [Technical paper](https://sec-bit.github.io/zkPoD-node/paper.pdf): a document with theoretic details to those who are interested in the theory we are developing.
++ Community: join us on [*Discord*](https://discord.gg/tfUH886) and follow us on [*Twitter*](https://twitter.com/SECBIT_IO) please!
 
 ## License
 
