@@ -5,12 +5,7 @@
 namespace scheme::atomic_swap_vc {
 
 inline uint64_t constexpr ZkpMimcCount() {
-#ifdef _WIN32
-  return 8; // just for debug
-#else
   return 1024;
-  //1024;
-#endif
 }
 
 struct ZkpItem {

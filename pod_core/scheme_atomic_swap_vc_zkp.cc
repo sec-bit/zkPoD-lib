@@ -4,12 +4,10 @@
 #include "atomic_swap_gadget.h"
 #include "mimc.h"
 
-namespace scheme::atomic_swap_vc
-{
+namespace scheme::atomic_swap_vc {
 
-void GenerateZkProof(ZkProof &proof, ZkPk const &pk, ZkpItem const &item,
-                     ZkVkPtr check_vk)
-{
+void GenerateZkProof(ZkProof& proof, ZkPk const& pk, ZkpItem const& item,
+                     ZkVkPtr check_vk) {
   using namespace libsnark;
   auto const kCount = ZkpMimcCount();
   assert(item.o.size() == kCount);
@@ -27,12 +25,12 @@ void GenerateZkProof(ZkProof &proof, ZkPk const &pk, ZkpItem const &item,
   pb_variable_array<ZkFr> w;
 
   // Allocate variables to protoboard
-  o.allocate(pb, kCount, "o");         // public
-  w.allocate(pb, kCount, "w");         // public
-  digest.allocate(pb, "digest");       // public
-  result.allocate(pb, "result");       // public
-  seed.allocate(pb, "seed");           // witness
-  seed_rand.allocate(pb, "seed_rand"); // witness
+  o.allocate(pb, kCount, "o");          // public
+  w.allocate(pb, kCount, "w");          // public
+  digest.allocate(pb, "digest");        // public
+  result.allocate(pb, "result");        // public
+  seed.allocate(pb, "seed");            // witness
+  seed_rand.allocate(pb, "seed_rand");  // witness
 
   // This sets up the protoboard variables
   // so that the first one (out) represents the public
@@ -47,8 +45,7 @@ void GenerateZkProof(ZkProof &proof, ZkPk const &pk, ZkpItem const &item,
   g.generate_r1cs_constraints();
 
   // public statement
-  for (size_t i = 0; i < kCount; ++i)
-  {
+  for (size_t i = 0; i < kCount; ++i) {
     pb.val(o[i]) = item.o[i];
     pb.val(w[i]) = item.w[i];
   }
@@ -67,8 +64,7 @@ void GenerateZkProof(ZkProof &proof, ZkPk const &pk, ZkpItem const &item,
   proof = r1cs_gg_ppzksnark_prover<default_r1cs_gg_ppzksnark_pp>(
       pk, pb.primary_input(), pb.auxiliary_input());
 
-  if (check_vk)
-  {
+  if (check_vk) {
     ZkvItem zkv_item;
     zkv_item.inner_product = item.inner_product;
     zkv_item.seed_mimc3_digest = item.seed_mimc3_digest;
@@ -78,8 +74,7 @@ void GenerateZkProof(ZkProof &proof, ZkPk const &pk, ZkpItem const &item,
   }
 }
 
-bool VerifyZkProof(ZkProof const &proof, ZkVk const &vk, ZkvItem const &item)
-{
+bool VerifyZkProof(ZkProof const& proof, ZkVk const& vk, ZkvItem const& item) {
   using namespace libsnark;
   auto const kCount = ZkpMimcCount();
   assert(item.o.size() == kCount);
@@ -95,10 +90,10 @@ bool VerifyZkProof(ZkProof const &proof, ZkVk const &vk, ZkvItem const &item)
   pb_variable_array<ZkFr> w;
 
   // Allocate variables to protoboard
-  o.allocate(pb, kCount, "o");   // public
-  w.allocate(pb, kCount, "w");   // public
-  digest.allocate(pb, "digest"); // public
-  result.allocate(pb, "result"); // public
+  o.allocate(pb, kCount, "o");    // public
+  w.allocate(pb, kCount, "w");    // public
+  digest.allocate(pb, "digest");  // public
+  result.allocate(pb, "result");  // public
 
   // This sets up the protoboard variables
   // so that the first one (out) represents the public
@@ -114,8 +109,7 @@ bool VerifyZkProof(ZkProof const &proof, ZkVk const &vk, ZkvItem const &item)
   // g.generate_r1cs_constraints();
 
   // public statement
-  for (size_t i = 0; i < kCount; ++i)
-  {
+  for (size_t i = 0; i < kCount; ++i) {
     pb.val(o[i]) = item.o[i];
     pb.val(w[i]) = item.w[i];
   }
@@ -129,4 +123,4 @@ bool VerifyZkProof(ZkProof const &proof, ZkVk const &vk, ZkvItem const &item)
   assert(verified);
   return verified;
 }
-} // namespace scheme::atomic_swap_vc
+}  // namespace scheme::atomic_swap_vc

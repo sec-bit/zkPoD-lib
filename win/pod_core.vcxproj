@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{AD8D57A0-7658-48D7-B5F0-279F688D6ECE}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>pod_setup</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="props\vcpkg.staticrt.64.debug.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="props\vcpkg.staticrt.64.release.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_WIN32_WINNT=0x0600;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)/../thirdparty/csv;$(SolutionDir)/../thirdparty/yas/include;$(SolutionDir)/../thirdparty;$(SolutionDir)/../public;$(SolutionDir)/../depends/install/include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalOptions>/utf-8 /Zc:twoPhase- /Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <OpenMPSupport>true</OpenMPSupport>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>mcl.lib;snark.lib;ff.lib;cryptopp-static.lib;boost_program_options-vc140-mt-gd.lib;boost_system-vc140-mt-gd.lib;boost_filesystem-vc140-mt-gd.lib;boost_iostreams-vc140-mt-gd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\..\depends\libsnark\msvc\lib\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_WIN32_WINNT=0x0600;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)/../thirdparty/csv;$(SolutionDir)/../thirdparty/yas/include;$(SolutionDir)/../thirdparty;$(SolutionDir)/../public;$(SolutionDir)/../depends/install/include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalOptions>/utf-8 /Zc:twoPhase- /Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <OpenMPSupport>true</OpenMPSupport>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>mcl.lib;snark.lib;ff.lib;cryptopp-static.lib;boost_program_options-vc140-mt.lib;boost_system-vc140-mt.lib;boost_filesystem-vc140-mt.lib;boost_iostreams-vc140-mt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\..\depends\libsnark\msvc\lib\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\pod_core\capi\c_api.cc" />
+    <ClCompile Include="..\pod_core\capi\c_api_plain.cc" />
+    <ClCompile Include="..\pod_core\capi\c_api_table.cc" />
+    <ClCompile Include="..\pod_core\capi\scheme_plain_atomic_swap_test_capi.cc" />
+    <ClCompile Include="..\pod_core\capi\scheme_plain_atomic_swap_vc_test_capi.cc" />
+    <ClCompile Include="..\pod_core\capi\scheme_plain_complaint_test_capi.cc" />
+    <ClCompile Include="..\pod_core\capi\scheme_plain_ot_complaint_test_capi.cc" />
+    <ClCompile Include="..\pod_core\capi\scheme_table_atomic_swap_test_capi.cc" />
+    <ClCompile Include="..\pod_core\capi\scheme_table_atomic_swap_vc_test_capi.cc" />
+    <ClCompile Include="..\pod_core\capi\scheme_table_complaint_test_capi.cc" />
+    <ClCompile Include="..\pod_core\capi\scheme_table_ot_complaint_test_capi.cc" />
+    <ClCompile Include="..\pod_core\capi\scheme_table_ot_vrfq_test_capi.cc" />
+    <ClCompile Include="..\pod_core\capi\scheme_table_vrfq_test_capi.cc" />
+    <ClCompile Include="..\pod_core\main.cc" />
+    <ClCompile Include="..\public\zkp.cc" />
+    <ClInclude Include="..\pod_core\capi\c_api_object.h" />
+    <ClInclude Include="..\pod_core\capi\scheme_plain_atomic_swap_test_capi.h" />
+    <ClInclude Include="..\pod_core\capi\scheme_plain_atomic_swap_vc_test_capi.h" />
+    <ClInclude Include="..\pod_core\capi\scheme_plain_complaint_test_capi.h" />
+    <ClInclude Include="..\pod_core\capi\scheme_plain_ot_complaint_test_capi.h" />
+    <ClCompile Include="..\pod_core\scheme_atomic_swap_vc_misc.cc" />
+    <ClCompile Include="..\pod_core\scheme_atomic_swap_vc_notary.cc" />
+    <ClCompile Include="..\pod_core\scheme_atomic_swap_vc_test.cc" />
+    <ClCompile Include="..\pod_core\scheme_atomic_swap_vc_zkp.cc" />
+    <ClCompile Include="..\pod_core\scheme_plain_alice_data.cc" />
+    <ClCompile Include="..\pod_core\scheme_plain_bob_data.cc" />
+    <ClCompile Include="..\pod_core\scheme_table_alice_data.cc" />
+    <ClCompile Include="..\pod_core\scheme_table_bob_data.cc" />
+    <ClInclude Include="..\pod_core\capi\scheme_table_atomic_swap_vc_test_capi.h" />
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_bob.inc">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClCompile Include="..\pod_core\scheme_atomic_swap_notary.cc" />
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_alice.inc">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClCompile Include="..\pod_core\scheme_atomic_swap_test.cc" />
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_vc_bob.h" />
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_vc_misc.h" />
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_vc_notary.h" />
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_vc_protocol.h" />
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_vc_serialize.h" />
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_vc_alice.h" />
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_vc_test.h" />
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_vc_zkp.h" />
+    <ClInclude Include="..\pod_core\scheme_complaint_bob.inc">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_complaint_alice.inc">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClCompile Include="..\pod_core\scheme_complaint_test.cc" />
+    <ClInclude Include="..\pod_core\scheme_ot_complaint_bob.inc">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_ot_complaint_alice.inc">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClCompile Include="..\pod_core\scheme_ot_complaint_test.cc" />
+    <ClCompile Include="..\pod_core\scheme_ot_vrfq_bob.cc" />
+    <ClCompile Include="..\pod_core\scheme_ot_vrfq_notary.cc" />
+    <ClCompile Include="..\pod_core\scheme_ot_vrfq_alice.cc" />
+    <ClCompile Include="..\pod_core\scheme_ot_vrfq_test.cc" />
+    <ClCompile Include="..\pod_core\scheme_vrfq_bob.cc" />
+    <ClCompile Include="..\pod_core\scheme_vrfq_notary.cc" />
+    <ClCompile Include="..\pod_core\scheme_vrfq_alice.cc" />
+    <ClCompile Include="..\pod_core\scheme_vrfq_test.cc" />
+    <ClCompile Include="..\public\bulletin_plain.cc" />
+    <ClCompile Include="..\public\bulletin_table.cc" />
+    <ClCompile Include="..\public\chain.cc" />
+    <ClCompile Include="..\public\ecc.cc" />
+    <ClCompile Include="..\public\mimc.cc" />
+    <ClCompile Include="..\public\mkl_tree.cc" />
+    <ClCompile Include="..\public\scheme_error.cc" />
+    <ClCompile Include="..\public\scheme_misc.cc" />
+    <ClCompile Include="..\public\scheme_plain.cc" />
+    <ClCompile Include="..\public\scheme_table.cc" />
+    <ClCompile Include="..\public\vrf_meta.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\pod_core\matrix_fr_serialize.h" />
+    <ClInclude Include="..\pod_core\scheme_ot_complaint_protocol.h" />
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_notary.h" />
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_protocol.h" />
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_serialize.h" />
+    <ClInclude Include="..\pod_core\scheme_complaint_notary.h" />
+    <ClInclude Include="..\pod_core\scheme_complaint_protocol.h" />
+    <ClInclude Include="..\pod_core\scheme_complaint_serialize.h" />
+    <ClInclude Include="..\pod_core\scheme_ot_complaint_serialize.h" />
+    <ClInclude Include="..\pod_core\scheme_ot_vrfq_notary.h" />
+    <ClInclude Include="..\pod_core\scheme_ot_vrfq_protocol.h" />
+    <ClInclude Include="..\pod_core\scheme_ot_vrfq_serialize.h" />
+    <ClInclude Include="..\pod_core\scheme_vrfq_notary.h" />
+    <ClInclude Include="..\pod_core\scheme_vrfq_protocol.h" />
+    <ClInclude Include="..\pod_core\scheme_vrfq_serialize.h" />
+    <ClInclude Include="..\pod_core\zkp_key.h" />
+    <ClInclude Include="..\public\func_alias.h" />
+    <ClInclude Include="..\public\matrix_fr.h" />
+    <ClInclude Include="..\public\mimc.h" />
+    <ClInclude Include="..\public\omp_helper.h" />
+    <ClInclude Include="..\public\zkp.h" />
+    <ClInclude Include="..\pod_core\basic_types_serialize.h" />
+    <ClInclude Include="..\pod_core\capi\c_api.h" />
+    <ClInclude Include="..\pod_core\capi\c_api_plain.h" />
+    <ClInclude Include="..\pod_core\capi\c_api_table.h" />
+    <ClInclude Include="..\pod_core\capi\c_api_types.h" />
+    <ClInclude Include="..\pod_core\capi\scheme_table_atomic_swap_test_capi.h" />
+    <ClInclude Include="..\pod_core\capi\scheme_table_complaint_test_capi.h" />
+    <ClInclude Include="..\pod_core\capi\scheme_table_ot_complaint_test_capi.h" />
+    <ClInclude Include="..\pod_core\capi\scheme_table_ot_vrfq_test_capi.h" />
+    <ClInclude Include="..\pod_core\capi\scheme_table_vrfq_test_capi.h" />
+    <ClInclude Include="..\pod_core\scheme_plain_alice_data.h" />
+    <ClInclude Include="..\pod_core\scheme_plain_bob_data.h" />
+    <ClInclude Include="..\pod_core\scheme_table_alice_data.h" />
+    <ClInclude Include="..\pod_core\scheme_table_bob_data.h" />
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_bob.h" />
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_alice.h" />
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_test.h" />
+    <ClInclude Include="..\pod_core\scheme_complaint_bob.h" />
+    <ClInclude Include="..\pod_core\scheme_complaint_alice.h" />
+    <ClInclude Include="..\pod_core\scheme_complaint_test.h" />
+    <ClInclude Include="..\pod_core\scheme_ot_complaint_notary.h" />
+    <ClInclude Include="..\pod_core\scheme_ot_complaint_bob.h" />
+    <ClInclude Include="..\pod_core\scheme_ot_complaint_alice.h" />
+    <ClInclude Include="..\pod_core\scheme_ot_complaint_test.h" />
+    <ClInclude Include="..\pod_core\scheme_ot_vrfq_bob.h" />
+    <ClInclude Include="..\pod_core\scheme_ot_vrfq_alice.h" />
+    <ClInclude Include="..\pod_core\scheme_ot_vrfq_test.h" />
+    <ClInclude Include="..\pod_core\scheme_vrfq_bob.h" />
+    <ClInclude Include="..\pod_core\scheme_vrfq_alice.h" />
+    <ClInclude Include="..\pod_core\scheme_vrfq_test.h" />
+    <ClInclude Include="..\public\basic_types.h" />
+    <ClInclude Include="..\public\bp.h" />
+    <ClInclude Include="..\public\bulletin_plain.h" />
+    <ClInclude Include="..\public\bulletin_table.h" />
+    <ClInclude Include="..\public\chain.h" />
+    <ClInclude Include="..\public\ecc.h" />
+    <ClInclude Include="..\public\ecc_pub.h" />
+    <ClInclude Include="..\public\misc.h" />
+    <ClInclude Include="..\public\mkl_tree.h" />
+    <ClInclude Include="..\public\mpz.h" />
+    <ClInclude Include="..\public\msvc_hack.h" />
+    <ClInclude Include="..\public\multiexp.h" />
+    <ClInclude Include="..\public\public.h" />
+    <ClInclude Include="..\public\scheme_error.h" />
+    <ClInclude Include="..\public\scheme_misc.h" />
+    <ClInclude Include="..\public\scheme_plain.h" />
+    <ClInclude Include="..\public\scheme_table.h" />
+    <ClInclude Include="..\public\schnorr.h" />
+    <ClInclude Include="..\public\tick.h" />
+    <ClInclude Include="..\public\vrf.h" />
+    <ClInclude Include="..\public\vrf_meta.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\pod_core\Makefile" />
+    <None Include="..\pod_core\Makefile.clang" />
+    <None Include="..\pod_core\README.md" />
+    <None Include="..\pod_core\scheme_atomic_swap_vc_bob.inc" />
+    <None Include="..\pod_core\scheme_atomic_swap_vc_alice.inc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="bak.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

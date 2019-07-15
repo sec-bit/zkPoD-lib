@@ -14,6 +14,7 @@ thread_local CryptoPP::NonblockingRng rng;
 }  // namespace
 
 void InitEcc() {
+  std::cout << "init mcl in main\n";
   mcl::bn::CurveParam cp = mcl::BN_SNARK1;
   mcl::bn256::initPairing(cp);
   // Fr::setIoMode(mcl::IoMode::IoSerialize);

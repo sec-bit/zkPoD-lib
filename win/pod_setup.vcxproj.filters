@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="..\thirdparty\mcl\include">
+      <UniqueIdentifier>{41b30b0c-1282-42f2-9b32-af1372c783b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\thirdparty\mcl\include\cybozu">
+      <UniqueIdentifier>{f3378cc1-33c2-4194-aa5e-71d46a36c648}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\thirdparty\mcl\include\mcl">
+      <UniqueIdentifier>{05e30be5-3541-4681-9b73-59b2fc219638}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="local">
+      <UniqueIdentifier>{4f779038-56c8-40fd-98fa-fdf73b95e41b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="public">
+      <UniqueIdentifier>{53409e12-0a61-45d7-94e4-8794d0ccd8f3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\pod_setup\atomic_swap_vc_keypair_generator.cc">
+      <Filter>local</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_setup\main.cc">
+      <Filter>local</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\ecc.cc">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\mimc.cc">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\zkp.cc">
+      <Filter>public</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\public\atomic_swap_gadget.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\ecc.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\mimc.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\mimc3_gadget.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\mimcinv_gadget.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\msvc_hack.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\tick.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\zkp.h">
+      <Filter>public</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\pod_setup\Makefile" />
+    <None Include="..\pod_setup\README.md" />
+    <None Include="..\pod_setup\Makefile.clang" />
+  </ItemGroup>
+</Project>

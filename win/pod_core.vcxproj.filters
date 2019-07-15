@@ -1,0 +1,476 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="..\thirdparty\mcl\include\cybozu">
+      <UniqueIdentifier>{f3378cc1-33c2-4194-aa5e-71d46a36c648}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\thirdparty\mcl\include\mcl">
+      <UniqueIdentifier>{05e30be5-3541-4681-9b73-59b2fc219638}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="local">
+      <UniqueIdentifier>{f5266e0b-523d-4bcf-923b-e55c771530cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="public">
+      <UniqueIdentifier>{17045654-599b-48ed-9433-14e77a8018cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="c_api">
+      <UniqueIdentifier>{c6c79f53-f6c4-4efc-8a70-1e5a4ce82e74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="local\atomic_swap">
+      <UniqueIdentifier>{cb7ae3c2-d575-4735-98d6-5205b5d6f104}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="local\atomic_swap_vc">
+      <UniqueIdentifier>{a983e5b7-3a0e-4fe2-925b-ff82ab879d9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="local\complaint">
+      <UniqueIdentifier>{5e539515-4b95-4173-bf11-00390afbde48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="local\ot_complaint">
+      <UniqueIdentifier>{cf4bdc7e-d3d5-4cdb-b9c8-363f93662c98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="local\ot_vrfq">
+      <UniqueIdentifier>{0989d90f-b793-4c27-84e9-682f103eda87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="local\vrfq">
+      <UniqueIdentifier>{17aca929-aff1-401a-9697-3f07719981bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="local\plain">
+      <UniqueIdentifier>{59c3e0bc-44a1-4948-80c4-458a0da2288e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="local\table">
+      <UniqueIdentifier>{61a079cd-0de4-4f61-a381-ec7e7814486a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\pod_core\capi\c_api.cc">
+      <Filter>c_api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\capi\c_api_plain.cc">
+      <Filter>c_api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\capi\c_api_table.cc">
+      <Filter>c_api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\scheme_atomic_swap_notary.cc">
+      <Filter>local\atomic_swap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\scheme_atomic_swap_test.cc">
+      <Filter>local\atomic_swap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\scheme_atomic_swap_vc_misc.cc">
+      <Filter>local\atomic_swap_vc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\scheme_atomic_swap_vc_notary.cc">
+      <Filter>local\atomic_swap_vc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\scheme_atomic_swap_vc_test.cc">
+      <Filter>local\atomic_swap_vc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\scheme_atomic_swap_vc_zkp.cc">
+      <Filter>local\atomic_swap_vc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\scheme_complaint_test.cc">
+      <Filter>local\complaint</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\scheme_ot_complaint_test.cc">
+      <Filter>local\ot_complaint</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\scheme_ot_vrfq_alice.cc">
+      <Filter>local\ot_vrfq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\scheme_ot_vrfq_bob.cc">
+      <Filter>local\ot_vrfq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\scheme_ot_vrfq_notary.cc">
+      <Filter>local\ot_vrfq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\scheme_ot_vrfq_test.cc">
+      <Filter>local\ot_vrfq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\capi\scheme_plain_atomic_swap_test_capi.cc">
+      <Filter>c_api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\capi\scheme_plain_atomic_swap_vc_test_capi.cc">
+      <Filter>c_api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\capi\scheme_plain_complaint_test_capi.cc">
+      <Filter>c_api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\capi\scheme_plain_ot_complaint_test_capi.cc">
+      <Filter>c_api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\capi\scheme_table_atomic_swap_test_capi.cc">
+      <Filter>c_api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\capi\scheme_table_atomic_swap_vc_test_capi.cc">
+      <Filter>c_api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\capi\scheme_table_complaint_test_capi.cc">
+      <Filter>c_api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\capi\scheme_table_ot_complaint_test_capi.cc">
+      <Filter>c_api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\capi\scheme_table_ot_vrfq_test_capi.cc">
+      <Filter>c_api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\capi\scheme_table_vrfq_test_capi.cc">
+      <Filter>c_api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\scheme_vrfq_alice.cc">
+      <Filter>local\vrfq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\scheme_vrfq_bob.cc">
+      <Filter>local\vrfq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\scheme_vrfq_notary.cc">
+      <Filter>local\vrfq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\scheme_vrfq_test.cc">
+      <Filter>local\vrfq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\scheme_plain_alice_data.cc">
+      <Filter>local\plain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\scheme_plain_bob_data.cc">
+      <Filter>local\plain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\scheme_table_alice_data.cc">
+      <Filter>local\table</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\scheme_table_bob_data.cc">
+      <Filter>local\table</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\bulletin_plain.cc">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\bulletin_table.cc">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\chain.cc">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\ecc.cc">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\mimc.cc">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\mkl_tree.cc">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\scheme_error.cc">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\scheme_misc.cc">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\scheme_plain.cc">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\scheme_table.cc">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\vrf_meta.cc">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\zkp.cc">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pod_core\main.cc">
+      <Filter>local</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\pod_core\capi\c_api.h">
+      <Filter>c_api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\capi\c_api_object.h">
+      <Filter>c_api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\capi\c_api_plain.h">
+      <Filter>c_api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\capi\c_api_table.h">
+      <Filter>c_api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\capi\c_api_types.h">
+      <Filter>c_api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_alice.h">
+      <Filter>local\atomic_swap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_alice.inc">
+      <Filter>local\atomic_swap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_bob.h">
+      <Filter>local\atomic_swap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_bob.inc">
+      <Filter>local\atomic_swap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_notary.h">
+      <Filter>local\atomic_swap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_protocol.h">
+      <Filter>local\atomic_swap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_serialize.h">
+      <Filter>local\atomic_swap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_test.h">
+      <Filter>local\atomic_swap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_vc_alice.h">
+      <Filter>local\atomic_swap_vc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_vc_bob.h">
+      <Filter>local\atomic_swap_vc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_vc_misc.h">
+      <Filter>local\atomic_swap_vc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_vc_notary.h">
+      <Filter>local\atomic_swap_vc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_vc_protocol.h">
+      <Filter>local\atomic_swap_vc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_vc_serialize.h">
+      <Filter>local\atomic_swap_vc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_vc_test.h">
+      <Filter>local\atomic_swap_vc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_atomic_swap_vc_zkp.h">
+      <Filter>local\atomic_swap_vc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_complaint_alice.h">
+      <Filter>local\complaint</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_complaint_alice.inc">
+      <Filter>local\complaint</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_complaint_bob.h">
+      <Filter>local\complaint</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_complaint_bob.inc">
+      <Filter>local\complaint</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_complaint_notary.h">
+      <Filter>local\complaint</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_complaint_protocol.h">
+      <Filter>local\complaint</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_complaint_serialize.h">
+      <Filter>local\complaint</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_complaint_test.h">
+      <Filter>local\complaint</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_ot_complaint_alice.h">
+      <Filter>local\ot_complaint</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_ot_complaint_alice.inc">
+      <Filter>local\ot_complaint</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_ot_complaint_bob.h">
+      <Filter>local\ot_complaint</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_ot_complaint_bob.inc">
+      <Filter>local\ot_complaint</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_ot_complaint_notary.h">
+      <Filter>local\ot_complaint</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_ot_complaint_protocol.h">
+      <Filter>local\ot_complaint</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_ot_complaint_serialize.h">
+      <Filter>local\ot_complaint</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_ot_complaint_test.h">
+      <Filter>local\ot_complaint</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_ot_vrfq_alice.h">
+      <Filter>local\ot_vrfq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_ot_vrfq_bob.h">
+      <Filter>local\ot_vrfq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_ot_vrfq_notary.h">
+      <Filter>local\ot_vrfq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_ot_vrfq_protocol.h">
+      <Filter>local\ot_vrfq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_ot_vrfq_serialize.h">
+      <Filter>local\ot_vrfq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_ot_vrfq_test.h">
+      <Filter>local\ot_vrfq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\capi\scheme_plain_atomic_swap_test_capi.h">
+      <Filter>c_api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\capi\scheme_plain_atomic_swap_vc_test_capi.h">
+      <Filter>c_api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\capi\scheme_plain_complaint_test_capi.h">
+      <Filter>c_api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\capi\scheme_plain_ot_complaint_test_capi.h">
+      <Filter>c_api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\capi\scheme_table_atomic_swap_test_capi.h">
+      <Filter>c_api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\capi\scheme_table_atomic_swap_vc_test_capi.h">
+      <Filter>c_api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\capi\scheme_table_complaint_test_capi.h">
+      <Filter>c_api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\capi\scheme_table_ot_complaint_test_capi.h">
+      <Filter>c_api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\capi\scheme_table_ot_vrfq_test_capi.h">
+      <Filter>c_api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\capi\scheme_table_vrfq_test_capi.h">
+      <Filter>c_api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_vrfq_alice.h">
+      <Filter>local\vrfq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_vrfq_bob.h">
+      <Filter>local\vrfq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_vrfq_notary.h">
+      <Filter>local\vrfq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_vrfq_protocol.h">
+      <Filter>local\vrfq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_vrfq_serialize.h">
+      <Filter>local\vrfq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_vrfq_test.h">
+      <Filter>local\vrfq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_plain_alice_data.h">
+      <Filter>local\plain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_plain_bob_data.h">
+      <Filter>local\plain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_table_alice_data.h">
+      <Filter>local\table</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\scheme_table_bob_data.h">
+      <Filter>local\table</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\basic_types.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\basic_types_serialize.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\bp.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\bulletin_plain.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\bulletin_table.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\chain.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\ecc.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\ecc_pub.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\func_alias.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\matrix_fr.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\matrix_fr_serialize.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\mimc.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\misc.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\mkl_tree.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\mpz.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\msvc_hack.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\multiexp.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\omp_helper.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\public.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\scheme_error.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\scheme_misc.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\scheme_plain.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\scheme_table.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\schnorr.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\tick.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\vrf.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\vrf_meta.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\zkp.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pod_core\zkp_key.h">
+      <Filter>public</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\pod_core\README.md" />
+    <None Include="..\pod_core\Makefile" />
+    <None Include="..\pod_core\Makefile.clang" />
+    <None Include="..\pod_core\scheme_atomic_swap_vc_alice.inc">
+      <Filter>local\atomic_swap_vc</Filter>
+    </None>
+    <None Include="..\pod_core\scheme_atomic_swap_vc_bob.inc">
+      <Filter>local\atomic_swap_vc</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="bak.txt" />
+  </ItemGroup>
+</Project>

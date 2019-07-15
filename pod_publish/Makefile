@@ -21,29 +21,26 @@ ifdef CXX11_HOME
   CXX := LD_LIBRARY_PATH=${CXX11_HOME}/lib $(CXX11_HOME)/bin/g++
 endif
 
+# HOME = ../linux
 THIRD_PARTY_HOME = ../thirdparty
-MCL_HOME = ../thirdparty/mcl/include
 CSV_HOME = ../thirdparty/csv
 PUB_HOME = ../public
 SNARK_HOME = ../depends/install
+MCL_HOME = $(SNARK_HOME)/include/depends/mcl/include
 
 INC_FLAGS :=  \
+ -I /usr/local/include \
+ -I /usr/include \
  -I $(MCL_HOME) \
  -I $(PUB_HOME) \
- -I $(THIRD_PARTY_HOME) \
  -isystem $(CSV_HOME) \
- -I.
+ -I $(THIRD_PARTY_HOME) \
+ -isystem $(SNARK_HOME)/include \
+ -I. \
+ -I.. \
 
 ifdef CXX11_HOME
   INC_FLAGS += -I $(CXX11_HOME)/include
-endif
-
-LDFLAGS += \
- -static-libstdc++ -static-libgcc \
- -fmerge-all-constants \
-
-ifdef CXX11_HOME
-  LDFLAGS += -L${CXX11_HOME}/lib64
 endif
 
 CXXFLAGS := \
@@ -58,14 +55,14 @@ CXXFLAGS := \
  -Wno-parentheses \
  -Wdeprecated-declarations \
  -fmerge-all-constants  \
- $(INC_FLAGS)\
- -isystem $(SNARK_HOME)/include \
+ $(INC_FLAGS) \
 
- SNARK_FLAGS = \
+SNARK_FLAGS = \
  -DBINARY_OUTPUT \
  -DBN_SUPPORT_SNARK=1 \
- -DCURVE_BN128 \
+ -DCURVE_MCL_BN128 \
  -DMONTGOMERY_OUTPUT \
+ -DMULTICORE=1 \
  -DUSE_ASM \
  -DNO_PROCPS \
 
@@ -73,10 +70,10 @@ MCL_FLAGS := \
  -DMCL_DONT_USE_OPENSSL
 
 BOOST_FLAGS := \
- -DBOOST_SPIRIT_THREADSAFE
+ -DBOOST_SPIRIT_THREADSAFE 
 
 RELEASE_FLAGS := \
- -O2 \
+ -O3 \
  -DNDEBUG \
  -DLINUX \
 
@@ -92,7 +89,6 @@ DEBUG_FLAGS := \
 
 LDFLAGS += \
  -fmerge-all-constants \
- -L${CXX11_HOME}/lib64\
  -L$(SNARK_HOME)/lib
 
 LIBS := \
@@ -108,14 +104,14 @@ LIBS := \
  -lboost_program_options \
  -lsnark \
  -lff \
- -lzm \
+ -lmcl \
 
 ifeq ($(OS_TYPE),Darwin)
   TMPVAR := $(CXXFLAGS)
   CXXFLAGS := $(filter-out -fopenmp, $(TMPVAR))
 
-  TMPVAR := $(LDFLAGS)
-  LDFLAGS := $(filter-out -static-libgcc, $(TMPVAR))
+  TMPVAR := $(SNARK_FLAGS)
+  SNARK_FLAGS := $(filter-out -DMULTICORE=1, $(TMPVAR))
 
   TMPVAR := $(LIBS)
   TMPVAR := $(filter-out -lgomp, $(TMPVAR))
@@ -127,7 +123,7 @@ BUILDPUB := ./build/public
 BUILD3RD := ./build/thirdparty
 BUILDCSV := ./build/thirdparty/csv
 
-$(shell mkdir -p $(HOME)/bin)
+# $(shell mkdir -p $(HOME)/bin)
 $(shell mkdir -p $(BUILD))
 $(shell mkdir -p $(BUILDPUB))
 $(shell mkdir -p $(BUILD3RD))
