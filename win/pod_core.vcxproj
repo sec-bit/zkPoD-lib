@@ -261,7 +261,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\pod_core\Makefile" />
-    <None Include="..\pod_core\Makefile.clang" />
     <None Include="..\pod_core\README.md" />
     <None Include="..\pod_core\scheme_atomic_swap_vc_bob.inc" />
     <None Include="..\pod_core\scheme_atomic_swap_vc_alice.inc" />

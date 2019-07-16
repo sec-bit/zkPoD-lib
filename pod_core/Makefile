@@ -112,6 +112,9 @@ ifeq ($(OS_TYPE),Darwin)
   TMPVAR := $(SNARK_FLAGS)
   SNARK_FLAGS := $(filter-out -DMULTICORE=1, $(TMPVAR))
 
+  TMPVAR := $(SNARK_FLAGS)
+  SNARK_FLAGS := $(filter-out -DUSE_ASM, $(TMPVAR))
+
   TMPVAR := $(LIBS)
   TMPVAR := $(filter-out -lgomp, $(TMPVAR))
   LIBS := $(filter-out -lrt, $(TMPVAR))

@@ -120,7 +120,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\pod_setup\Makefile" />
-    <None Include="..\pod_setup\Makefile.clang" />
     <None Include="..\pod_setup\README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

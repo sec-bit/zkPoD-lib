@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="..\thirdparty\mcl\include">
-      <UniqueIdentifier>{41b30b0c-1282-42f2-9b32-af1372c783b7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="..\thirdparty\mcl\include\cybozu">
       <UniqueIdentifier>{f3378cc1-33c2-4194-aa5e-71d46a36c648}</UniqueIdentifier>
     </Filter>
@@ -63,6 +60,5 @@
   <ItemGroup>
     <None Include="..\pod_setup\Makefile" />
     <None Include="..\pod_setup\README.md" />
-    <None Include="..\pod_setup\Makefile.clang" />
   </ItemGroup>
 </Project>
