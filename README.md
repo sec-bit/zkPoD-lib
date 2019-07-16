@@ -1,5 +1,7 @@
 # zkPoD-lib
 
+[![Build Status](https://travis-ci.org/sec-bit/zkPoD-lib.svg?branch=master)](https://travis-ci.org/sec-bit/zkPoD-lib)
+
 zkPoD-lib is the underlying core library for [zkPoD system](https://github.com/sec-bit/zkPoD-node). It fully implements PoD (proof of delivery) protocol and also provides a CLI interface together with Golang bindings.
 
 zkPoD-lib has four main parts as followed.
