@@ -17,7 +17,7 @@ zkPoD-lib has four main parts as followed.
 ## Dependencies
 
 - GCC 7.3 or above
-- Go 1.11
+- Go 1.12
 - Boost 1.69.0 or newer
 - OpenMP 5.3.1 or newer
 
@@ -161,7 +161,7 @@ command line options:
   --dump_ecc_pub
 ```
 
-`pod_core` supports several mode combinations. We have `atomic-swap` and `complaint` trade mode for binary and table files. Moreover, we could employ _oblivious transfer_, `OT` mode, for privacy-preserving download. Furthermore, we are allowed to do `vrf_query` of structured table data, which could be combined with `OT` mode for the private query.
+`pod_core` supports several mode combinations. We have `atomic-swap`, `atomic-swap-vc` and `complaint` trade mode for binary and table files. Moreover, we could employ _oblivious transfer_, `OT` mode, for privacy-preserving download. Furthermore, we are allowed to do `vrf_query` of structured table data, which could be combined with `OT` mode for the private query.
 
 ```shell
 ./pod_core -m plain -a complaint_pod -p plain_data -o plain_output --demand_ranges 0-2
