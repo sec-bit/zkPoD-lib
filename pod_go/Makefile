@@ -18,7 +18,7 @@ ifndef V
   V := @
 else
   V :=
-  GO_TEST_FLAGS := -v
+  GO_TEST_FLAGS := -v -p 1 # disable parallel execution of tests 
 endif
 
 POD_CORE_DIR := $(PWD)/../pod_core
