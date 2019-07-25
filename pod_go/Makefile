@@ -70,7 +70,9 @@ test: clean test_publish pod_core
 	$(V) rm -rf $(TEST_OUTPUT_DIR)
 	$(V) mkdir -p $(TEST_OUTPUT_DIR)
 	$(V) $(GO) clean -testcache ./...
+	mv ecc_pub.bin $(TEST_ECC_PUB)
 	$(V) $(GO_TEST) ./...
+	make clean
 
 test_publish: test_publish_plain test_publish_table
 
