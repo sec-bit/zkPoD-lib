@@ -18,7 +18,9 @@ zkPoD-lib has four main parts as followed.
 
 ## Dependencies
 
-- GCC 7.3 or above
+**We would recommend Ubuntu 18.04 for convenience. The default GCC on Ubuntu 16.04 is outdated and you may encounter some annoying issues.**
+
+- GCC 7.3 or above (***If you upgrade GCC manually from an old version like GCC5, you should re-install the boost library.***)
 - Go 1.12
 - Boost 1.69.0 or newer
 - OpenMP 5.3.1 or newer
